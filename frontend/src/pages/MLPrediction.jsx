@@ -113,7 +113,7 @@ export default function MLPrediction() {
             >
               {samples.map((s) => (
                 <option key={s.sample_id} value={s.sample_id}>
-                  {s.sample_id} ({s.study_id}) — Actual: {s.alzheimers_diagnosis === 1 ? 'AD Positive' : 'Control'}
+                  {s.sample_id} ({s.study_id}) — Actual: {(s.alzheimers === 1 || s.alzheimers_diagnosis === 1) ? 'AD Positive' : 'Control'}
                 </option>
               ))}
             </select>

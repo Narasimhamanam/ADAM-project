@@ -170,7 +170,7 @@ async def get_dataset_validation(
 )
 async def list_samples(
     page: int = Query(1, ge=1),
-    page_size: int = Query(20, ge=1, le=100),
+    page_size: int = Query(20, ge=1, le=500),
     study_id: Optional[str] = Query(None, description="Filter by study_id"),
     alzheimers: Optional[float] = Query(None, description="Filter by Alzheimers label (0.0 or 1.0)"),
     search: Optional[str] = Query(None, description="Search by sample_id prefix"),
@@ -236,7 +236,7 @@ async def get_sample(
 )
 async def list_species(
     page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1, le=200),
+    page_size: int = Query(50, ge=1, le=1000),
     search: Optional[str] = Query(None, description="Search by species name"),
     db: AsyncSession = Depends(get_db),
 ) -> SpeciesListResponse:
@@ -272,7 +272,7 @@ async def list_species(
 )
 async def list_alpha_diversity(
     page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1, le=200),
+    page_size: int = Query(50, ge=1, le=1000),
     db: AsyncSession = Depends(get_db),
 ) -> AlphaDiversityListResponse:
     count_result = await db.execute(select(func.count(AlphaDiversityMetric.sample_id)))

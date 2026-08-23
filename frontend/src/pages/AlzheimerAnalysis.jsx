@@ -95,10 +95,11 @@ export default function AlzheimerAnalysis() {
   }, [selectedSampleId, selectedModel]);
 
   const filteredSamples = samples.filter((s) => {
+    const isAD = s.alzheimers === 1 || s.alzheimers_diagnosis === 1;
     const matchesDiagnosis =
       diagnosisFilter === 'all' ||
-      (diagnosisFilter === 'positive' && s.alzheimers_diagnosis === 1) ||
-      (diagnosisFilter === 'negative' && s.alzheimers_diagnosis === 0);
+      (diagnosisFilter === 'positive' && isAD) ||
+      (diagnosisFilter === 'negative' && !isAD);
     const matchesSearch =
       !searchQuery ||
       s.sample_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -107,7 +108,8 @@ export default function AlzheimerAnalysis() {
   });
 
   // Calculate actual vs predicted comparison states
-  const actualLabel = sampleDetail?.alzheimers_diagnosis;
+  const rawActual = sampleDetail?.alzheimers ?? sampleDetail?.alzheimers_diagnosis;
+  const actualLabel = rawActual !== undefined ? (rawActual === 1 || rawActual === 1.0 ? 1 : 0) : undefined;
   const predictedLabel = prediction?.predicted_label;
   const isMatch = actualLabel !== undefined && predictedLabel !== undefined && actualLabel === predictedLabel;
   const riskPercent = prediction ? Math.round(prediction.alzheimers_risk_probability * 100) : 0;
@@ -200,7 +202,7 @@ export default function AlzheimerAnalysis() {
             <div className="flex-1 overflow-y-auto space-y-1.5 pr-1">
               {filteredSamples.map((s) => {
                 const isSelected = s.sample_id === selectedSampleId;
-                const isAD = s.alzheimers_diagnosis === 1;
+                const isAD = s.alzheimers === 1 || s.alzheimers_diagnosis === 1;
 
                 return (
                   <button
