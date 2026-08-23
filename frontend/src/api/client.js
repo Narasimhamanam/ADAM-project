@@ -60,3 +60,11 @@ export const fetchSystemInfo = () =>
  */
 export const fetchDatasets = () =>
   apiClient.get('/datasets').then((r) => r.data)
+
+/**
+ * Fetch ML benchmarks across models and seeds.
+ * @returns {Promise<{total_experiments: number, models: object}>}
+ */
+export const fetchMlBenchmark = () =>
+  apiClient.get('/ml/benchmark').then((r) => r.data)
+

@@ -11,7 +11,7 @@ import {
   Bot, BookOpen, TrendingUp, Zap, RefreshCw, Clock,
   CheckCircle2, AlertTriangle, XCircle, Dna,
 } from 'lucide-react'
-import { fetchHealth, fetchSystemInfo, fetchDatasets } from '../api/client'
+import { fetchHealth, fetchSystemInfo, fetchDatasets, fetchMlBenchmark } from '../api/client'
 import StatusBadge from '../components/ui/StatusBadge'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ErrorAlert from '../components/ui/ErrorAlert'
@@ -88,6 +88,9 @@ function StatusRow({ icon: Icon, label, status, detail }) {
 // ── Component ─────────────────────────────────────────────────────────────
 
 export default function Dashboard() {
+  const [health, setHealth]         = useState(null)
+  const [systemInfo, setSystemInfo] = useState(null)
+  const [datasets, setDatasets]     = useState(null)
   const [mlData, setMlData]         = useState(null)
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState(null)
@@ -101,7 +104,7 @@ export default function Dashboard() {
         fetchHealth(),
         fetchSystemInfo(),
         fetchDatasets(),
-        fetch('/api/ml/benchmark').then(r => r.ok ? r.json() : null),
+        fetchMlBenchmark(),
       ])
       if (h.status === 'fulfilled') setHealth(h.value)
       else setHealth({ status: 'error', database: 'disconnected' })
