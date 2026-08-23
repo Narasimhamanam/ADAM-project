@@ -10,20 +10,18 @@ RUN npm ci --prefer-offline
 COPY . .
 RUN npm run build
 
-# ── Production stage ──────────────────────────────────────
-FROM node:20-alpine AS production
+# ── Production stage (nginx) ──────────────────────────────────────
+FROM nginx:alpine AS production
 
-WORKDIR /app
+# Remove default nginx config
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy package config and vite config
-COPY package*.json ./
-COPY vite.config.js ./
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy installed node_modules and built static bundle from builder
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/dist ./dist
+# Copy built static assets from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
 
 EXPOSE 3000
 
-# Serve the production build with Vite preview
-CMD ["npm", "run", "preview"]
+CMD ["nginx", "-g", "daemon off;"]

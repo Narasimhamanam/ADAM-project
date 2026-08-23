@@ -35,7 +35,10 @@ class Settings(BaseSettings):
     api_prefix: str = "/api"
 
     # CORS — comma-separated in env, parsed into list
-    cors_origins: str = "http://localhost:5173,http://localhost:3000,http://frontend:3000"
+    cors_origins: str = (
+        "http://localhost:5173,http://localhost:3000,http://frontend:3000,"
+        "http://127.0.0.1:5173,http://127.0.0.1:3000,http://127.0.0.1:8000,http://localhost:8000"
+    )
 
     @property
     def cors_origins_list(self) -> List[str]:
