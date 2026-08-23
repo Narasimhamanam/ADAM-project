@@ -51,10 +51,11 @@ async def system_info() -> SystemInfoResponse:
         platform_release=platform.release(),
         timestamp=datetime.now(timezone.utc).isoformat(),
         pgvector_enabled=settings.pgvector_enabled,
-        phase="Phase 1 — Foundation",
+        phase="Phase 2 — Data Ingestion & Dataset Explorer",
         description=(
             "ADAM-1 Enhanced: AI-Powered Alzheimer's Disease and Microbiome "
-            "Research Platform. Phase 1 provides the backend foundation, "
-            "database connectivity, and frontend shell."
+            "Research Platform. Phase 1 (Foundation) and Phase 2 (Dataset Audit, "
+            "Ingestion Pipeline, Dataset Explorer UI) are COMPLETE. "
+            "Phase 3 (ML Pipeline, XGBoost, SHAP Explainability) is next."
         ),
     )

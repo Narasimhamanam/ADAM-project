@@ -25,24 +25,36 @@ function resolveStatus(status) {
   return 'disconnected'
 }
 
-function PipelineCard({ icon: Icon, title, phase, description, active = false }) {
+function PipelineCard({ icon: Icon, title, phase, description, active = false, status }) {
+  const isComplete = status === 'complete'
+  const isActive   = active && !isComplete
+
   return (
-    <div className={`card p-4 flex gap-4 transition-all duration-200 ${active
-      ? 'border-accent-500/30 bg-gradient-to-br from-accent-600/10 to-transparent'
-      : 'hover:border-surface-600 opacity-80 hover:opacity-100'
+    <div className={`card p-4 flex gap-4 transition-all duration-200 ${
+      isComplete
+        ? 'border-success-500/30 bg-gradient-to-br from-success-600/10 to-transparent'
+        : isActive
+          ? 'border-accent-500/30 bg-gradient-to-br from-accent-600/10 to-transparent'
+          : 'hover:border-surface-600 opacity-80 hover:opacity-100'
     }`}>
-      <div className={`rounded-xl p-2.5 shrink-0 ${active ? 'bg-accent-600/20 text-accent-400' : 'bg-surface-700/60 text-surface-400'}`}>
+      <div className={`rounded-xl p-2.5 shrink-0 ${
+        isComplete ? 'bg-success-600/20 text-success-400'
+        : isActive  ? 'bg-accent-600/20 text-accent-400'
+        : 'bg-surface-700/60 text-surface-400'
+      }`}>
         <Icon size={20} />
       </div>
       <div className="min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
           <h3 className="text-sm font-semibold text-white">{title}</h3>
           <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
-            active
+            isComplete
               ? 'bg-success-600/20 border-success-500/30 text-success-400'
-              : 'bg-surface-700/60 border-surface-600/40 text-surface-400'
+              : isActive
+                ? 'bg-accent-600/20 border-accent-500/30 text-accent-400'
+                : 'bg-surface-700/60 border-surface-600/40 text-surface-400'
           }`}>
-            {active ? 'Active' : phase}
+            {isComplete ? '✓ ' : ''}{phase}
           </span>
         </div>
         <p className="text-xs text-surface-400 mt-1 leading-relaxed">{description}</p>
@@ -185,12 +197,12 @@ export default function Dashboard() {
         <div className="card p-4 bg-gradient-to-br from-accent-600/15 to-transparent border-accent-500/20">
           <p className="stat-label">Datasets Registered</p>
           <p className="stat-value mt-1">{datasets?.total ?? (loading ? '…' : '—')}</p>
-          <p className="text-xs text-surface-400 mt-1">Phase 1 registry</p>
+          <p className="text-xs text-surface-400 mt-1">Phase 2 · 5 core research CSVs</p>
         </div>
         <div className="card p-4 bg-gradient-to-br from-primary-600/15 to-transparent border-primary-500/20">
           <p className="stat-label">ML Experiments</p>
           <p className="stat-value mt-1">30</p>
-          <p className="text-xs text-surface-400 mt-1">Original ADAM-1 paper</p>
+          <p className="text-xs text-surface-400 mt-1">Original ADAM-1 paper baseline</p>
         </div>
         <div className="card p-4 bg-gradient-to-br from-success-600/15 to-transparent border-success-500/20">
           <p className="stat-label">Backend Status</p>
@@ -201,8 +213,8 @@ export default function Dashboard() {
         </div>
         <div className="card p-4 bg-gradient-to-br from-warning-600/15 to-transparent border-warning-500/20">
           <p className="stat-label">Active Phase</p>
-          <p className="stat-value mt-1 text-xl">Phase 1</p>
-          <p className="text-xs text-surface-400 mt-1">Foundation</p>
+          <p className="stat-value mt-1 text-xl">Phase 3</p>
+          <p className="text-xs text-surface-400 mt-1">ML Pipeline · Starting Now</p>
         </div>
       </div>
 
@@ -216,21 +228,23 @@ export default function Dashboard() {
           <PipelineCard
             icon={Database}
             title="Data Foundation"
-            phase="Phase 1 — Active"
+            phase="Phase 1 — Complete"
             description="PostgreSQL + pgvector database, dataset registry, API layer, and React dashboard."
-            active
+            status="complete"
           />
           <PipelineCard
             icon={Dna}
-            title="Data Ingestion & Processing"
-            phase="Phase 2"
-            description="CSV ingestion pipeline for clinical microbiome data, alpha/beta diversity preprocessing, and feature engineering."
+            title="Data Ingestion & Dataset Explorer"
+            phase="Phase 2 — Complete"
+            description="335 samples · 940 species · 5 datasets ingested · Shannon & Bray-Curtis · 5-tab Dataset Explorer UI."
+            status="complete"
           />
           <PipelineCard
             icon={TrendingUp}
             title="ML Prediction Engine"
-            phase="Phase 3"
+            phase="Phase 3 — Active"
             description="XGBoost training pipeline, Optuna hyperparameter optimisation, 30-experiment cross-validation regime."
+            active
           />
           <PipelineCard
             icon={Zap}
