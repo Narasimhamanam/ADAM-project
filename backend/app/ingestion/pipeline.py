@@ -32,7 +32,21 @@ from app.models import (
 
 logger = get_logger(__name__)
 
-GLOBAL_RES_DIR = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources"
+
+def get_global_resources_dir() -> str:
+    """Resolve global_resources path across local Windows, relative dev, and Docker environments."""
+    env_dir = os.environ.get("ORIGINAL_ADAM_DIR")
+    if env_dir and os.path.exists(env_dir):
+        return env_dir
+    docker_mount = "/original_adam/ADAM/global_resources"
+    if os.path.exists(docker_mount):
+        return docker_mount
+    rel_path = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "..", "original_adam", "ADAM", "global_resources")
+    )
+    if os.path.exists(rel_path):
+        return rel_path
+    return r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources"
 
 DATASET_CONFIGS = {
     "clinical_microbiome_df": {
@@ -104,7 +118,7 @@ async def register_dataset_metadata(
         dataset = Dataset(
             name=key,
             description=cfg["description"],
-            source_file=os.path.relpath(fpath, r"e:\ADAM-Enhanced"),
+            source_file=f"original_adam/ADAM/global_resources/{cfg['filename']}",
             dataset_type=cfg["category"],
             rows=nrows,
             columns=ncols,
@@ -441,10 +455,11 @@ async def execute_ingestion_pipeline(db: AsyncSession) -> dict[str, str]:
 
     # DEPENDENCY ORDER: taxonomy must be ingested before clinical samples & abundances
     ordered_keys = ["clade_species_df", "clinical_microbiome_df", "ad_df", "bc_df", "mph_matching_ad"]
+    global_res_dir = get_global_resources_dir()
 
     for key in ordered_keys:
         cfg = DATASET_CONFIGS[key]
-        fpath = os.path.join(GLOBAL_RES_DIR, cfg["filename"])
+        fpath = os.path.join(global_res_dir, cfg["filename"])
         
         # 1. Validation checks
         if not os.path.exists(fpath):

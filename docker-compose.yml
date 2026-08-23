@@ -46,6 +46,7 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
+      - ./original_adam:/original_adam:ro
     networks:
       - adam_network
     healthcheck:

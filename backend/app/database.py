@@ -78,6 +78,7 @@ async def init_db() -> None:
 
         async with engine.begin() as conn:
             await conn.run_sync(Base.metadata.create_all)
+            await conn.execute(text("ALTER TABLE datasets ADD COLUMN IF NOT EXISTS checksum VARCHAR(64)"))
 
         logger.info("Database tables created/verified")
         await _verify_pgvector()
