@@ -4,11 +4,11 @@ const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 // ── API helpers ──────────────────────────────────────────────────────────────
 async function apiFetch(path, params = {}) {
-  const url = new URL(`${API_BASE}${path}`);
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== '') url.searchParams.set(k, v);
-  });
-  const res = await fetch(url.toString());
+  const qs = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== '')
+  ).toString();
+  const fullPath = `${API_BASE}${path}${qs ? '?' + qs : ''}`;
+  const res = await fetch(fullPath);
   if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
   return res.json();
 }
