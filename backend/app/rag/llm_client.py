@@ -18,15 +18,25 @@ logger = get_logger(__name__)
 class LLMClient:
     """Provider-independent LLM caller with biomedical knowledge synthesis."""
 
+    # Free, efficient Groq models (in preference order)
+    GROQ_MODELS = [
+        "groq/compound-mini",        # Fastest, highly accurate, free
+        "groq/compound",             # Full compound model, free
+        "openai/gpt-oss-120b",       # High capability, free
+        "qwen/qwen3.6-27b",          # Deep reasoning, free
+    ]
+
     def __init__(self):
         self.groq_key = os.environ.get("GROQ_API_KEY", "").strip()
         self.openai_key = os.environ.get("OPENAI_API_KEY", "").strip()
         self.ollama_url = os.environ.get("OLLAMA_URL", "http://localhost:11434").strip()
+        # Prefer env-specified model, fall back to priority list
+        self.groq_model = os.environ.get("GROQ_MODEL", self.GROQ_MODELS[0]).strip()
 
     def get_active_provider(self) -> str:
         """Identify which provider is active."""
         if self.groq_key:
-            return "Groq (Llama-3)"
+            return f"Groq ({self.groq_model})"
         if self.openai_key:
             return "OpenAI (GPT)"
         return "ADAM-1 Biomedical Expert Engine (Local)"
@@ -54,7 +64,7 @@ class LLMClient:
         # 1. Try Groq if configured
         if self.groq_key:
             try:
-                async with httpx.AsyncClient(timeout=15.0) as client:
+                async with httpx.AsyncClient(timeout=20.0) as client:
                     res = await client.post(
                         "https://api.groq.com/openai/v1/chat/completions",
                         headers={
@@ -62,7 +72,7 @@ class LLMClient:
                             "Content-Type": "application/json",
                         },
                         json={
-                            "model": "llama-3.1-8b-instant",
+                            "model": self.groq_model,
                             "messages": [
                                 {"role": "system", "content": system_prompt or "You are an AI research assistant specializing in Alzheimer's disease and human gut microbiome multi-omics."},
                                 {"role": "user", "content": full_prompt},
@@ -75,7 +85,7 @@ class LLMClient:
                         text = data["choices"][0]["message"]["content"]
                         return {
                             "response": text,
-                            "provider": "Groq (Llama-3.1)",
+                            "provider": f"Groq ({self.groq_model})",
                             "citations": citations,
                         }
             except Exception as e:
@@ -177,9 +187,14 @@ class LLMClient:
             )
 
 
-_LLM_CLIENT = LLMClient()
+
+_LLM_CLIENT: LLMClient | None = None
 
 
 def get_llm_client() -> LLMClient:
-    """Return shared LLM client singleton."""
+    """Return LLM client, lazily initialized so env vars are read at first call."""
+    global _LLM_CLIENT
+    if _LLM_CLIENT is None:
+        _LLM_CLIENT = LLMClient()
     return _LLM_CLIENT
+
