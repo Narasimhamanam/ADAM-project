@@ -32,9 +32,9 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: 'Analysis — Phase 2+',
+    label: 'Analysis & Research',
     items: [
-      { to: '/alzheimer',  icon: Brain,      label: 'Alzheimer Analysis',   phase: 'Phase 2' },
+      { to: '/alzheimer',  icon: Brain,      label: 'Alzheimer Analysis',   phase: null },
     ],
   },
   {
@@ -43,7 +43,7 @@ const NAV_SECTIONS = [
       { to: '/ml',        icon: TrendingUp,  label: 'ML Prediction',       phase: null },
       { to: '/models',    icon: BarChart3,   label: 'Model Comparison',    phase: null },
       { to: '/shap',      icon: Zap,         label: 'SHAP Explainability', phase: null },
-      { to: '/reports',   icon: FileText,    label: 'Reports',             phase: 'Phase 3' },
+      { to: '/reports',   icon: FileText,    label: 'Reports',             phase: null },
     ],
   },
   {
