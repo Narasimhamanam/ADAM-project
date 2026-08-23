@@ -1,0 +1,49 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Node
+node_modules/
+dist/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# ML / generated data
+*.pkl
+*.joblib
+*.pt
+*.pth
+
+# Databases
+*.db
+*.sqlite
+
+# Chroma
+chroma_db/
+
+# Logs
+*.log
+
+# Secrets
+secrets/
+credentials/
+keys.py
+**/keys.py
+
+# Original ADAM reference repository (contains API keys from original research)
+# Download separately from: https://github.com/rkaunismaki/ADAM
+# Place in e:\ADAM-Enhanced\original_adam\
+original_adam/
