@@ -38,7 +38,7 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: 'Machine Learning — Phase 3 (Active)',
+    label: 'Machine Learning — Phase 3 (Complete)',
     items: [
       { to: '/ml',        icon: TrendingUp,  label: 'ML Prediction',       phase: null },
       { to: '/models',    icon: BarChart3,   label: 'Model Comparison',    phase: null },
@@ -47,11 +47,11 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: 'AI & Literature — Phase 4',
+    label: 'AI & Literature — Phase 4 (Active)',
     items: [
-      { to: '/assistant',  icon: MessageSquare, label: 'Research Assistant', phase: 'Phase 4' },
-      { to: '/literature', icon: BookOpen,      label: 'Literature / RAG',   phase: 'Phase 4' },
-      { to: '/agents',     icon: Bot,           label: 'AI Agents',          phase: 'Phase 4' },
+      { to: '/assistant',  icon: MessageSquare, label: 'Research Assistant', phase: null },
+      { to: '/literature', icon: BookOpen,      label: 'Literature / RAG',   phase: null },
+      { to: '/agents',     icon: Bot,           label: 'AI Agents',          phase: null },
     ],
   },
   {
@@ -136,7 +136,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Footer */}
         <div className="border-t border-surface-700/60 px-4 py-3">
           <p className="text-[10px] text-surface-500">ADAM-1 Enhanced v1.0.0</p>
-          <p className="text-[10px] text-accent-400 font-medium">Phase 3 — ML &amp; SHAP Live</p>
+          <p className="text-[10px] text-accent-400 font-medium">Phase 4 — AI Agents &amp; RAG Live</p>
         </div>
       </aside>
     </>
