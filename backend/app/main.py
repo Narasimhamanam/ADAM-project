@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 from app.config import get_settings
 from app.core.logging import configure_logging, get_logger
 from app.database import init_db
-from app.routers import health, system, datasets
+from app.routers import health, system, datasets, ml
 
 # ---------------------------------------------------------------------------
 # Bootstrap logging before anything else
@@ -134,6 +134,7 @@ API_PREFIX = settings.api_prefix  # /api
 app.include_router(health.router, prefix=API_PREFIX)
 app.include_router(system.router, prefix=API_PREFIX)
 app.include_router(datasets.router, prefix=API_PREFIX)
+app.include_router(ml.router, prefix=API_PREFIX)
 
 
 # ---------------------------------------------------------------------------
@@ -145,7 +146,7 @@ async def root() -> dict:
     return {
         "app": settings.app_name,
         "version": settings.app_version,
-        "phase": "Phase 2 — Dataset Ingestion & Explorer",
+        "phase": "Phase 3 — Machine Learning & SHAP Explainability",
         "docs": "/docs",
         "health": f"{API_PREFIX}/health",
     }

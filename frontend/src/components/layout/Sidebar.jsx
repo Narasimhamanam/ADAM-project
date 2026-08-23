@@ -38,11 +38,11 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: 'Machine Learning — Phase 3',
+    label: 'Machine Learning — Phase 3 (Active)',
     items: [
-      { to: '/ml',        icon: TrendingUp,  label: 'ML Prediction',       phase: 'Phase 3' },
-      { to: '/models',    icon: BarChart3,   label: 'Model Comparison',    phase: 'Phase 3' },
-      { to: '/shap',      icon: Zap,         label: 'SHAP Explainability', phase: 'Phase 3' },
+      { to: '/ml',        icon: TrendingUp,  label: 'ML Prediction',       phase: null },
+      { to: '/models',    icon: BarChart3,   label: 'Model Comparison',    phase: null },
+      { to: '/shap',      icon: Zap,         label: 'SHAP Explainability', phase: null },
       { to: '/reports',   icon: FileText,    label: 'Reports',             phase: 'Phase 3' },
     ],
   },
@@ -136,7 +136,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Footer */}
         <div className="border-t border-surface-700/60 px-4 py-3">
           <p className="text-[10px] text-surface-500">ADAM-1 Enhanced v1.0.0</p>
-          <p className="text-[10px] text-surface-600">Phase 1 — Foundation</p>
+          <p className="text-[10px] text-accent-400 font-medium">Phase 3 — ML &amp; SHAP Live</p>
         </div>
       </aside>
     </>
