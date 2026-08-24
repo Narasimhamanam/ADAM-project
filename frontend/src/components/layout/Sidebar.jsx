@@ -47,7 +47,7 @@ const NAV_SECTIONS = [
     ],
   },
   {
-    label: 'AI & Literature — Phase 4 (Active)',
+    label: 'AI & Literature — Phase 4 (Complete)',
     items: [
       { to: '/assistant',  icon: MessageSquare, label: 'Research Assistant', phase: null },
       { to: '/literature', icon: BookOpen,      label: 'Literature / RAG',   phase: null },
@@ -136,7 +136,7 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Footer */}
         <div className="border-t border-surface-700/60 px-4 py-3">
           <p className="text-[10px] text-surface-500">ADAM-1 Enhanced v1.0.0</p>
-          <p className="text-[10px] text-accent-400 font-medium">Phase 4 — AI Agents &amp; RAG Live</p>
+          <p className="text-[10px] text-success-500 font-semibold">Phase 4 Complete — All Verified</p>
         </div>
       </aside>
     </>

@@ -15,6 +15,16 @@ from app.rag.literature_store import search_literature
 logger = get_logger(__name__)
 
 
+DEFAULT_SYSTEM_PROMPT = (
+    "You are AIRA, an expert biomedical AI research assistant specializing in Alzheimer's disease and gut microbiome multi-omics.\n"
+    "Guidelines for your response:\n"
+    "1. Structure your answer with clear markdown headings and concise, high-value bullet points.\n"
+    "2. Focus strictly on key biological mechanisms, validated biomarkers (e.g., Phocaeicola dorei, Eubacterium rectale), and clinical metrics (e.g., Clinical Frailty Scale, SHAP importance).\n"
+    "3. Keep the output punchy, direct, and free of unnecessary filler.\n"
+    "4. End with a 1-sentence 'Key Clinical Takeaway'."
+)
+
+
 class LLMClient:
     """Provider-independent LLM caller with biomedical knowledge synthesis."""
 
@@ -74,10 +84,14 @@ class LLMClient:
                         json={
                             "model": self.groq_model,
                             "messages": [
-                                {"role": "system", "content": system_prompt or "You are an AI research assistant specializing in Alzheimer's disease and human gut microbiome multi-omics."},
+                                {
+                                    "role": "system",
+                                    "content": system_prompt or DEFAULT_SYSTEM_PROMPT,
+                                },
                                 {"role": "user", "content": full_prompt},
                             ],
-                            "temperature": 0.3,
+                            "temperature": 0.2,
+                            "max_tokens": 700,
                         },
                     )
                     if res.status_code == 200:

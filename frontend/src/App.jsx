@@ -11,7 +11,7 @@ import MLPrediction      from './pages/MLPrediction'
 import ModelComparison   from './pages/ModelComparison'
 import ShapExplainability from './pages/ShapExplainability'
 import ResearchAssistant from './pages/ResearchAssistant'
-import Literature        from './pages/Literature'
+import LiteratureRAG     from './pages/LiteratureRAG'
 import AIAgents          from './pages/AIAgents'
 import Reports           from './pages/Reports'
 import Settings          from './pages/Settings'
@@ -45,7 +45,7 @@ export default function App() {
         <Route path="/models"      element={<ModelComparison />} />
         <Route path="/shap"        element={<ShapExplainability />} />
         <Route path="/assistant"   element={<ResearchAssistant />} />
-        <Route path="/literature"  element={<Literature />} />
+        <Route path="/literature"  element={<LiteratureRAG />} />
         <Route path="/agents"      element={<AIAgents />} />
         <Route path="/reports"     element={<Reports />} />
         <Route path="/settings"    element={<Settings />} />

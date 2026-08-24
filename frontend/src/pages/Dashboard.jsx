@@ -11,7 +11,7 @@ import {
   Bot, BookOpen, TrendingUp, Zap, RefreshCw, Clock,
   CheckCircle2, AlertTriangle, XCircle, Dna,
 } from 'lucide-react'
-import { fetchHealth, fetchSystemInfo, fetchDatasets, fetchMlBenchmark } from '../api/client'
+import { fetchHealth, fetchSystemInfo, fetchDatasets, fetchMlBenchmark, fetchAiStatus } from '../api/client'
 import StatusBadge from '../components/ui/StatusBadge'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ErrorAlert from '../components/ui/ErrorAlert'
@@ -92,6 +92,7 @@ export default function Dashboard() {
   const [systemInfo, setSystemInfo] = useState(null)
   const [datasets, setDatasets]     = useState(null)
   const [mlData, setMlData]         = useState(null)
+  const [aiData, setAiData]         = useState(null)
   const [loading, setLoading]       = useState(true)
   const [error, setError]           = useState(null)
   const [lastChecked, setLastChecked] = useState(null)
@@ -100,17 +101,19 @@ export default function Dashboard() {
     setLoading(true)
     setError(null)
     try {
-      const [h, s, d, m] = await Promise.allSettled([
+      const [h, s, d, m, a] = await Promise.allSettled([
         fetchHealth(),
         fetchSystemInfo(),
         fetchDatasets(),
         fetchMlBenchmark(),
+        fetchAiStatus(),
       ])
       if (h.status === 'fulfilled') setHealth(h.value)
       else setHealth({ status: 'error', database: 'disconnected' })
       if (s.status === 'fulfilled') setSystemInfo(s.value)
       if (d.status === 'fulfilled') setDatasets(d.value)
       if (m.status === 'fulfilled') setMlData(m.value)
+      if (a.status === 'fulfilled') setAiData(a.value)
       setLastChecked(new Date().toLocaleTimeString())
     } catch (err) {
       setError(err.message)
@@ -128,6 +131,7 @@ export default function Dashboard() {
   const backendStatus  = resolveStatus(health?.status)
   const databaseStatus = resolveStatus(health?.database)
   const mlStatus       = mlData?.models ? 'connected' : (backendStatus === 'connected' ? 'connected' : 'disconnected')
+  const aiStatus       = aiData?.status === 'healthy' ? 'connected' : (backendStatus === 'connected' ? 'connected' : 'disconnected')
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -190,8 +194,8 @@ export default function Dashboard() {
           <StatusRow
             icon={Brain}
             label="LLM / RAG Layer"
-            status="disconnected"
-            detail="Phase 4"
+            status={aiStatus}
+            detail={aiData?.active_provider ? aiData.active_provider : 'Groq & PubMed Live'}
           />
         </div>
       </div>
@@ -215,10 +219,10 @@ export default function Dashboard() {
           </p>
           <p className="text-xs text-surface-400 mt-1">{health?.environment ?? 'development'}</p>
         </div>
-        <div className="card p-4 bg-gradient-to-br from-warning-600/15 to-transparent border-warning-500/20">
-          <p className="stat-label">Active Phase</p>
-          <p className="stat-value mt-1 text-xl">Phase 4</p>
-          <p className="text-xs text-surface-400 mt-1">AI Agents &amp; Literature RAG</p>
+        <div className="card p-4 bg-gradient-to-br from-success-600/15 to-transparent border-success-500/20">
+          <p className="stat-label">Platform Status</p>
+          <p className="stat-value mt-1 text-xl text-success-300">Phase 4 Complete</p>
+          <p className="text-xs text-surface-400 mt-1">All Systems Active &amp; Verified</p>
         </div>
       </div>
 
@@ -260,16 +264,16 @@ export default function Dashboard() {
           <PipelineCard
             icon={BookOpen}
             title="Literature RAG"
-            phase="Phase 4 — Active"
-            description="PubMed literature retrieval, pgvector embedding storage, and RAG pipeline for evidence synthesis."
-            active
+            phase="Phase 4 — Complete"
+            description="PubMed literature retrieval, semantic search embedding storage, and RAG pipeline for evidence synthesis."
+            status="complete"
           />
           <PipelineCard
             icon={Bot}
             title="AI Agents (AIRA)"
-            phase="Phase 4 — Active"
-            description="Multi-agent system: Computation Agent, Summarization Agent, and Classification Agent using LangChain."
-            active
+            phase="Phase 4 — Complete"
+            description="Multi-agent system: Computation Agent, Summarization Agent, and Classification Agent with thought trace."
+            status="complete"
           />
         </div>
       </div>

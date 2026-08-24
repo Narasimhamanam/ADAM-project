@@ -68,3 +68,10 @@ export const fetchDatasets = () =>
 export const fetchMlBenchmark = () =>
   apiClient.get('/ml/benchmark').then((r) => r.data)
 
+/**
+ * Fetch AI and Literature RAG status.
+ * @returns {Promise<{status: string, active_provider: string, indexed_articles: number, agents_available: Array<string>}>}
+ */
+export const fetchAiStatus = () =>
+  apiClient.get('/ai/status').then((r) => r.data)
+
