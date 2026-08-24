@@ -18,10 +18,17 @@ logger = get_logger(__name__)
 
 
 def get_base_research_dir() -> str:
-    """Resolve original_adam research root path."""
+    """Resolve original_adam research root path or packaged backend/data."""
     env_dir = os.environ.get("ORIGINAL_ADAM_DIR")
     if env_dir and os.path.exists(env_dir):
         return os.path.dirname(env_dir)
+    # Check backend/data (packaged with repo)
+    pkg_data = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+    if os.path.exists(pkg_data) and (
+        os.path.exists(os.path.join(pkg_data, "output")) or
+        os.path.exists(os.path.join(pkg_data, "base_model_selection"))
+    ):
+        return pkg_data
     docker_mount = "/original_adam/ADAM"
     if os.path.exists(docker_mount):
         return docker_mount

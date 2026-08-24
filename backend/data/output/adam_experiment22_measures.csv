@@ -1,0 +1,2 @@
+Model,Seed,Experiment_Number,Accuracy,AUC,F1_Score
+adam,1010220053,22,0.6,0.6000000000000001,0.7

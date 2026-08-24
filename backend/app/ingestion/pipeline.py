@@ -34,10 +34,16 @@ logger = get_logger(__name__)
 
 
 def get_global_resources_dir() -> str:
-    """Resolve global_resources path across local Windows, relative dev, and Docker environments."""
+    """Resolve global_resources path across local Windows, relative dev, packaged backend/data, and Docker environments."""
     env_dir = os.environ.get("ORIGINAL_ADAM_DIR")
     if env_dir and os.path.exists(env_dir):
         return env_dir
+    # Check backend/data/global_resources (packaged with repo)
+    pkg_data = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "..", "data", "global_resources")
+    )
+    if os.path.exists(pkg_data) and os.path.exists(os.path.join(pkg_data, "clinical_microbiome_df.csv")):
+        return pkg_data
     docker_mount = "/original_adam/ADAM/global_resources"
     if os.path.exists(docker_mount):
         return docker_mount

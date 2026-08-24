@@ -1,0 +1,2 @@
+Model,Seed,Experiment_Number,Accuracy,AUC,F1_Score
+xgboost,1029933563,4,0.7,0.7000000000000001,0.6086956521739131
