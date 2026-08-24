@@ -27,6 +27,8 @@ const TOPIC_CHIPS = [
   'Proton Pump Inhibitors',
 ];
 
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
+
 export default function LiteratureRAG() {
   const [query, setQuery] = useState('');
   const [articles, setArticles] = useState([]);
@@ -39,7 +41,7 @@ export default function LiteratureRAG() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('/api/ai/literature/articles');
+      const res = await fetch(`${API_BASE}/ai/literature/articles`);
       if (!res.ok) throw new Error('Failed to load indexed literature');
       const data = await res.json();
       setArticles(data || []);
@@ -64,7 +66,7 @@ export default function LiteratureRAG() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(`/api/ai/literature/search?q=${encodeURIComponent(q.trim())}&top_k=6`);
+      const res = await fetch(`${API_BASE}/ai/literature/search?q=${encodeURIComponent(q.trim())}&top_k=6`);
       if (!res.ok) throw new Error('Literature semantic search failed');
       const data = await res.json();
       setArticles(data.articles || []);

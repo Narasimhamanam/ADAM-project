@@ -28,6 +28,8 @@ const SUGGESTED_PROMPTS = [
   'What are the key bacterial mechanisms linking gut dysbiosis to amyloid burden?',
 ];
 
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
+
 export default function ResearchAssistant() {
   const [messages, setMessages] = useState([
     {
@@ -56,7 +58,7 @@ export default function ResearchAssistant() {
 
   // Load AI Layer Status
   useEffect(() => {
-    fetch('/api/ai/status')
+    fetch(`${API_BASE}/ai/status`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.active_provider) {
@@ -83,7 +85,7 @@ export default function ResearchAssistant() {
     setError(null);
 
     try {
-      const res = await fetch('/api/ai/chat', {
+      const res = await fetch(`${API_BASE}/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -68,6 +68,7 @@ const AGENT_PRESETS = [
 ];
 
 const QUICK_PATIENTS = ['DC001', 'DC002', 'DC017', 'FB085', 'FB100', 'FB300'];
+const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
 export default function AIAgents() {
   const [selectedPreset, setSelectedPreset] = useState(AGENT_PRESETS[0]);
@@ -80,7 +81,7 @@ export default function AIAgents() {
   const [aiStatus, setAiStatus] = useState(null);
 
   useEffect(() => {
-    fetch('/api/ai/status')
+    fetch(`${API_BASE}/ai/status`)
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => setAiStatus(data))
       .catch(() => {});
@@ -96,7 +97,7 @@ export default function AIAgents() {
 
     const timer = setTimeout(async () => {
       try {
-        const res = await fetch(`/api/samples/${clean}`);
+        const res = await fetch(`${API_BASE}/samples/${clean}`);
         if (res.ok) {
           setPatientValidation({ valid: true, message: `✓ Patient ${clean} validated in cohort` });
         } else {
@@ -132,7 +133,7 @@ export default function AIAgents() {
     setResult(null);
 
     try {
-      const res = await fetch('/api/ai/agent/execute', {
+      const res = await fetch(`${API_BASE}/ai/agent/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -32,7 +32,7 @@ export default function Header({ onMenuToggle, backendStatus }) {
         </div>
       </div>
 
-      {/* Centre: subtitle (hidden on small screens) */}
+      {/* Centre: subtitle */}
       <p className="hidden md:block text-xs text-surface-400 tracking-wide font-medium">
         AI-Powered Alzheimer's Disease &amp; Microbiome Research
       </p>
@@ -75,4 +75,3 @@ export default function Header({ onMenuToggle, backendStatus }) {
     </header>
   )
 }
-

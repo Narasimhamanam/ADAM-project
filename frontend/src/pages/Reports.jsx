@@ -28,6 +28,22 @@ const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 
 const QUICK_SAMPLES = ['DC001', 'DC002', 'DC017', 'FB085', 'FB100', 'FB300'];
 
+// Helper to format real numerical values or explicitly indicate unavailable
+function formatTaxonAbundance(val) {
+  if (val !== undefined && val !== null && !isNaN(Number(val))) {
+    const num = Number(val);
+    return `${(num * 100).toFixed(4)}%`;
+  }
+  return 'Data unavailable for this sample';
+}
+
+function formatShannonDiversity(val) {
+  if (val !== undefined && val !== null && !isNaN(Number(val))) {
+    return `${Number(val).toFixed(2)} (H')`;
+  }
+  return 'Not reported in cohort';
+}
+
 export default function Reports() {
   const [benchmarks, setBenchmarks] = useState(null);
   const [globalShap, setGlobalShap] = useState([]);
@@ -36,10 +52,11 @@ export default function Reports() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Patient Search & Dossier State
+  // Patient Search & Real ML Dossier State
   const [searchQuery, setSearchQuery] = useState('DC001');
   const [activePatientId, setActivePatientId] = useState('DC001');
   const [sampleData, setSampleData] = useState(null);
+  const [predictionData, setPredictionData] = useState(null);
   const [sampleLoading, setSampleLoading] = useState(false);
   const [searchError, setSearchError] = useState(null);
 
@@ -82,6 +99,7 @@ export default function Reports() {
     if (!cleanId) {
       setSearchError('Please enter a Patient ID (e.g., DC001, FB085).');
       setSampleData(null);
+      setPredictionData(null);
       return;
     }
 
@@ -89,17 +107,37 @@ export default function Reports() {
     setSearchError(null);
 
     try {
-      const res = await fetch(`${API_BASE}/samples/${cleanId}`);
-      if (!res.ok) {
+      // 1. Fetch real patient record from database
+      const sampleRes = await fetch(`${API_BASE}/samples/${cleanId}`);
+      if (!sampleRes.ok) {
         throw new Error(`No Patient ID found: '${cleanId}'. Please enter a valid cohort Patient ID (e.g., DC001 - DC092, FB085 - FB399).`);
       }
-      const data = await res.json();
-      setSampleData(data);
+      const sData = await sampleRes.json();
+      setSampleData(sData);
       setActivePatientId(cleanId);
       setSearchQuery(cleanId);
+
+      // 2. Fetch real live ML prediction & SHAP attribution for this patient
+      try {
+        const predRes = await fetch(`${API_BASE}/ml/predict`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model_name: 'xgboost', sample_id: cleanId }),
+        });
+        if (predRes.ok) {
+          const pData = await predRes.json();
+          setPredictionData(pData);
+        } else {
+          setPredictionData(null);
+        }
+      } catch (predErr) {
+        console.warn('ML Prediction inference unavailable for sample:', predErr);
+        setPredictionData(null);
+      }
     } catch (err) {
       setSearchError(err.message);
       setSampleData(null);
+      setPredictionData(null);
     } finally {
       setSampleLoading(false);
     }
@@ -118,6 +156,37 @@ export default function Reports() {
   function handleDownloadMarkdownReport() {
     if (!sampleData) return;
     const timestamp = new Date().toISOString().split('T')[0];
+    
+    // Extract real values safely from SampleResponse / covariates
+    const age = sampleData.age !== undefined && sampleData.age !== null ? sampleData.age : sampleData.covariates?.age;
+    const isMale = sampleData.male !== undefined && sampleData.male !== null ? sampleData.male === 1 : (sampleData.covariates?.gender !== 1);
+    const cfs = sampleData.clinical_frailty_scale !== undefined && sampleData.clinical_frailty_scale !== null ? sampleData.clinical_frailty_scale : sampleData.covariates?.clinical_frailty_scale;
+    const malnutrition = sampleData.malnutrition_indicator_sco !== undefined && sampleData.malnutrition_indicator_sco !== null ? sampleData.malnutrition_indicator_sco : sampleData.covariates?.malnutrition_indicator_sco;
+    const alzheimersVal = sampleData.alzheimers !== undefined && sampleData.alzheimers !== null ? sampleData.alzheimers : sampleData.covariates?.alzheimers;
+
+    // Real Taxa values
+    const pDoreiRaw = sampleData.secondary_covariates?.['Phocaeicola dorei'] ?? sampleData.covariates?.['Phocaeicola dorei'];
+    const nTimonRaw = sampleData.secondary_covariates?.['Neglecta timonensis'] ?? sampleData.covariates?.['Neglecta timonensis'];
+    const eRectRaw = sampleData.secondary_covariates?.['Eubacterium rectale'] ?? sampleData.covariates?.['Eubacterium rectale'];
+    const shannonRaw = sampleData.secondary_covariates?.shannon_diversity ?? sampleData.covariates?.shannon_diversity;
+
+    const pDoreiVal = formatTaxonAbundance(pDoreiRaw);
+    const nTimonVal = formatTaxonAbundance(nTimonRaw);
+    const eRectVal = formatTaxonAbundance(eRectRaw);
+    const shannonVal = formatShannonDiversity(shannonRaw);
+
+    // Format real ML prediction
+    const mlRiskStr = predictionData
+      ? `${(predictionData.alzheimers_risk_probability * 100).toFixed(1)}% (${predictionData.risk_level})`
+      : 'Prediction unavailable — Run ML prediction to generate a risk assessment';
+
+    const topFeaturesStr = predictionData?.feature_contributions?.length > 0
+      ? predictionData.feature_contributions
+          .slice(0, 5)
+          .map((f) => `  - ${f.feature}: SHAP ${f.shap_value > 0 ? '+' : ''}${f.shap_value.toFixed(4)} (${f.impact})`)
+          .join('\n')
+      : '  - Feature attribution not available';
+
     const reportText = `# ADAM-1 Enhanced — Clinical Patient Assessment Dossier
 Date: ${timestamp}
 Patient Sample ID: ${activePatientId}
@@ -125,20 +194,26 @@ Platform: ${systemInfo?.app_name || 'ADAM-1 Enhanced'} (Phase 4 — AI & RAG Liv
 
 ## 1. Patient Profile
 - Sample ID: ${sampleData.sample_id}
-- Cohort Group: ${sampleData.cohort || 'ADAM Longitudinal'}
-- Age: ${sampleData.covariates?.age ?? '74'}
-- Gender: ${sampleData.covariates?.gender === 1 ? 'Female' : 'Male'}
-- Clinical Frailty Scale (CFS): ${sampleData.covariates?.clinical_frailty_scale ?? '4'} / 9
-- Malnutrition Score: ${sampleData.covariates?.malnutrition_indicator_sco ?? '0'}
-- Clinical Diagnosis: ${sampleData.covariates?.alzheimers === 1 ? 'Alzheimer\'s Disease Positive' : 'Cognitive Normal (Control)'}
+- Cohort Group: ${sampleData.study_id ? `Cohort Subject ${sampleData.study_id}` : (sampleData.cohort || 'ADAM Longitudinal')}
+- Age: ${age !== undefined ? `${age} yrs` : 'Not recorded'}
+- Gender: ${isMale ? 'Male' : 'Female'}
+- Clinical Frailty Scale (CFS): ${cfs !== undefined ? `${cfs} / 9` : 'Not recorded'}
+- Malnutrition Score: ${malnutrition !== undefined ? malnutrition : 'Not recorded'}
+- Ground Truth Cohort Diagnosis: ${alzheimersVal === 1 ? 'Alzheimer\'s Disease Positive (+)' : 'Cognitive Normal (Control -)'}
 
-## 2. Multi-Omic Microbiome Biomarkers
-- Phocaeicola dorei (Pro-inflammatory LPS): ${sampleData.covariates?.['Phocaeicola dorei'] ? (sampleData.covariates['Phocaeicola dorei'] * 100).toFixed(3) + '%' : 'Elevated'}
-- Eubacterium rectale (Neuroprotective Butyrate): ${sampleData.covariates?.['Eubacterium rectale'] ? (sampleData.covariates['Eubacterium rectale'] * 100).toFixed(3) + '%' : 'Depleted'}
-- Shannon Alpha Diversity Index: ${sampleData.covariates?.shannon_diversity ?? '2.84'}
+## 2. Multi-Omic Microbiome Biomarkers (Real Abundance)
+- Phocaeicola dorei (Pro-inflammatory LPS): ${pDoreiVal}
+- Neglecta timonensis (Pro-inflammatory): ${nTimonVal}
+- Eubacterium rectale (Neuroprotective Butyrate): ${eRectVal}
+- Shannon Alpha Diversity Index: ${shannonVal}
 
-## 3. Diagnostic Reasoning
-Multi-modal gradient-boosted decision trees (XGBoost) evaluated host frailty indicators combined with gut metagenomic taxa abundances to provide clinical probability attribution.
+## 3. Real Machine Learning Risk Inference (XGBoost)
+- Model Prediction Probability: ${mlRiskStr}
+- Primary Attributing Biomarkers (TreeSHAP):
+${topFeaturesStr}
+
+## 4. Methodological Protocol
+Multi-modal gradient-boosted decision trees (XGBoost) evaluated patient host frailty indicators combined with gut metagenomic taxa abundances to provide clinical probability attribution.
 `;
 
     const blob = new Blob([reportText], { type: 'text/markdown' });
@@ -337,23 +412,25 @@ Multi-modal gradient-boosted decision trees (XGBoost) evaluated host frailty ind
                     <div>
                       <p className="text-[10px] text-surface-400 uppercase font-bold">Age / Gender</p>
                       <p className="text-sm font-semibold text-surface-50 mt-0.5">
-                        {sampleData.covariates?.age ?? '74'} yrs / {sampleData.covariates?.gender === 1 ? 'Female' : 'Male'}
+                        {sampleData.age !== undefined && sampleData.age !== null ? `${sampleData.age} yrs` : (sampleData.covariates?.age !== undefined ? `${sampleData.covariates.age} yrs` : 'Not recorded')} / {sampleData.male !== undefined && sampleData.male !== null ? (sampleData.male === 1 ? 'Male' : 'Female') : (sampleData.covariates?.gender === 1 ? 'Female' : 'Male')}
                       </p>
                     </div>
                     <div>
                       <p className="text-[10px] text-surface-400 uppercase font-bold">Clinical Frailty (CFS)</p>
                       <p className="text-sm font-bold text-[#0F9D8A] mt-0.5">
-                        Score: {sampleData.covariates?.clinical_frailty_scale ?? '4'} / 9
+                        {sampleData.clinical_frailty_scale !== undefined && sampleData.clinical_frailty_scale !== null
+                          ? `Score: ${sampleData.clinical_frailty_scale} / 9`
+                          : (sampleData.covariates?.clinical_frailty_scale !== undefined ? `Score: ${sampleData.covariates.clinical_frailty_scale} / 9` : 'Not recorded')}
                       </p>
                     </div>
                     <div>
-                      <p className="text-[10px] text-surface-400 uppercase font-bold">Ground Truth Status</p>
+                      <p className="text-[10px] text-surface-400 uppercase font-bold">Ground Truth Diagnosis</p>
                       <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full mt-0.5 ${
-                        sampleData.covariates?.alzheimers === 1
+                        (sampleData.alzheimers === 1 || sampleData.covariates?.alzheimers === 1)
                           ? 'bg-[#FEF2F2] text-[#DC2626] border border-[#DC2626]/30'
                           : 'bg-[#F0FDF4] text-[#16A34A] border border-[#16A34A]/30'
                       }`}>
-                        {sampleData.covariates?.alzheimers === 1 ? 'AD Positive (+)' : 'Cognitive Normal (-)'}
+                        {(sampleData.alzheimers === 1 || sampleData.covariates?.alzheimers === 1) ? 'AD Positive (+)' : 'Cognitive Normal (-)'}
                       </span>
                     </div>
                   </div>
@@ -371,14 +448,14 @@ Multi-modal gradient-boosted decision trees (XGBoost) evaluated host frailty ind
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between py-1 border-b border-surface-700">
                           <span className="font-semibold text-surface-300">Phocaeicola dorei (LPS Producer)</span>
-                          <span className="font-mono font-bold text-[#DC2626]">
-                            {sampleData.covariates?.['Phocaeicola dorei'] ? (sampleData.covariates['Phocaeicola dorei'] * 100).toFixed(3) + '%' : '0.412% (High)'}
+                          <span className={`font-mono font-bold ${(sampleData.secondary_covariates?.['Phocaeicola dorei'] ?? sampleData.covariates?.['Phocaeicola dorei']) !== undefined ? 'text-[#DC2626]' : 'text-surface-400'}`}>
+                            {formatTaxonAbundance(sampleData.secondary_covariates?.['Phocaeicola dorei'] ?? sampleData.covariates?.['Phocaeicola dorei'])}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-surface-700">
                           <span className="font-semibold text-surface-300">Neglecta timonensis</span>
-                          <span className="font-mono font-bold text-[#D97706]">
-                            {sampleData.covariates?.['Neglecta timonensis'] ? (sampleData.covariates['Neglecta timonensis'] * 100).toFixed(3) + '%' : '0.128% (Mod)'}
+                          <span className={`font-mono font-bold ${(sampleData.secondary_covariates?.['Neglecta timonensis'] ?? sampleData.covariates?.['Neglecta timonensis']) !== undefined ? 'text-[#D97706]' : 'text-surface-400'}`}>
+                            {formatTaxonAbundance(sampleData.secondary_covariates?.['Neglecta timonensis'] ?? sampleData.covariates?.['Neglecta timonensis'])}
                           </span>
                         </div>
                         <p className="text-[11px] text-surface-400 mt-2 leading-relaxed">
@@ -398,14 +475,14 @@ Multi-modal gradient-boosted decision trees (XGBoost) evaluated host frailty ind
                       <div className="space-y-2 text-xs">
                         <div className="flex justify-between py-1 border-b border-surface-700">
                           <span className="font-semibold text-surface-300">Eubacterium rectale (Butyrate)</span>
-                          <span className="font-mono font-bold text-[#16A34A]">
-                            {sampleData.covariates?.['Eubacterium rectale'] ? (sampleData.covariates['Eubacterium rectale'] * 100).toFixed(3) + '%' : '0.045% (Depleted)'}
+                          <span className={`font-mono font-bold ${(sampleData.secondary_covariates?.['Eubacterium rectale'] ?? sampleData.covariates?.['Eubacterium rectale']) !== undefined ? 'text-[#16A34A]' : 'text-surface-400'}`}>
+                            {formatTaxonAbundance(sampleData.secondary_covariates?.['Eubacterium rectale'] ?? sampleData.covariates?.['Eubacterium rectale'])}
                           </span>
                         </div>
                         <div className="flex justify-between py-1 border-b border-surface-700">
                           <span className="font-semibold text-surface-300">Shannon Alpha Diversity</span>
-                          <span className="font-mono font-bold text-[#0F9D8A]">
-                            {sampleData.covariates?.shannon_diversity ?? '2.84'} (H')
+                          <span className={`font-mono font-bold ${(sampleData.secondary_covariates?.shannon_diversity ?? sampleData.covariates?.shannon_diversity) !== undefined ? 'text-[#0F9D8A]' : 'text-surface-400'}`}>
+                            {formatShannonDiversity(sampleData.secondary_covariates?.shannon_diversity ?? sampleData.covariates?.shannon_diversity)}
                           </span>
                         </div>
                         <p className="text-[11px] text-surface-400 mt-2 leading-relaxed">
@@ -415,21 +492,61 @@ Multi-modal gradient-boosted decision trees (XGBoost) evaluated host frailty ind
                     </div>
                   </div>
 
-                  {/* AI Multi-Agent Diagnostic Interpretation */}
+                  {/* Real ML Risk Prediction Assessment */}
                   <div className="p-5 rounded-xl bg-[#E8F7F4] dark:bg-surface-800 border border-[#0F9D8A]/30 space-y-3">
-                    <div className="flex items-center gap-2">
-                      <Sparkles size={16} className="text-[#0F9D8A]" />
-                      <h3 className="text-xs font-bold uppercase tracking-wider text-surface-50">
-                        AIRA Multi-Agent Diagnostic Assessment &amp; Clinical Recommendation
-                      </h3>
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles size={16} className="text-[#0F9D8A]" />
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-surface-50">
+                          XGBoost Machine Learning Risk Prediction &amp; SHAP Attribution
+                        </h3>
+                      </div>
+                      {predictionData && (
+                        <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
+                          predictionData.predicted_label === 1
+                            ? 'bg-[#FEF2F2] text-[#DC2626] border border-[#DC2626]/30'
+                            : 'bg-[#F0FDF4] text-[#16A34A] border border-[#16A34A]/30'
+                        }`}>
+                          Model: {predictionData.risk_level}
+                        </span>
+                      )}
                     </div>
+
                     <div className="text-xs text-surface-300 leading-relaxed space-y-2">
-                      <p>
-                        <strong>Diagnostic Risk Stratification:</strong> The integrated multi-modal model (XGBoost) calculates a disease risk score of <strong>{sampleData.covariates?.alzheimers === 1 ? '87.4% (High Risk)' : '18.2% (Low Risk)'}</strong> for sample <code>{activePatientId}</code>.
-                      </p>
-                      <p>
-                        <strong>Key Attributing Features:</strong> Risk is driven by synergistic host frailty metrics (Clinical Frailty Scale) and dysbiotic metagenomic shift (elevated <em>P. dorei</em> / depleted <em>E. rectale</em>).
-                      </p>
+                      {predictionData ? (
+                        <>
+                          <p>
+                            <strong>Model Risk Probability:</strong> Multi-modal gradient-boosted decision tree (XGBoost) calculates an Alzheimer's risk probability of{' '}
+                            <strong className="text-surface-50 font-mono">
+                              {(predictionData.alzheimers_risk_probability * 100).toFixed(1)}%
+                            </strong>{' '}
+                            ({predictionData.risk_level}) for sample <code>{activePatientId}</code>.
+                          </p>
+                          {predictionData.feature_contributions?.length > 0 && (
+                            <div>
+                              <p className="font-semibold text-surface-50 mb-1">Top Attributing Biomarkers (TreeSHAP):</p>
+                              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                                {predictionData.feature_contributions.slice(0, 4).map((f, i) => (
+                                  <span
+                                    key={i}
+                                    className={`inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded border font-mono ${
+                                      f.shap_value > 0
+                                        ? 'bg-[#FEF2F2] text-[#DC2626] border-[#DC2626]/20'
+                                        : 'bg-[#F0FDF4] text-[#16A34A] border-[#16A34A]/20'
+                                    }`}
+                                  >
+                                    {f.feature}: {f.shap_value > 0 ? '+' : ''}{f.shap_value.toFixed(3)}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <p className="italic text-surface-400">
+                          Prediction unavailable for this sample profile. Run ML prediction to generate a live risk assessment.
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -441,7 +558,7 @@ Multi-modal gradient-boosted decision trees (XGBoost) evaluated host frailty ind
                     </div>
                     <div className="text-right">
                       <p className="font-mono text-surface-300">Generated: {new Date().toUTCString()}</p>
-                      <p className="text-[10px] text-[#16A34A] font-bold">✓ Electronic Verification Passed</p>
+                      <p className="text-[#16A34A] font-bold">✓ Electronic Verification Passed</p>
                     </div>
                   </div>
                 </div>
