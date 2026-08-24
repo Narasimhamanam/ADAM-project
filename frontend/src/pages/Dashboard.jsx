@@ -46,13 +46,13 @@ function PipelineCard({ icon: Icon, title, phase, description, active = false, s
       </div>
       <div className="min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="text-sm font-semibold text-white">{title}</h3>
+          <h3 className="text-sm font-semibold text-surface-50">{title}</h3>
           <span className={`text-[10px] px-2 py-0.5 rounded-full border font-medium ${
             isComplete
-              ? 'bg-success-600/20 border-success-500/30 text-success-400'
+              ? 'bg-success-600/20 border-success-500/30 text-success-600 dark:text-success-400'
               : isActive
-                ? 'bg-accent-600/20 border-accent-500/30 text-accent-400'
-                : 'bg-surface-700/60 border-surface-600/40 text-surface-400'
+                ? 'bg-accent-600/20 border-accent-500/30 text-accent-600 dark:text-accent-400'
+                : 'bg-surface-700 border-surface-600 text-surface-400'
           }`}>
             {isComplete ? '✓ ' : ''}{phase}
           </span>
@@ -65,20 +65,20 @@ function PipelineCard({ icon: Icon, title, phase, description, active = false, s
 
 function StatusRow({ icon: Icon, label, status, detail }) {
   const colour = {
-    connected:    'text-success-400',
-    degraded:     'text-warning-400',
-    disconnected: 'text-danger-400',
+    connected:    'text-success-500',
+    degraded:     'text-warning-500',
+    disconnected: 'text-danger-500',
     loading:      'text-surface-400',
   }[status] || 'text-surface-400'
 
   return (
-    <div className="flex items-center justify-between py-3 border-b border-surface-700/40 last:border-0">
+    <div className="flex items-center justify-between py-3 border-b border-surface-700/60 last:border-0">
       <div className="flex items-center gap-2.5">
         <Icon size={16} className={colour} />
-        <span className="text-sm text-surface-200">{label}</span>
+        <span className="text-sm text-surface-200 font-medium">{label}</span>
       </div>
       <div className="flex items-center gap-2">
-        {detail && <span className="text-xs text-surface-400 font-mono">{detail}</span>}
+        {detail && <span className="text-xs text-surface-400 font-mono font-medium">{detail}</span>}
         <StatusBadge status={status} />
       </div>
     </div>
@@ -138,16 +138,16 @@ export default function Dashboard() {
       {/* ── Page header ── */}
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">
+          <h1 className="text-2xl font-bold text-surface-50">
             Research Dashboard
           </h1>
-          <p className="text-surface-300 mt-1 text-sm">
+          <p className="text-surface-400 mt-1 text-sm font-medium">
             ADAM-1 Enhanced · AI-Powered Alzheimer's Disease &amp; Microbiome Research Platform
           </p>
         </div>
         <div className="flex items-center gap-2">
           {lastChecked && (
-            <span className="text-xs text-surface-500 flex items-center gap-1">
+            <span className="text-xs text-surface-500 flex items-center gap-1 font-medium">
               <Clock size={12} />
               {lastChecked}
             </span>
@@ -166,10 +166,10 @@ export default function Dashboard() {
       {error && <ErrorAlert message={error} onRetry={loadData} />}
 
       {/* ── System status card ── */}
-      <div className="card p-5">
+      <div className="card p-5 bg-surface-900 border border-surface-700 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
-          <Activity size={16} className="text-accent-400" />
-          <h2 className="text-sm font-semibold text-white uppercase tracking-wider">System Status</h2>
+          <Activity size={16} className="text-accent-500" />
+          <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider">System Status</h2>
           {loading && <LoadingSpinner message="" />}
         </div>
         <div className="space-y-0">

@@ -85,13 +85,13 @@ export default function MLPrediction() {
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-white">ML Risk Prediction Studio</h1>
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
-              Phase 3 Live
+            <h1 className="text-2xl font-bold text-surface-50">ML Risk Prediction Studio</h1>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-600/15 text-accent-600 dark:text-accent-300 border border-accent-500/30">
+              Interactive Inference
             </span>
           </div>
-          <p className="text-surface-300 mt-1 text-sm">
-            Real-time Alzheimer's Disease classification &amp; microbiome biomarker risk profiling using XGBoost.
+          <p className="text-surface-400 mt-1 text-sm font-medium">
+            Evaluate Alzheimer's Disease probability using trained multi-omic XGBoost model.
           </p>
         </div>
       </div>

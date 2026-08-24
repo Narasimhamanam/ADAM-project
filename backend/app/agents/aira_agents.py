@@ -80,7 +80,14 @@ class SummarizationAgent:
         llm = get_llm_client()
 
         llm_res = await llm.generate_completion(
-            prompt=f"Summarize the biomedical evidence and mechanisms relevant to this query: {query}",
+            prompt=(
+                f"Synthesize key biomedical evidence for query: '{query}'.\n"
+                "Format strictly with:\n"
+                "1. **Key Biological Mechanisms:** 2-3 concise, high-impact bullet points (focusing on LPS endotoxemia, tight junction integrity, SCFA/butyrate depletion).\n"
+                "2. **Microbial Biomarker Roles:** 2 bullets contrasting pro-inflammatory taxa (P. dorei) vs neuroprotective SCFA producers (E. rectale).\n"
+                "3. **Clinical Takeaway:** 1 clear sentence.\n"
+                "Do NOT write long repetitive introductions or multiple redundant tables."
+            ),
             context_docs=docs,
         )
 
@@ -110,9 +117,9 @@ class ClassificationAgent:
 
         sample_row = matching.iloc[0] if not matching.empty else {}
         actual_dx = int(sample_row.get("Alzheimers", 0))
-        age = sample_row.get("age", 75)
-        cfs = sample_row.get("clinical_frailty_scale", 5)
-        malnut = sample_row.get("malnutrition_indicator_sco", 1)
+        age = sample_row.get("age", 75.0)
+        cfs = sample_row.get("clinical_frailty_scale", 5.0)
+        malnut = sample_row.get("malnutrition_indicator_sco", 1.0)
 
         # Explain risk logic
         output_text = (
@@ -129,6 +136,11 @@ class ClassificationAgent:
             "sample_id": sample_id,
             "output": output_text,
             "actual_diagnosis": actual_dx,
+            "covariates": {
+                "age": age,
+                "cfs": cfs,
+                "malnutrition": malnut,
+            },
         }
 
 
@@ -191,6 +203,11 @@ class AIRACoordinator:
             "timestamp": start_time,
             "thought_trace": thought_trace,
             "final_synthesis": final_synthesis,
+            "computation": comp_res.get("metrics", {}),
+            "literature_synthesis": summ_res["output"],
+            "diagnostic_assessment": class_res["output"],
+            "sample_id": class_res.get("sample_id", "DC001"),
+            "actual_diagnosis": class_res.get("actual_diagnosis", 0),
             "citations": summ_res.get("citations", []),
         }
 

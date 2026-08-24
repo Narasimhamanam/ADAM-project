@@ -125,20 +125,20 @@ export default function ResearchAssistant() {
       <div className="flex items-start justify-between flex-wrap gap-4 shrink-0">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-white">AI Research Assistant (AIRA)</h1>
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
+            <h1 className="text-2xl font-bold text-surface-50">AI Research Assistant (AIRA)</h1>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-600/15 text-accent-600 dark:text-accent-300 border border-accent-500/30">
               RAG &amp; Multi-Omics
             </span>
           </div>
-          <p className="text-surface-300 mt-1 text-sm">
+          <p className="text-surface-400 mt-1 text-sm font-medium">
             Conversational reasoning across metagenomics, ML model benchmarks, and PubMed literature.
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <div className="card px-3 py-1.5 flex items-center gap-2 bg-surface-800/80 border-surface-700/60 text-xs text-surface-300">
-            <Cpu size={13} className="text-accent-400" />
-            <span>Engine:</span>
-            <span className="font-mono text-accent-300 font-semibold">{activeProvider}</span>
+          <div className="card px-3 py-1.5 flex items-center gap-2 bg-surface-900 border-surface-700 text-xs text-surface-400">
+            <Cpu size={13} className="text-accent-500" />
+            <span className="font-medium">Engine:</span>
+            <span className="font-mono text-accent-600 dark:text-accent-300 font-bold">{activeProvider}</span>
           </div>
         </div>
       </div>

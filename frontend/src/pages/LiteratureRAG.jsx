@@ -92,13 +92,13 @@ export default function LiteratureRAG() {
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-white">Scientific Literature &amp; RAG Store</h1>
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-primary-500/20 text-primary-300 border border-primary-500/30">
-              PubMed · Semantic pgvector
+            <h1 className="text-2xl font-bold text-surface-50">Scientific Literature &amp; RAG Store</h1>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-600/15 text-accent-600 dark:text-accent-300 border border-accent-500/30">
+              PubMed Indexed
             </span>
           </div>
-          <p className="text-surface-300 mt-1 text-sm">
-            Curated PubMed scientific publications on the gut-brain axis, microbial metabolomics, and Alzheimer's disease pathology.
+          <p className="text-surface-400 mt-1 text-sm font-medium">
+            Explore curated PubMed literature with semantic vector cosine search and topic filtering.
           </p>
         </div>
       </div>

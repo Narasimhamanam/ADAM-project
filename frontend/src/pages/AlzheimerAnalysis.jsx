@@ -129,13 +129,13 @@ export default function AlzheimerAnalysis() {
       <div className="flex items-start justify-between flex-wrap gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-white">Alzheimer's Disease Patient Analysis</h1>
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-accent-500/20 text-accent-300 border border-accent-500/30">
-              Live Comparative Evaluation
+            <h1 className="text-2xl font-bold text-surface-50">Alzheimer's Disease Patient Analysis</h1>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-600/15 text-accent-600 dark:text-accent-300 border border-accent-500/30">
+              Cohort Intelligence
             </span>
           </div>
-          <p className="text-surface-300 mt-1 text-sm">
-            Inspect individual patient records to compare <strong>Actual Clinical Cohort Diagnosis</strong> against <strong>Model Predictions &amp; Biomarker Forces</strong>.
+          <p className="text-surface-400 mt-1 text-sm font-medium">
+            Multi-omic profiling comparing Alzheimer's patients vs. cognitively normal control participants.
           </p>
         </div>
         <button

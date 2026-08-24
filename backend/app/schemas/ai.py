@@ -72,6 +72,11 @@ class AgentExecuteResponse(BaseModel):
     timestamp: str
     thought_trace: List[ThoughtStep]
     final_synthesis: str
+    computation: Optional[Dict[str, Any]] = None
+    literature_synthesis: Optional[str] = None
+    diagnostic_assessment: Optional[str] = None
+    sample_id: Optional[str] = None
+    actual_diagnosis: Optional[int] = None
     citations: List[Citation] = []
 
 
