@@ -1,8 +1,8 @@
 /**
  * AIRA Multi-Agent Workspace
  * ==========================
- * Interactive multi-agent execution panel with structured visual synthesis
- * and real-time patient ID validation.
+ * Interactive multi-agent execution panel with structured vertical agent
+ * response hierarchy, pure Markdown rendering, and real-time patient validation.
  */
 import React, { useState, useEffect } from 'react';
 import {
@@ -24,9 +24,13 @@ import {
   User,
   ShieldCheck,
   Search,
+  Brain,
+  Microscope,
+  Calculator,
 } from 'lucide-react';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ErrorAlert from '../components/ui/ErrorAlert';
+import MarkdownContent from '../components/ui/MarkdownContent';
 
 const AGENT_PRESETS = [
   {
@@ -40,7 +44,7 @@ const AGENT_PRESETS = [
   {
     id: 'computation',
     label: 'Computation Agent',
-    icon: BarChart3,
+    icon: Calculator,
     description: 'Quantitative dataset metrics, model benchmarks, and experiment summaries.',
     color: 'primary',
     defaultQuery: 'Summarize model performance metrics across 30 experiment seeds.',
@@ -48,7 +52,7 @@ const AGENT_PRESETS = [
   {
     id: 'summarization',
     label: 'Summarization Agent',
-    icon: BookOpen,
+    icon: Brain,
     description: 'PubMed literature synthesis and biomedical evidence extraction.',
     color: 'success',
     defaultQuery: 'What is the mechanistic link between Phocaeicola dorei and Alzheimer\'s neuroinflammation?',
@@ -56,7 +60,7 @@ const AGENT_PRESETS = [
   {
     id: 'classification',
     label: 'Classification Agent',
-    icon: FlaskConical,
+    icon: Microscope,
     description: 'Multi-modal patient clinical reasoning and diagnostic interpretation.',
     color: 'warning',
     defaultQuery: 'Provide diagnostic interpretation for this patient\'s risk profile.',
@@ -64,53 +68,6 @@ const AGENT_PRESETS = [
 ];
 
 const QUICK_PATIENTS = ['DC001', 'DC002', 'DC017', 'FB085', 'FB100', 'FB300'];
-
-const STEP_COLORS = {
-  'Computation Agent': 'primary',
-  'Summarization Agent': 'success',
-  'Classification Agent': 'warning',
-};
-
-function StepCard({ step, index }) {
-  const isComplete = step.status === 'completed';
-
-  return (
-    <div
-      className={`card p-4 transition-all ${
-        isComplete
-          ? 'border-[#0F9D8A]/30 bg-surface-900 shadow-sm'
-          : 'border-surface-700/60 opacity-60'
-      }`}
-    >
-      <div className="flex items-start gap-3">
-        <div
-          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold ${
-            isComplete
-              ? 'bg-[#E8F7F4] text-[#0F9D8A] border border-[#0F9D8A]/30'
-              : 'bg-surface-800 text-surface-400 border border-surface-700'
-          }`}
-        >
-          {isComplete ? <CheckCircle2 size={15} /> : index + 1}
-        </div>
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-bold text-surface-50">{step.agent}</span>
-            <span
-              className={`text-[10px] px-2 py-0.5 rounded font-bold uppercase ${
-                isComplete
-                  ? 'bg-[#F0FDF4] text-[#16A34A] border border-[#16A34A]/30'
-                  : 'bg-surface-800 text-surface-400 border border-surface-700'
-              }`}
-            >
-              {step.status}
-            </span>
-          </div>
-          <p className="text-[11px] text-surface-400 mt-0.5">{step.action}</p>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export default function AIAgents() {
   const [selectedPreset, setSelectedPreset] = useState(AGENT_PRESETS[0]);
@@ -196,6 +153,11 @@ export default function AIAgents() {
   }
 
   const isPatientInputDisabled = selectedPreset.id === 'computation' || selectedPreset.id === 'summarization';
+
+  // Extract individual agent outputs from thought_trace
+  const compStep = result?.thought_trace?.find((t) => t.agent?.includes('Computation'));
+  const summStep = result?.thought_trace?.find((t) => t.agent?.includes('Summarization'));
+  const classStep = result?.thought_trace?.find((t) => t.agent?.includes('Classification'));
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -359,113 +321,171 @@ export default function AIAgents() {
         </div>
       )}
 
-      {/* ── Structured Results & Thought Trace ── */}
+      {/* ── 3-Agent Vertical Workflow Response Hierarchy ── */}
       {result && !loading && (
-        <div className="space-y-5">
-          {/* Header */}
-          <div className="flex items-center justify-between">
-            <h2 className="text-xs font-bold text-surface-50 uppercase tracking-wider flex items-center gap-2">
-              <CheckCircle2 size={15} className="text-[#16A34A]" />
-              AIRA Multi-Agent Execution Results
-            </h2>
-            <span className="text-[10px] text-surface-400 font-mono font-medium">
-              {new Date(result.timestamp).toLocaleTimeString()}
+        <div className="space-y-6">
+          {/* Summary Banner */}
+          <div className="flex items-center justify-between flex-wrap gap-2 pb-1 border-b border-surface-700">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 size={16} className="text-[#16A34A]" />
+              <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider">
+                AIRA 3-Agent Collaborative Workflow Results
+              </h2>
+            </div>
+            <span className="text-xs text-surface-400 font-mono font-medium">
+              Executed at {new Date(result.timestamp).toLocaleTimeString()}
             </span>
           </div>
 
-          {/* 1. Quantitative Computation Metric Cards */}
-          {result.computation && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="card p-3.5 bg-surface-900 border border-surface-700">
-                <p className="text-[10px] uppercase font-bold text-surface-400">Metagenomic Samples</p>
-                <p className="text-lg font-extrabold text-surface-50 mt-0.5">335 Samples</p>
-                <p className="text-[10px] text-surface-400 font-medium">102 Cohort Subjects</p>
+          {/* ─────────────────────────────────────────────────────────────
+              1. 🧮 Computation Agent Response
+              ───────────────────────────────────────────────────────────── */}
+          {(compStep || result.task_type === 'computation') && (
+            <div className="card p-6 bg-surface-900 border border-surface-700 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-surface-700 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#EFF6FF] text-[#2563EB] flex items-center justify-center font-bold">
+                    <Calculator size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-surface-50 flex items-center gap-1.5">
+                      🧮 Computation Agent
+                    </h3>
+                    <p className="text-[11px] text-surface-400 font-medium">
+                      Quantitative dataset metrics, model benchmarks, and experiment summaries
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#EFF6FF] text-[#2563EB] border border-[#2563EB]/30">
+                  Step 1 · Quantitative
+                </span>
               </div>
-              <div className="card p-3.5 bg-[#E8F7F4] dark:bg-surface-800 border border-[#0F9D8A]/30">
-                <p className="text-[10px] uppercase font-bold text-[#0F9D8A]">XGBoost ROC-AUC</p>
-                <p className="text-lg font-extrabold text-[#0F9D8A] mt-0.5">0.8211</p>
-                <p className="text-[10px] text-[#0F9D8A] font-medium">Mean F1: 0.6509 (30 Seeds)</p>
-              </div>
-              <div className="card p-3.5 bg-surface-900 border border-surface-700">
-                <p className="text-[10px] uppercase font-bold text-surface-400">Baseline Random Forest</p>
-                <p className="text-lg font-extrabold text-surface-50 mt-0.5">AUC 0.8036</p>
-                <p className="text-[10px] text-surface-400 font-medium">Logistic Reg: 0.7715</p>
-              </div>
-              <div className="card p-3.5 bg-surface-900 border border-surface-700">
-                <p className="text-[10px] uppercase font-bold text-surface-400">Top Pro-Inflammatory</p>
-                <p className="text-sm font-bold text-[#DC2626] mt-1 truncate">P. dorei, Neglecta</p>
-                <p className="text-[10px] text-surface-400 font-medium">LPS Biosynthesis Driver</p>
+
+              {/* Formatted Content */}
+              <div className="pt-1">
+                <MarkdownContent content={compStep?.result || result.final_synthesis} />
               </div>
             </div>
           )}
 
-          {/* 2. Structured Literature Synthesis Card */}
-          <div className="card p-5 bg-surface-900 border border-surface-700 shadow-sm space-y-3">
-            <div className="flex items-center gap-2 border-b border-surface-700 pb-3">
-              <BookOpen size={16} className="text-[#0F9D8A]" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-surface-50">
-                Biomedical Literature &amp; Mechanistic Synthesis (Summarization Agent)
-              </h3>
-            </div>
-            <div className="text-xs text-surface-300 leading-relaxed whitespace-pre-wrap font-normal">
-              {result.literature_synthesis || result.final_synthesis}
-            </div>
-
-            {result.citations && result.citations.length > 0 && (
-              <div className="pt-3 border-t border-surface-700 flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] font-bold text-surface-400 uppercase">Verified Citations:</span>
-                {result.citations.map((c, i) => (
-                  <a
-                    key={i}
-                    href={`https://pubmed.ncbi.nlm.nih.gov/?term=${c.pmid}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-[10px] px-2 py-0.5 rounded bg-surface-800 border border-surface-700 text-[#0F9D8A] font-bold hover:border-[#0F9D8A]"
-                  >
-                    [{c.pmid}] {c.title}
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 3. Patient Clinical Diagnostic Interpretation Card */}
-          {result.diagnostic_assessment && (
-            <div className="card p-5 bg-surface-900 border border-surface-700 shadow-sm space-y-3">
+          {/* ─────────────────────────────────────────────────────────────
+              2. 🧠 Summarization Agent Response
+              ───────────────────────────────────────────────────────────── */}
+          {(summStep || result.task_type === 'summarization') && (
+            <div className="card p-6 bg-surface-900 border border-surface-700 shadow-sm space-y-4">
               <div className="flex items-center justify-between border-b border-surface-700 pb-3">
-                <div className="flex items-center gap-2">
-                  <User size={16} className="text-[#0F9D8A]" />
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-surface-50">
-                    Patient Diagnostic Reasoning (Classification Agent)
-                  </h3>
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#E8F7F4] text-[#0F9D8A] flex items-center justify-center font-bold">
+                    <Brain size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-surface-50 flex items-center gap-1.5">
+                      🧠 Summarization Agent
+                    </h3>
+                    <p className="text-[11px] text-surface-400 font-medium">
+                      Biomedical literature review, mechanistic pathways, and evidence synthesis
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#E8F7F4] text-[#0F9D8A] border border-[#0F9D8A]/30">
+                  Step 2 · Literature RAG
+                </span>
+              </div>
+
+              {/* Formatted Content */}
+              <div className="pt-1">
+                <MarkdownContent content={summStep?.result || result.literature_synthesis || result.final_synthesis} />
+              </div>
+
+              {/* Verified Citations List (if returned) */}
+              {result.citations && result.citations.length > 0 && (
+                <div className="pt-3 border-t border-surface-700 flex items-center gap-2 flex-wrap">
+                  <span className="text-[10px] font-bold text-surface-400 uppercase">Scientific Citations:</span>
+                  {result.citations.map((c, i) => (
+                    <a
+                      key={i}
+                      href={`https://pubmed.ncbi.nlm.nih.gov/?term=${c.pmid}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[10px] px-2 py-0.5 rounded bg-surface-800 border border-surface-700 text-[#0F9D8A] font-bold hover:border-[#0F9D8A]"
+                    >
+                      [{c.pmid}] {c.title}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ─────────────────────────────────────────────────────────────
+              3. 🔬 Classification Agent Response
+              ───────────────────────────────────────────────────────────── */}
+          {(classStep || result.task_type === 'classification') && (
+            <div className="card p-6 bg-surface-900 border border-surface-700 shadow-sm space-y-4">
+              <div className="flex items-center justify-between border-b border-surface-700 pb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-[#FFFBEB] text-[#D97706] flex items-center justify-center font-bold">
+                    <Microscope size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-surface-50 flex items-center gap-1.5">
+                      🔬 Classification Agent
+                    </h3>
+                    <p className="text-[11px] text-surface-400 font-medium">
+                      Multi-modal patient clinical reasoning and diagnostic risk interpretation
+                    </p>
+                  </div>
                 </div>
                 {result.actual_diagnosis !== null && result.actual_diagnosis !== undefined && (
-                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${
-                    result.actual_diagnosis === 1
-                      ? 'bg-[#FEF2F2] text-[#DC2626] border border-[#DC2626]/30'
-                      : 'bg-[#F0FDF4] text-[#16A34A] border border-[#16A34A]/30'
-                  }`}>
+                  <span
+                    className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                      result.actual_diagnosis === 1
+                        ? 'bg-[#FEF2F2] text-[#DC2626] border border-[#DC2626]/30'
+                        : 'bg-[#F0FDF4] text-[#16A34A] border border-[#16A34A]/30'
+                    }`}
+                  >
                     {result.actual_diagnosis === 1 ? 'Alzheimer’s (+)' : 'Cognitive Normal (Control)'}
                   </span>
                 )}
               </div>
-              <div className="text-xs text-surface-300 leading-relaxed whitespace-pre-wrap font-normal">
-                {result.diagnostic_assessment}
+
+              {/* Formatted Content */}
+              <div className="pt-1">
+                <MarkdownContent content={classStep?.result || result.diagnostic_assessment || result.final_synthesis} />
               </div>
             </div>
           )}
 
-          {/* 4. Thought Trace Steps */}
-          <div className="space-y-2">
-            <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wider">
-              Agent Execution Thought Trace ({result.thought_trace.length} Steps)
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-              {result.thought_trace.map((step, i) => (
-                <StepCard key={i} step={step} index={i} />
-              ))}
+          {/* ─────────────────────────────────────────────────────────────
+              4. ✨ Final AIRA Prediction / Final Integrated Response
+              ───────────────────────────────────────────────────────────── */}
+          {result.task_type === 'multi_agent_workflow' && result.final_synthesis && (
+            <div className="card p-6 md:p-8 bg-[#E8F7F4] dark:bg-surface-800 border-2 border-[#0F9D8A] shadow-md space-y-4">
+              <div className="flex items-center justify-between border-b border-[#0F9D8A]/30 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-[#0F9D8A] text-white flex items-center justify-center font-bold shadow-sm">
+                    <Sparkles size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-extrabold text-surface-50 uppercase tracking-wide flex items-center gap-2">
+                      ✨ Final AIRA Prediction &amp; Integrated Synthesis
+                    </h3>
+                    <p className="text-xs text-surface-400 font-medium">
+                      Multi-agent consensus combining computation benchmarks, literature evidence, and diagnostic reasoning
+                    </p>
+                  </div>
+                </div>
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-[#0F9D8A] text-white shadow-sm">
+                  Integrated Consensus
+                </span>
+              </div>
+
+              {/* Formatted Content */}
+              <div className="pt-2">
+                <MarkdownContent content={result.final_synthesis} />
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
