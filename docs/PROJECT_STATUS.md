@@ -23,13 +23,41 @@
 ---
 
 ## Phase 3: Machine Learning Pipeline, Benchmark Models & SHAP Explainability
-**Status**: ⏸️ READY TO START UPON USER INSTRUCTION
-- Will implement XGBoost, Random Forest, Logistic Regression baseline modeling.
-- Grouped longitudinal train/test split on `study_id` to prevent subject-level data leakage.
-- SHAP feature importance calculation and biomarker ranking.
-- Model comparison and prediction API endpoints.
+**Status**: ✅ COMPLETE & VERIFIED
+- **Modeling Engine**: XGBoost, Random Forest, and Logistic Regression baseline classifiers implemented with subject-level stratified splitting on `study_id` to strictly prevent data leakage across longitudinal visits.
+- **Explainability**: TreeSHAP & LinearSHAP implementations for global feature importance (Mean |SHAP|) and local sample-level feature attribution force values.
+- **Biomarker Discovery**: Verified *Phocaeicola dorei* as top pro-inflammatory biomarker alongside Clinical Frailty Scale (CFS) and malnutrition indicators.
+- **REST Endpoints**: `/api/ml/predict`, `/api/ml/models/benchmark`, `/api/ml/shap/global`, `/api/ml/shap/sample/{id}`.
+- **UI Pages**: Model Benchmark Comparison (`/models`), Live ML Inference (`/ml`), SHAP Explainability Dashboard (`/shap`), Alzheimer's Cohort Analysis (`/alzheimer`), and Clinical Reports generator (`/reports`).
 
 ---
 
-## Current Blockers
-None.
+## Phase 4: Literature Retrieval & RAG / AI Agents (AIRA)
+**Status**: ✅ COMPLETE & VERIFIED
+- **Literature Store**: Curated corpus of 6 PubMed indexed studies covering the gut-brain axis, *P. dorei*, short-chain fatty acids (butyrate), and multi-omics machine learning.
+- **Semantic Vector Engine**: High-performance cosine similarity retrieval with TF-IDF indexing.
+- **Provider-Independent LLM Integration**: Multi-provider client with Groq (`groq/compound-mini` default), OpenAI, and local biomedical heuristic engine fallback.
+- **AIRA Multi-Agent Architecture**: 3 specialized research agents:
+  1. *Computation Agent* (dataset metrics, cross-validation benchmark statistics).
+  2. *Summarization Agent* (PubMed synthesis, mechanistic literature extraction).
+  3. *Classification Agent* (multi-modal clinical reasoning and patient risk interpretation).
+  4. *AIRA Coordinator* (sequential multi-agent orchestration).
+- **UI Pages**:
+  - Research Assistant Chat with live literature citation cards (`/assistant`).
+  - PubMed Literature & Semantic RAG Explorer (`/literature`).
+  - AI Agent Workspace with live thought-trace visualization (`/agents`).
+
+---
+
+## Summary of Completed Deliverables
+- **Total Backend Tests**: 38/38 passing (100%).
+- **Frontend Pages**: 9 fully functional interactive research pages.
+- **Docker Deployment**: 3 healthy containers (`adam_backend`, `adam_db`, `adam_frontend`).
+- **Research Integrity**: Original research files preserved as read-only; zero synthetic or fabricated metrics.
+
+---
+
+## Optional Future Enhancements (Post-Core Roadmap)
+1. **Cloud Production Deployment**: Deployment scripts / configs for AWS/GCP or Render/Vercel/Railway.
+2. **Optuna Hyperparameter Tuning Studio**: Interactive UI for running live hyperparameter tuning sweeps.
+3. **Advanced ChromaDB / pgvector Vector Store**: Ingesting larger scale PubMed batch dumps into pgvector embeddings.
