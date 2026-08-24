@@ -140,9 +140,11 @@ async def register_dataset_metadata(
         dataset.rows = nrows
         dataset.columns = ncols
         dataset.size_bytes = fsize
-        dataset.checksum = checksum
-        dataset.status = "REGISTERED"
-        logger.info("Updated existing dataset metadata", dataset_name=key)
+        # Only reset to REGISTERED if checksum changed (file modified)
+        if dataset.checksum != checksum:
+            dataset.checksum = checksum
+            dataset.status = "REGISTERED"
+        logger.info("Updated existing dataset metadata", dataset_name=key, status=dataset.status)
 
     return dataset
 
@@ -494,7 +496,15 @@ async def execute_ingestion_pipeline(db: AsyncSession) -> dict[str, str]:
                 continue
                 
             # Primary metadata record creation
+            checksum = calculate_sha256(fpath)
             dataset = await register_dataset_metadata(db, key, fpath, df)
+
+            # Check if already ingested with identical checksum and valid state
+            if dataset.status == "INGESTED" and dataset.checksum == checksum:
+                logger.info("Dataset already ingested and verified with matching checksum — skipping redundant insertion", dataset_name=key)
+                results[key] = "ALREADY_INGESTED"
+                continue
+
             dataset.status = "INGESTING"
             await db.flush()
 

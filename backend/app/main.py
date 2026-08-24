@@ -31,36 +31,67 @@ logger = get_logger(__name__)
 settings = get_settings()
 
 
+import asyncio
+from typing import Optional
+
+# ---------------------------------------------------------------------------
+# Background Ingestion Management
+# ---------------------------------------------------------------------------
+_ingestion_lock = asyncio.Lock()
+_ingestion_task: Optional[asyncio.Task] = None
+
+
+async def run_background_ingestion() -> None:
+    """Safely execute the dataset ingestion pipeline in the background without blocking server startup."""
+    if _ingestion_lock.locked():
+        logger.info("Ingestion pipeline is already running in background — skipping duplicate trigger")
+        return
+
+    async with _ingestion_lock:
+        from app.database import AsyncSessionLocal
+        from app.ingestion.pipeline import execute_ingestion_pipeline
+
+        try:
+            logger.info("Starting background dataset ingestion pipeline...")
+            async with AsyncSessionLocal() as session:
+                results = await execute_ingestion_pipeline(session)
+                logger.info("Background dataset ingestion pipeline completed successfully", results=results)
+        except Exception as exc:
+            logger.error("Background dataset ingestion failed", error=str(exc), exc_info=True)
+
+
 # ---------------------------------------------------------------------------
 # Application lifespan
 # ---------------------------------------------------------------------------
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage startup and shutdown lifecycle events."""
+    global _ingestion_task
     # ── Startup ──────────────────────────────────────────────────────────
     logger.info(
         "Starting ADAM-1 Enhanced backend",
         version=settings.app_version,
         environment=settings.app_env,
     )
+    # 1. Initialize schema & extensions immediately
     await init_db()
-    
-    # Trigger auto-ingestion on startup
-    from app.database import AsyncSessionLocal
-    from app.ingestion.pipeline import execute_ingestion_pipeline
-    async with AsyncSessionLocal() as session:
-        try:
-            res = await execute_ingestion_pipeline(session)
-            logger.info("Auto-ingestion completed on startup", results=res)
-        except Exception as e:
-            logger.error("Auto-ingestion failed on startup", error=str(e))
 
-    logger.info("Database initialised — application ready")
+    # 2. Launch real data ingestion asynchronously in background
+    _ingestion_task = asyncio.create_task(run_background_ingestion())
+
+    logger.info("FastAPI ready and listening on port immediately; background ingestion running")
 
     yield
 
     # ── Shutdown ─────────────────────────────────────────────────────────
     logger.info("Shutting down ADAM-1 Enhanced backend")
+    if _ingestion_task and not _ingestion_task.done():
+        logger.info("Cancelling background ingestion task on shutdown")
+        _ingestion_task.cancel()
+        try:
+            await _ingestion_task
+        except asyncio.CancelledError:
+            pass
 
 
 # ---------------------------------------------------------------------------
