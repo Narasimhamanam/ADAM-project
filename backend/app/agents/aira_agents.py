@@ -107,15 +107,26 @@ class ClassificationAgent:
     role = "Diagnostic Reasoning & Biomarker Specialist"
 
     async def execute(self, query: str, context: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
-        sample_id = (context or {}).get("sample_id", "DC001")
+        raw_sample_id = (context or {}).get("sample_id", "DC001")
+        sample_id = str(raw_sample_id).strip().upper()
         df = load_dataset_df()
         matching = df[df["Sample ID"] == sample_id]
 
         if matching.empty:
-            sample_id = "DC001"
-            matching = df[df["Sample ID"] == sample_id]
+            return {
+                "agent": self.name,
+                "role": self.role,
+                "sample_id": sample_id,
+                "valid_sample": False,
+                "output": (
+                    f"⚠️ **Invalid Patient ID:** `{sample_id}` was not found in the ADAM research cohort repository.\n"
+                    f"Please verify and enter a valid Patient ID (e.g., `DC001` - `DC092`, `FB085` - `FB399`)."
+                ),
+                "actual_diagnosis": None,
+                "covariates": None,
+            }
 
-        sample_row = matching.iloc[0] if not matching.empty else {}
+        sample_row = matching.iloc[0]
         actual_dx = int(sample_row.get("Alzheimers", 0))
         age = sample_row.get("age", 75.0)
         cfs = sample_row.get("clinical_frailty_scale", 5.0)
@@ -134,6 +145,7 @@ class ClassificationAgent:
             "agent": self.name,
             "role": self.role,
             "sample_id": sample_id,
+            "valid_sample": True,
             "output": output_text,
             "actual_diagnosis": actual_dx,
             "covariates": {

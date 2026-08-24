@@ -171,6 +171,9 @@ async def execute_agent_task(payload: AgentExecuteRequest) -> AgentExecuteRespon
                     "result": res["output"],
                 }],
                 final_synthesis=res["output"],
+                diagnostic_assessment=res["output"],
+                sample_id=res.get("sample_id"),
+                actual_diagnosis=res.get("actual_diagnosis"),
                 citations=[],
             )
 
