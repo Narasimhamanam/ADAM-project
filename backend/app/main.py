@@ -10,9 +10,10 @@ This module bootstraps the FastAPI application:
 """
 from __future__ import annotations
 
+import asyncio
 import time
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
@@ -30,9 +31,6 @@ configure_logging()
 logger = get_logger(__name__)
 settings = get_settings()
 
-
-import asyncio
-from typing import Optional
 
 # ---------------------------------------------------------------------------
 # Background Ingestion Management
@@ -172,9 +170,9 @@ app.include_router(ai.router, prefix=API_PREFIX)
 # ---------------------------------------------------------------------------
 # Root redirect
 # ---------------------------------------------------------------------------
-@app.get("/", include_in_schema=False)
+@app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
 async def root() -> dict:
-    """Root endpoint — returns basic app identification."""
+    """Root endpoint — returns basic app identification. Supports HEAD for Render health probes."""
     return {
         "app": settings.app_name,
         "version": settings.app_version,
@@ -182,3 +180,9 @@ async def root() -> dict:
         "docs": "/docs",
         "health": f"{API_PREFIX}/health",
     }
+
+
+@app.api_route("/health", methods=["GET", "HEAD"], include_in_schema=False)
+async def root_health() -> dict:
+    """Bare /health alias — used as Render's default healthCheckPath fallback."""
+    return {"status": "ok"}

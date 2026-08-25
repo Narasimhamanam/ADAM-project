@@ -13,7 +13,7 @@ import json
 from datetime import datetime, timezone
 import pandas as pd
 import numpy as np
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.logging import get_logger
@@ -375,34 +375,46 @@ async def ingest_beta_diversity(db: AsyncSession, df: pd.DataFrame):
 
 
 async def ingest_raw_abundances(db: AsyncSession, df: pd.DataFrame):
-    """Ingest raw species-by-sample abundances including the 18 unlinked/auxiliary samples."""
-    logger.info("Ingesting raw abundance matrix...")
-    
+    """Ingest raw species-by-sample abundances including the 18 unlinked/auxiliary samples.
+
+    Performance notes:
+    - mph_matching_ad is 940 × 353 = 331,820 cells with ~92.7% zero values.
+    - We skip zero-value cells (sparse storage optimization), reducing inserts to ~24,000.
+    - We use SQLAlchemy core bulk INSERT (executemany) rather than per-row ORM objects,
+      which is significantly faster for high-volume writes.
+    """
+    logger.info("Ingesting raw abundance matrix (sparse, non-zero values only)...")
+
     # Clear old records
     await db.execute(delete(RawMatchingAbundance))
     await db.flush()
 
-    raw_inserts = []
+    # Build list of non-zero values only (sparse storage — mirrors ingest_abundances logic)
+    sample_cols = [col for col in df.columns if col != "species_name"]
+    raw_rows = []
     for _, row in df.iterrows():
         species_name = str(row["species_name"])
-        for col in df.columns:
-            if col == "species_name":
-                continue
+        for col in sample_cols:
             abundance_val = float(row[col])
-            raw_inserts.append(
-                RawMatchingAbundance(
-                    species_name=species_name,
-                    sample_id=str(col),
-                    abundance=abundance_val
-                )
-            )
-            
-    chunk_size = 5000
-    for i in range(0, len(raw_inserts), chunk_size):
-        db.add_all(raw_inserts[i : i + chunk_size])
+            if abundance_val > 0.0:  # Skip zeros — 92.7% of the matrix
+                raw_rows.append({
+                    "species_name": species_name,
+                    "sample_id": str(col),
+                    "abundance": abundance_val,
+                })
+
+    if not raw_rows:
+        logger.info("No non-zero raw abundances found — skipping insert.")
+        return
+
+    # Bulk INSERT using SQLAlchemy Core (executemany path — avoids per-object ORM overhead)
+    chunk_size = 2000
+    table = RawMatchingAbundance.__table__
+    for i in range(0, len(raw_rows), chunk_size):
+        await db.execute(insert(table), raw_rows[i : i + chunk_size])
         await db.flush()
-        
-    logger.info(f"Successfully ingested {len(raw_inserts)} raw abundances.")
+
+    logger.info(f"Successfully ingested {len(raw_rows)} non-zero raw abundances (sparse storage).")
 
 
 async def create_dataset_columns(db: AsyncSession, dataset_id: uuid.UUID, df: pd.DataFrame, key: str):
