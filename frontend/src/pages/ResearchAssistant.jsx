@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import ErrorAlert from '../components/ui/ErrorAlert';
+import MarkdownContent from '../components/ui/MarkdownContent';
 
 const SUGGESTED_PROMPTS = [
   'What is the role of Phocaeicola dorei in Alzheimer’s pathology?',
@@ -172,13 +173,17 @@ export default function ResearchAssistant() {
                 {/* Message Body */}
                 <div className={`max-w-3xl space-y-2 ${isAssistant ? 'text-left' : 'text-right'}`}>
                   <div
-                    className={`p-4 rounded-xl text-xs leading-relaxed whitespace-pre-wrap ${
+                    className={`p-4 rounded-xl text-xs leading-relaxed ${
                       isAssistant
                         ? 'bg-surface-800/90 border border-surface-700/80 text-surface-100 shadow-md'
-                        : 'bg-accent-600/25 border border-accent-500/40 text-white shadow-md'
+                        : 'bg-accent-600/25 border border-accent-500/40 text-white shadow-md whitespace-pre-wrap'
                     }`}
                   >
-                    {m.content}
+                    {isAssistant ? (
+                      <MarkdownContent content={m.content} />
+                    ) : (
+                      m.content
+                    )}
                   </div>
 
                   {/* Citations & Meta (Assistant only) */}
