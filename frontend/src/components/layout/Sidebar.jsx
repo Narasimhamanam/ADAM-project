@@ -63,6 +63,7 @@ const NAV_SECTIONS = [
 
 function NavItem({ to, icon: Icon, label, phase, activeDemoPhase, onClose }) {
   const isLocked = phase > activeDemoPhase
+  const isCurrentActive = phase === activeDemoPhase
 
   return (
     <NavLink
@@ -83,9 +84,13 @@ function NavItem({ to, icon: Icon, label, phase, activeDemoPhase, onClose }) {
           <Lock size={9} />
           P{phase}
         </span>
-      ) : (
-        <span className="shrink-0 rounded text-[9px] px-1.5 py-0.5 bg-surface-700/50 text-surface-500 font-mono font-semibold">
+      ) : isCurrentActive ? (
+        <span className="shrink-0 rounded text-[9px] px-1.5 py-0.5 bg-[#E8F7F4] dark:bg-surface-700 text-[#0F9D8A] font-mono font-bold border border-[#0F9D8A]/30">
           P{phase}
+        </span>
+      ) : (
+        <span className="shrink-0 rounded text-[9px] px-1.5 py-0.5 bg-surface-700/50 text-surface-400 font-mono font-semibold">
+          ✓ P{phase}
         </span>
       )}
     </NavLink>

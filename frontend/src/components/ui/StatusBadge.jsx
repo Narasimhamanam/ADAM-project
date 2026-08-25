@@ -1,18 +1,24 @@
 /**
  * StatusBadge — displays a coloured status indicator
- * Props: status ('connected'|'disconnected'|'loading'|'degraded'|'coming-soon')
+ * Props: status ('connected'|'healthy'|'disconnected'|'unavailable'|'loading'|'degraded'|'upcoming'|'coming-soon'|'not_configured'|'active'|'in_progress')
  *        label (optional override text)
  */
 import React from 'react'
-import { Wifi, WifiOff, Loader2, AlertTriangle, Clock } from 'lucide-react'
+import { Wifi, WifiOff, Loader2, AlertTriangle, Clock, Slash, CheckCircle2, Play } from 'lucide-react'
 import clsx from 'clsx'
 
 const CONFIG = {
-  connected:    { cls: 'badge-connected',  Icon: Wifi,          text: 'Connected' },
-  disconnected: { cls: 'badge-error',      Icon: WifiOff,       text: 'Disconnected' },
-  loading:      { cls: 'badge-loading',    Icon: Loader2,       text: 'Checking...' },
-  degraded:     { cls: 'badge-degraded',   Icon: AlertTriangle, text: 'Degraded' },
-  'coming-soon':{ cls: 'badge-info',       Icon: Clock,         text: 'Coming Soon' },
+  connected:      { cls: 'badge-connected', Icon: CheckCircle2,  text: 'Connected' },
+  healthy:        { cls: 'badge-connected', Icon: CheckCircle2,  text: 'Healthy' },
+  active:         { cls: 'badge-teal',      Icon: Play,          text: 'In Progress' },
+  in_progress:    { cls: 'badge-teal',      Icon: Play,          text: 'In Progress' },
+  disconnected:   { cls: 'badge-error',     Icon: WifiOff,       text: 'Unavailable' },
+  unavailable:    { cls: 'badge-error',     Icon: WifiOff,       text: 'Unavailable' },
+  loading:        { cls: 'badge-loading',   Icon: Loader2,       text: 'Checking...' },
+  degraded:       { cls: 'badge-degraded',  Icon: AlertTriangle, text: 'Degraded' },
+  upcoming:       { cls: 'badge-loading',   Icon: Clock,         text: 'Upcoming' },
+  'coming-soon':  { cls: 'badge-info',      Icon: Clock,         text: 'Coming Soon' },
+  not_configured: { cls: 'badge-loading',   Icon: Slash,         text: 'Not Configured' },
 }
 
 export default function StatusBadge({ status = 'loading', label }) {

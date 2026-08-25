@@ -112,7 +112,7 @@ export default function AlzheimerAnalysis() {
   const actualLabel = rawActual !== undefined ? (rawActual === 1 || rawActual === 1.0 ? 1 : 0) : undefined;
   const predictedLabel = prediction?.predicted_label;
   const isMatch = actualLabel !== undefined && predictedLabel !== undefined && actualLabel === predictedLabel;
-  const riskPercent = prediction ? Math.round(prediction.alzheimers_risk_probability * 100) : 0;
+  const riskPercent = prediction ? (prediction.alzheimers_risk_probability * 100).toFixed(1) : '0.0';
 
   const confusionType =
     actualLabel === 1 && predictedLabel === 1

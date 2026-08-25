@@ -92,7 +92,9 @@ class PredictResponse(BaseModel):
     alzheimers_risk_probability: float
     predicted_label: int
     risk_level: str
+    confidence: float = 0.0
     feature_contributions: List[FeatureContribution]
+
 
 
 class ShapFeatureRank(BaseModel):

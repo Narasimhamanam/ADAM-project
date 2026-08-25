@@ -222,10 +222,60 @@ export const FEATURE_CONFIG = {
 };
 
 /**
- * Get active demonstration phase determined strictly by ACTIVE_DEMO_PHASE.
+ * Dynamic calculation of a phase's progress status based on ACTIVE_DEMO_PHASE.
  */
-export function getActiveDemoPhase() {
-  return ACTIVE_DEMO_PHASE;
+export function getPhaseStatus(phaseNumber, activeDemoPhase = ACTIVE_DEMO_PHASE) {
+  if (phaseNumber < activeDemoPhase) {
+    return {
+      status: 'complete',
+      label: 'Complete & Verified',
+      badge: `✓ Phase ${phaseNumber} Complete`,
+      isUnlocked: true,
+    };
+  } else if (phaseNumber === activeDemoPhase) {
+    if (activeDemoPhase === 4) {
+      return {
+        status: 'complete',
+        label: 'Complete & Verified',
+        badge: 'Phase 4 Complete & Verified',
+        isUnlocked: true,
+      };
+    }
+    return {
+      status: 'active',
+      label: 'In Progress (Active Demo)',
+      badge: `● Phase ${phaseNumber} In Progress`,
+      isUnlocked: true,
+    };
+  } else {
+    return {
+      status: 'upcoming',
+      label: `Upcoming in Phase ${phaseNumber}`,
+      badge: `Phase ${phaseNumber} Upcoming`,
+      isUnlocked: false,
+    };
+  }
+}
+
+/**
+ * Dynamic platform status descriptor based on active demonstration phase.
+ */
+export function getPlatformStatus(activeDemoPhase = ACTIVE_DEMO_PHASE) {
+  const current = PHASES[activeDemoPhase] || PHASES[1];
+  if (activeDemoPhase === 4) {
+    return {
+      title: 'Phase 4 Complete',
+      subtitle: 'All Systems Active & Verified',
+      color: '#10B981',
+      activePhase: 4,
+    };
+  }
+  return {
+    title: `Phase ${activeDemoPhase} Active`,
+    subtitle: current.name,
+    color: current.color || '#0F9D8A',
+    activePhase: activeDemoPhase,
+  };
 }
 
 /**
@@ -244,3 +294,4 @@ export function isFeatureEnabled(path, demoPhase) {
 export function getFeatureByPath(path) {
   return FEATURE_CONFIG[path] || null;
 }
+

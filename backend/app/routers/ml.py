@@ -164,7 +164,7 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
         model_entry = _TRAINED_MODELS[model_name]
         model = model_entry["model"]
 
-        # Extract sample vector
+        # Extract and sanitize sample vector matching exact training feature order
         if payload.sample_id:
             df = load_dataset_df()
             matching = df[df["Sample ID"] == payload.sample_id]
@@ -172,17 +172,28 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
                 raise HTTPException(status_code=404, detail=f"Sample ID {payload.sample_id} not found in cohort")
             
             sample_row = matching.iloc[0]
-            vector = np.array([float(pd.to_numeric(sample_row.get(col, 0.0), errors="coerce") or 0.0) for col in feature_names])
+            feature_vals = []
+            for col in feature_names:
+                if col in sample_row:
+                    val = pd.to_numeric(sample_row[col], errors="coerce")
+                    feature_vals.append(0.0 if pd.isna(val) else float(val))
+                else:
+                    feature_vals.append(0.0)
+            vector = np.array(feature_vals, dtype=np.float64)
             sample_id = payload.sample_id
         elif payload.features:
-            vector = np.array([float(payload.features.get(col, 0.0)) for col in feature_names])
+            feature_vals = []
+            for col in feature_names:
+                val = pd.to_numeric(payload.features.get(col, 0.0), errors="coerce")
+                feature_vals.append(0.0 if pd.isna(val) else float(val))
+            vector = np.array(feature_vals, dtype=np.float64)
             sample_id = "custom_profile"
         else:
             # Default to first test sample
             vector = split["X_test"][0]
             sample_id = split["test_sample_ids"][0] if split.get("test_sample_ids") else "test_sample_0"
 
-        # Compute SHAP explanation for the vector
+        # Compute SHAP explanation and probabilities for the vector
         explanation = explain_single_sample(
             model=model,
             sample_vector=vector,
@@ -191,9 +202,20 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
             top_k=15,
         )
 
-        proba = explanation["prediction_probability"]
-        label = explanation["prediction_binary"]
+        proba = float(explanation["prediction_probability"])
+        label = int(explanation["prediction_binary"])
+        confidence = float(max(proba, 1.0 - proba))
         risk_level = "High Risk" if proba >= 0.65 else "Moderate Risk" if proba >= 0.35 else "Low Risk"
+
+        logger.info(
+            "Executed ML inference",
+            model_name=model_name,
+            sample_id=sample_id,
+            vector_shape=vector.shape,
+            risk_probability=round(proba, 4),
+            predicted_label=label,
+            confidence=round(confidence, 4),
+        )
 
         contributions = [
             FeatureContribution(
@@ -211,6 +233,7 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
             alzheimers_risk_probability=proba,
             predicted_label=label,
             risk_level=risk_level,
+            confidence=confidence,
             feature_contributions=contributions,
         )
 
