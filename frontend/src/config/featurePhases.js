@@ -13,7 +13,7 @@
  * ============================================================================
  */
 
-export const ACTIVE_DEMO_PHASE = 4;
+export const ACTIVE_DEMO_PHASE = 2;
 
 export const PHASES = {
   1: {
