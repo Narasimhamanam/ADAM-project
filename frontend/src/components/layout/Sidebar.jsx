@@ -61,12 +61,13 @@ const NAV_SECTIONS = [
   },
 ]
 
-function NavItem({ to, icon: Icon, label, phase, activeDemoPhase }) {
+function NavItem({ to, icon: Icon, label, phase, activeDemoPhase, onClose }) {
   const isLocked = phase > activeDemoPhase
 
   return (
     <NavLink
       to={to}
+      onClick={onClose}
       className={({ isActive }) =>
         clsx(
           isActive ? 'nav-item-active' : 'nav-item',
@@ -149,6 +150,7 @@ export default function Sidebar({ isOpen, onClose }) {
                       key={item.to}
                       {...item}
                       activeDemoPhase={activeDemoPhase}
+                      onClose={onClose}
                     />
                   ))}
                 </div>

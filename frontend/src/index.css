@@ -216,8 +216,78 @@
 }
 
 /* ─────────────────────────────────────────────────────────
-   Print & PDF Export Styling for Medical Dossiers
+   Mobile Responsive Utilities
    ───────────────────────────────────────────────────────── */
+
+/* Prevent horizontal page overflow on all screens */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Safe table scrolling — prevents full-page horizontal overflow */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
+}
+
+/* Touch-friendly minimum target size for interactive controls */
+@media (max-width: 640px) {
+  button, select, input[type="text"], input[type="search"] {
+    min-height: 40px;
+  }
+
+  /* Reduce page padding on DatasetExplorer inline-style container */
+  .dataset-explorer-page {
+    padding: 12px !important;
+  }
+
+  /* Stack filter/control rows vertically */
+  .filter-row {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+  .filter-row > * {
+    width: 100% !important;
+    min-width: unset !important;
+  }
+
+  /* Prevent stat cards from overflowing */
+  .stat-cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Make section titles slightly smaller on mobile */
+  .section-title {
+    @apply text-lg;
+  }
+
+  /* Reduce status row detail text on very small screens */
+  .status-detail-text {
+    display: none;
+  }
+}
+
+/* Tablet: graceful mid-size layout */
+@media (min-width: 641px) and (max-width: 1023px) {
+  .stat-cards-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* Larger desktop: full 4-col stat grid */
+@media (min-width: 1024px) {
+  .stat-cards-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+
+  /* Restore desktop padding for DatasetExplorer */
+  .dataset-explorer-page {
+    padding: 28px 32px !important;
+  }
+}
+
 @media print {
   body {
     background: #ffffff !important;

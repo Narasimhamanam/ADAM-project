@@ -20,16 +20,15 @@ function StatCard({ label, value, color = '#7c3aed', icon }) {
       background: 'rgba(30,20,60,0.7)',
       border: `1px solid ${color}40`,
       borderRadius: 12,
-      padding: '18px 22px',
+      padding: '14px 18px',
       display: 'flex',
       alignItems: 'center',
-      gap: 16,
-      minWidth: 160,
+      gap: 12,
     }}>
-      {icon && <span style={{ fontSize: 28 }}>{icon}</span>}
+      {icon && <span style={{ fontSize: 24 }}>{icon}</span>}
       <div>
-        <div style={{ color: '#a78bfa', fontSize: 12, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</div>
-        <div style={{ color: '#fff', fontSize: 22, fontWeight: 700, marginTop: 4 }}>{value ?? '—'}</div>
+        <div style={{ color: '#a78bfa', fontSize: 11, fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase' }}>{label}</div>
+        <div style={{ color: '#fff', fontSize: 20, fontWeight: 700, marginTop: 4 }}>{value ?? '—'}</div>
       </div>
     </div>
   );
@@ -114,7 +113,7 @@ function OverviewTab() {
 
   return (
     <div>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginBottom: 28 }}>
+      <div className="stat-cards-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 12, marginBottom: 28 }}>
         <StatCard label="Total Datasets" value={datasets.length} icon="📦" />
         <StatCard label="Ingested" value={datasets.filter(d => d.status === 'INGESTED').length} color="#22c55e" icon="✅" />
         <StatCard label="Total Samples" value="335" color="#3b82f6" icon="🧪" />
@@ -196,20 +195,20 @@ function DataDictTab() {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="filter-row" style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         <select value={selectedId || ''} onChange={e => { setSelectedId(e.target.value); setPage(1); }}
           style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 12px', fontSize: 13 }}>
           {datasets.map(ds => <option key={ds.id} value={ds.id}>{ds.name}</option>)}
         </select>
         <input placeholder="🔍 Search columns…" value={search}
           onChange={e => { setSearch(e.target.value); setPage(1); }}
-          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13, minWidth: 220 }} />
+          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13 }} />
         <span style={{ color: '#6b7280', fontSize: 13 }}>{total} columns</span>
       </div>
 
       {loading ? <Spinner /> : error ? <ErrorMsg msg={error} /> : (
         <>
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-scroll" style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr>
@@ -266,13 +265,13 @@ function SampleTab() {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+      <div className="filter-row" style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'center' }}>
         <input placeholder="🔍 Sample ID (e.g. DC001)" value={search}
           onChange={e => { setSearch(e.target.value); setPage(1); }}
-          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13, minWidth: 200 }} />
+          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13 }} />
         <input placeholder="study_id (e.g. CH1-002)" value={studyId}
           onChange={e => { setStudyId(e.target.value); setPage(1); }}
-          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13, minWidth: 180 }} />
+          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13 }} />
         <select value={adFilter} onChange={e => { setAdFilter(e.target.value); setPage(1); }}
           style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 12px', fontSize: 13 }}>
           <option value="">All Labels</option>
@@ -284,7 +283,7 @@ function SampleTab() {
 
       {loading ? <Spinner /> : error ? <ErrorMsg msg={error} /> : (
         <>
-          <div style={{ overflowX: 'auto' }}>
+          <div className="table-scroll" style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
               <thead>
                 <tr>
@@ -341,10 +340,10 @@ function SpeciesTab() {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="filter-row" style={{ display: 'flex', gap: 10, marginBottom: 16, alignItems: 'center', flexWrap: 'wrap' }}>
         <input placeholder="🔍 Search species (e.g. Faecalibacterium)" value={search}
           onChange={e => { setSearch(e.target.value); setPage(1); }}
-          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13, minWidth: 280 }} />
+          style={{ background: '#1e1440', color: '#c4b5fd', border: '1px solid #4c1d95', borderRadius: 8, padding: '8px 14px', fontSize: 13 }} />
         <span style={{ color: '#6b7280', fontSize: 13 }}>{total} species</span>
       </div>
 
@@ -472,8 +471,8 @@ export default function DatasetExplorer() {
   const [activeTab, setActiveTab] = useState('Overview');
 
   return (
-    <div style={{
-      padding: '28px 32px',
+    <div className="dataset-explorer-page" style={{
+      padding: '16px',
       fontFamily: "'Inter', 'Outfit', system-ui, sans-serif",
       color: '#e2e8f0',
       minHeight: '100vh',
