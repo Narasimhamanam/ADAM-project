@@ -48,7 +48,7 @@ services:
         sync: false
 
       - key: GROQ_MODEL
-        value: "groq/compound-mini"
+        value: "llama-3.3-70b-versatile"
 
 
   # ─────────────────────────────────────────────────────────────

@@ -10,7 +10,7 @@ const BASE_URL = import.meta.env.VITE_API_URL || ''
 
 export const apiClient = axios.create({
   baseURL: BASE_URL ? `${BASE_URL}/api` : '/api',
-  timeout: 10_000,
+  timeout: 30_000, // 30s accommodates cloud/free-tier cold starts
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -20,16 +20,25 @@ export const apiClient = axios.create({
 // ── Request interceptor ──────────────────────────────────────────────────
 apiClient.interceptors.request.use(
   (config) => {
-    // Future: attach auth token here
     return config
   },
   (error) => Promise.reject(error),
 )
 
-// ── Response interceptor ─────────────────────────────────────────────────
+// ── Response interceptor with retry for cold starts ─────────────────────
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const config = error.config
+    // Retry idempotent GET requests once if network error or timeout
+    if (config && config.method === 'get' && !config._retry) {
+      if (error.code === 'ECONNABORTED' || error.message?.includes('Network Error') || !error.response) {
+        config._retry = true
+        await new Promise((resolve) => setTimeout(resolve, 2000))
+        return apiClient(config)
+      }
+    }
+
     const message =
       error.response?.data?.detail ||
       error.message ||

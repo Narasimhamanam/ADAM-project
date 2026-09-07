@@ -84,7 +84,14 @@ class Settings(BaseSettings):
 
     # AI / LLM Provider (Groq)
     groq_api_key: Optional[str] = None
-    groq_model: str = "groq/compound-mini"
+    groq_model: str = "llama-3.3-70b-versatile"
+
+    @field_validator("groq_model", mode="before")
+    @classmethod
+    def normalize_groq_model(cls, v: Optional[str]) -> str:
+        if not v or "compound" in v.lower() or "mini" in v.lower():
+            return "llama-3.3-70b-versatile"
+        return v
 
 
 @lru_cache(maxsize=1)

@@ -53,24 +53,35 @@ def compute_shap_explanations(
         X_explain = bg
 
     try:
-        if hasattr(model, "get_booster"):
+        clf = model
+        bg_transformed = bg
+        explain_transformed = X_explain
+
+        if hasattr(model, "named_steps"):
+            if "scaler" in model.named_steps:
+                scaler = model.named_steps["scaler"]
+                bg_transformed = scaler.transform(bg)
+                explain_transformed = scaler.transform(X_explain)
+            clf = model.named_steps.get("classifier", model)
+
+        if hasattr(clf, "get_booster"):
             # Native XGBoost TreeSHAP
-            shap_array = _compute_xgboost_shap(model, X_explain)
-        elif HAS_SHAP and hasattr(model, "estimators_"):
-            explainer = shap.TreeExplainer(model)
-            sv = explainer.shap_values(X_explain)
+            shap_array = _compute_xgboost_shap(clf, explain_transformed)
+        elif HAS_SHAP and hasattr(clf, "estimators_"):
+            explainer = shap.TreeExplainer(clf)
+            sv = explainer.shap_values(explain_transformed)
             shap_array = sv[1] if isinstance(sv, list) and len(sv) == 2 else sv
-        elif hasattr(model, "coef_"):
+        elif hasattr(clf, "coef_"):
             # Linear model SHAP: (X - mean(X)) * coef
-            center = X_explain - np.mean(bg, axis=0)
-            shap_array = center * model.coef_[0]
+            center = explain_transformed - np.mean(bg_transformed, axis=0)
+            shap_array = center * clf.coef_[0]
         else:
             # Tree / Ensemble fallback
-            if hasattr(model, "feature_importances_"):
-                imp = model.feature_importances_
-                shap_array = np.tile(imp, (len(X_explain), 1))
+            if hasattr(clf, "feature_importances_"):
+                imp = clf.feature_importances_
+                shap_array = np.tile(imp, (len(explain_transformed), 1))
             else:
-                shap_array = np.zeros((len(X_explain), len(feature_names)))
+                shap_array = np.zeros((len(explain_transformed), len(feature_names)))
 
         if hasattr(shap_array, "values"):
             shap_array = shap_array.values
@@ -126,20 +137,33 @@ def explain_single_sample(
         sample_vector = sample_vector.reshape(1, -1)
 
     try:
-        if hasattr(model, "get_booster"):
+        # Check if model is a Pipeline
+        raw_model = model
+        clf = model
+        sample_transformed = sample_vector
+        bg_transformed = X_background[:50]
+
+        if hasattr(model, "named_steps"):
+            if "scaler" in model.named_steps:
+                scaler = model.named_steps["scaler"]
+                sample_transformed = scaler.transform(sample_vector)
+                bg_transformed = scaler.transform(bg_transformed)
+            clf = model.named_steps.get("classifier", model)
+
+        if hasattr(clf, "get_booster"):
             # Native XGBoost TreeSHAP
-            contribs = model.get_booster().predict(xgb.DMatrix(sample_vector), pred_contribs=True)
+            contribs = clf.get_booster().predict(xgb.DMatrix(sample_transformed), pred_contribs=True)
             shap_vec = contribs[0, :-1]
             base_val = float(contribs[0, -1])
-        elif HAS_SHAP and hasattr(model, "estimators_"):
-            explainer = shap.TreeExplainer(model)
-            sv = explainer.shap_values(sample_vector)
+        elif HAS_SHAP and hasattr(clf, "estimators_"):
+            explainer = shap.TreeExplainer(clf)
+            sv = explainer.shap_values(sample_transformed)
             shap_vec = sv[1][0] if isinstance(sv, list) and len(sv) == 2 else sv[0]
             base_val = float(explainer.expected_value[1]) if isinstance(explainer.expected_value, (list, np.ndarray)) else float(explainer.expected_value)
-        elif hasattr(model, "coef_"):
-            center = sample_vector[0] - np.mean(X_background[:50], axis=0)
-            shap_vec = center * model.coef_[0]
-            base_val = float(model.intercept_[0]) if hasattr(model, "intercept_") else 0.0
+        elif hasattr(clf, "coef_"):
+            center = sample_transformed[0] - np.mean(bg_transformed, axis=0)
+            shap_vec = center * clf.coef_[0]
+            base_val = float(clf.intercept_[0]) if hasattr(clf, "intercept_") else 0.0
         else:
             shap_vec = np.zeros(len(feature_names))
             base_val = 0.5
@@ -149,6 +173,7 @@ def explain_single_sample(
         contributions = []
         for idx in abs_sorted[:top_k]:
             fname = feature_names[idx] if idx < len(feature_names) else f"feature_{idx}"
+            # Keep original raw feature value for clinical interpretability
             val = float(sample_vector[0, idx])
             shap_val = float(shap_vec[idx])
             contributions.append({
@@ -158,7 +183,7 @@ def explain_single_sample(
                 "impact": "increases_risk" if shap_val > 0 else "decreases_risk",
             })
 
-        proba = float(model.predict_proba(sample_vector)[0, 1]) if hasattr(model, "predict_proba") else 0.5
+        proba = float(raw_model.predict_proba(sample_vector)[0, 1]) if hasattr(raw_model, "predict_proba") else 0.5
 
         return {
             "prediction_probability": proba,

@@ -20,9 +20,9 @@ import ErrorAlert from '../components/ui/ErrorAlert'
 // ── Helpers ──────────────────────────────────────────────────────────────
 
 function resolveHealthStatus(status) {
-  if (status === 'healthy' || status === 'connected') return 'connected'
-  if (status === 'degraded') return 'degraded'
-  if (status === null) return 'loading'
+  if (status === 'healthy' || status === 'connected' || status === 'operational' || status === 'ready') return 'connected'
+  if (status === 'degraded' || status === 'timeout') return 'degraded'
+  if (status === null || status === 'loading' || status === 'connecting' || status === 'initializing') return 'loading'
   return 'disconnected'
 }
 

@@ -7,6 +7,7 @@ and global/local SHAP biomarker explanations.
 from __future__ import annotations
 
 import os
+import asyncio
 from typing import Dict, Any, List, Optional
 import numpy as np
 import pandas as pd
@@ -14,7 +15,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 
 from app.core.logging import get_logger
 from app.ml.data_loader import load_dataset_df, preprocess_and_split
-from app.ml.models import train_and_evaluate, get_model_instance
+from app.ml.models import train_and_evaluate, get_model_instance, load_saved_model
 from app.ml.baseline_loader import (
     load_baseline_experiments,
     get_aggregated_benchmarks,
@@ -93,7 +94,8 @@ async def train_model(payload: TrainRequest) -> TrainResponse:
         df = load_dataset_df()
         split = preprocess_and_split(df, test_size=payload.test_size, seed=payload.seed)
         
-        result = train_and_evaluate(
+        result = await asyncio.to_thread(
+            train_and_evaluate,
             model_name=payload.model_name,
             X_train=split["X_train"],
             y_train=split["y_train"],
@@ -143,23 +145,32 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
         split = get_cached_split(seed=42)
         feature_names = split["feature_columns"]
 
-        # Ensure model is initialized
+        # Ensure model is initialized from cache, disk, or trained asynchronously
         if model_name not in _TRAINED_MODELS:
-            res = train_and_evaluate(
-                model_name=model_name,
-                X_train=split["X_train"],
-                y_train=split["y_train"],
-                X_test=split["X_test"],
-                y_test=split["y_test"],
-                feature_names=feature_names,
-                seed=42,
-                scale_pos_weight=split["scale_pos_weight"],
-            )
-            _TRAINED_MODELS[model_name] = {
-                "model": res["model_obj"],
-                "feature_names": feature_names,
-                "split": split,
-            }
+            saved = load_saved_model(model_name, seed=42)
+            if saved is not None and "model" in saved:
+                _TRAINED_MODELS[model_name] = {
+                    "model": saved["model"],
+                    "feature_names": feature_names,
+                    "split": split,
+                }
+            else:
+                res = await asyncio.to_thread(
+                    train_and_evaluate,
+                    model_name=model_name,
+                    X_train=split["X_train"],
+                    y_train=split["y_train"],
+                    X_test=split["X_test"],
+                    y_test=split["y_test"],
+                    feature_names=feature_names,
+                    seed=42,
+                    scale_pos_weight=split["scale_pos_weight"],
+                )
+                _TRAINED_MODELS[model_name] = {
+                    "model": res["model_obj"],
+                    "feature_names": feature_names,
+                    "split": split,
+                }
 
         model_entry = _TRAINED_MODELS[model_name]
         model = model_entry["model"]
@@ -193,8 +204,9 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
             vector = split["X_test"][0]
             sample_id = split["test_sample_ids"][0] if split.get("test_sample_ids") else "test_sample_0"
 
-        # Compute SHAP explanation and probabilities for the vector
-        explanation = explain_single_sample(
+        # Compute SHAP explanation and probabilities in background thread to avoid event loop starving
+        explanation = await asyncio.to_thread(
+            explain_single_sample,
             model=model,
             sample_vector=vector,
             feature_names=feature_names,

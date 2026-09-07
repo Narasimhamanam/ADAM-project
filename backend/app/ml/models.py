@@ -9,6 +9,8 @@ from __future__ import annotations
 import os
 from typing import Dict, Any, Optional, List, Tuple
 import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
@@ -47,6 +49,7 @@ def get_model_instance(model_name: str, params: Optional[Dict[str, Any]] = None,
             "learning_rate": 0.1,
             "subsample": 0.8,
             "colsample_bytree": 0.8,
+            "n_jobs": 1,
         }
         default_params.update(params)
         return XGBClassifier(**default_params)
@@ -57,21 +60,27 @@ def get_model_instance(model_name: str, params: Optional[Dict[str, Any]] = None,
             "max_depth": 10,
             "class_weight": "balanced",
             "random_state": seed,
-            "n_jobs": -1,
+            "n_jobs": 1,  # Keep single-threaded to prevent thread exhaustion in memory-constrained containers
         }
         default_params.update(params)
         return RandomForestClassifier(**default_params)
 
     elif "logistic" in model_key or "lr" in model_key:
+        # Standardized Pipeline with liblinear solver (matching original ADAM research methodology)
+        # Prevents numerical ill-conditioning, extreme iterations, and process freezing on unscaled 1044-dim features
         default_params = {
             "penalty": "l2",
-            "C": 1.0,
+            "C": 0.1,
             "class_weight": "balanced",
+            "solver": "liblinear",
             "max_iter": 1000,
             "random_state": seed,
         }
         default_params.update(params)
-        return LogisticRegression(**default_params)
+        return Pipeline([
+            ("scaler", StandardScaler()),
+            ("classifier", LogisticRegression(**default_params)),
+        ])
 
     else:
         raise ValueError(f"Unsupported model: {model_name}. Choose 'xgboost', 'randomforest', or 'logisticregression'.")
@@ -127,18 +136,20 @@ def train_and_evaluate(
     model.fit(X_train, y_train)
     metrics = evaluate_model(model, X_test, y_test)
 
-    # Feature importance extraction
+    # Feature importance extraction (handling both raw estimators and Pipelines)
+    effective_clf = model.named_steps["classifier"] if isinstance(model, Pipeline) and "classifier" in model.named_steps else model
+
     importances = []
-    if hasattr(model, "feature_importances_"):
-        raw_imp = model.feature_importances_
+    if hasattr(effective_clf, "feature_importances_"):
+        raw_imp = effective_clf.feature_importances_
         sorted_indices = np.argsort(raw_imp)[::-1]
         for idx in sorted_indices[:30]:
             importances.append({
                 "feature": feature_names[idx],
                 "importance": float(raw_imp[idx]),
             })
-    elif hasattr(model, "coef_"):
-        raw_coef = np.abs(model.coef_[0])
+    elif hasattr(effective_clf, "coef_"):
+        raw_coef = np.abs(effective_clf.coef_[0])
         sorted_indices = np.argsort(raw_coef)[::-1]
         for idx in sorted_indices[:30]:
             importances.append({
@@ -146,7 +157,7 @@ def train_and_evaluate(
                 "importance": float(raw_coef[idx]),
             })
 
-    model_id = f"{model_name.lower()}_seed{seed}"
+    model_id = f"{model_name.lower().replace('-', '').replace('_', '')}_seed{seed}"
     model_path = None
 
     if save_model:
@@ -169,3 +180,22 @@ def train_and_evaluate(
         "model_path": model_path,
         "model_obj": model,
     }
+
+
+def load_saved_model(model_name: str, seed: int = 42) -> Optional[Dict[str, Any]]:
+    """Load a trained model artifact from the saved_models directory if present."""
+    m_clean = model_name.lower().replace("-", "").replace("_", "").replace(" ", "")
+    candidate_names = [
+        f"{m_clean}_seed{seed}.joblib",
+        f"{model_name.lower()}_seed{seed}.joblib",
+    ]
+    for name in candidate_names:
+        p = os.path.join(MODELS_DIR, name)
+        if os.path.exists(p):
+            try:
+                data = joblib.load(p)
+                logger.info("Loaded model artifact from disk", path=p, model_name=model_name)
+                return data
+            except Exception as e:
+                logger.warning("Failed to deserialize model artifact", path=p, error=str(e))
+    return None

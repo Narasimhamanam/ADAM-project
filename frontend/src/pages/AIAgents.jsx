@@ -189,6 +189,92 @@ export default function AIAgents() {
 
       {error && <ErrorAlert message={error} onRetry={executeAgent} />}
 
+      {/* ── Technical Multi-Agent Diagnostic Architecture Guide (Part 8) ── */}
+      <div className="card p-5 bg-surface-900 border border-surface-700 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-surface-700 pb-3">
+          <div className="flex items-center gap-2">
+            <Cpu size={18} className="text-[#0F9D8A]" />
+            <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider">
+              AIRA 3-Agent Diagnostic Reasoning Architecture
+            </h2>
+          </div>
+          <span className="text-[11px] font-mono text-[#0F9D8A] bg-[#E8F7F4] dark:bg-surface-800 px-2.5 py-0.5 rounded-full border border-[#0F9D8A]/30 font-bold">
+            Auditable Pipeline: Data → Computation → Retrieval → Summarization → Classification → Consensus
+          </span>
+        </div>
+
+        {/* 4-Stage Architectural Breakdown */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          {/* Stage 1: Computational Agent */}
+          <div className="p-3.5 rounded-xl border border-surface-700 bg-surface-800/60 space-y-2">
+            <div className="flex items-center gap-2 text-[#2563EB] font-bold">
+              <Calculator size={15} />
+              <span>1. Computational Agent</span>
+            </div>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Receives:</strong> Raw metagenomic abundance matrix (940 taxa, 335 samples, 102 subjects) and clinical covariates (CFS, Malnutrition).
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Calculates:</strong> 30-seed cross-validation metrics (ROC-AUC, F1) across XGBoost, Random Forest, and Logistic Regression, plus global TreeSHAP rankings.
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Outputs:</strong> Quantitative baselines, subject-grouped validation metrics, and top cohort biomarker rankings.
+            </p>
+          </div>
+
+          {/* Stage 2: Summarization Agent */}
+          <div className="p-3.5 rounded-xl border border-surface-700 bg-surface-800/60 space-y-2">
+            <div className="flex items-center gap-2 text-[#0F9D8A] font-bold">
+              <Brain size={15} />
+              <span>2. Summarization Agent</span>
+            </div>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Receives:</strong> Significant biomarker signals from the Computational Agent and research prompts.
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Evidence Retrieval:</strong> Performs semantic TF-IDF cosine similarity search over indexed PubMed peer-reviewed literature corpus.
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Outputs:</strong> Mechanistic synthesis of biological pathways (LPS endotoxemia, TLR4 microglial activation, butyrate depletion) with citations.
+            </p>
+          </div>
+
+          {/* Stage 3: Classification Agent */}
+          <div className="p-3.5 rounded-xl border border-surface-700 bg-surface-800/60 space-y-2">
+            <div className="flex items-center gap-2 text-[#D97706] font-bold">
+              <Microscope size={15} />
+              <span>3. Classification Agent</span>
+            </div>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Receives:</strong> Single-patient sample vector (1,044 features) and synthesized biological context.
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Inference & SHAP:</strong> Executes real-time model inference and decomposes sample prediction into additive patient-specific TreeSHAP values.
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Outputs:</strong> Multi-modal risk assessment strictly distinguishing machine-learned probability from retrospective ground truth.
+            </p>
+          </div>
+
+          {/* Stage 4: Integrated Consensus */}
+          <div className="p-3.5 rounded-xl border border-[#0F9D8A]/40 bg-[#E8F7F4]/20 dark:bg-surface-800/90 space-y-2">
+            <div className="flex items-center gap-2 text-[#0F9D8A] font-bold">
+              <Sparkles size={15} />
+              <span>4. Final AIRA Consensus</span>
+            </div>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Integration:</strong> Coordinates multi-agent reasoning chain into a unified clinical-grade research assessment.
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Validation:</strong> Verifies that ML predictions, local SHAP drivers, and retrieved literature mechanisms are scientifically aligned.
+            </p>
+            <p className="text-surface-300 text-[11px] leading-relaxed">
+              <strong className="text-surface-50">Outputs:</strong> Transparent, auditable diagnostic narrative suitable for research review and clinical analysis.
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* ── Agent Selector & Config ── */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
         {/* Agent Type Cards */}
