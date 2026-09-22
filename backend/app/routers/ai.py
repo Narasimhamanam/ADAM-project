@@ -56,11 +56,15 @@ async def chat_research_assistant(payload: ChatRequest) -> ChatResponse:
     try:
         llm = get_llm_client()
         intent = classify_query_intent(payload.query)
+        q_lower = payload.query.lower()
         
-        # Only activate RAG retrieval for inquiries that genuinely require literature evidence
+        # 1. Literature summarization queries get the full curated corpus
         docs = []
-        if payload.include_literature and intent in ["biomedical_research", "data_record"]:
-            docs = search_literature(payload.query, top_k=3, min_threshold=0.05)
+        if any(phrase in q_lower for phrase in ["summarize the retrieved literature", "summarize literature", "summarize articles", "literature summary"]):
+            docs = get_all_articles()[:4]
+        elif payload.include_literature and intent in ["biomedical_research", "data_record"]:
+            # Semantic search with strict thresholding (prevents irrelevant papers on cancer, general questions)
+            docs = search_literature(payload.query, top_k=3, min_threshold=0.08)
 
         res = await llm.generate_completion(
             prompt=payload.query,
@@ -75,11 +79,12 @@ async def chat_research_assistant(payload: ChatRequest) -> ChatResponse:
             timestamp=datetime.now(timezone.utc).isoformat(),
         )
     except Exception as e:
-        logger.error("AI Chat failed", error=str(e))
+        logger.error("AI Chat failed", query=payload.query, error=str(e))
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Chat generation failed: {str(e)}",
         )
+
 
 
 @router.get(

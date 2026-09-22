@@ -1,11 +1,11 @@
 import React from 'react';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, BookOpen } from 'lucide-react';
 
 /**
  * Pure React Markdown renderer for scientific research output.
  * Renders headings, bold/italics, bullet lists, numbered lists, tables,
  * code blocks, inline code, blockquotes, links, and clickable citation badges
- * without raw Markdown artifacts.
+ * without raw Markdown or SVG text artifacts.
  */
 
 // Helper to extract clean query term for PubMed link
@@ -21,6 +21,12 @@ function extractPubMedTerm(citationText) {
 function renderInline(text) {
   if (!text) return null;
 
+  // Sanitize any raw 'svg' artifact preceding citations (e.g. "svg[PMC8472911]" -> "[PMC8472911]")
+  const sanitizedText = text
+    .replace(/\bsvg\s*(\[PMC[0-9A-Za-z]+\])/gi, '$1')
+    .replace(/\b(svg)\b(?=\s*\[)/gi, '')
+    .replace(/<svg[^>]*>.*?<\/svg>/gis, '');
+
   // Token patterns:
   // 1. Bold: `**...**`
   // 2. Italics: `*...*` or `_..._`
@@ -29,10 +35,15 @@ function renderInline(text) {
   // 5. Citations: 【...】, [PMC...], (PMCID: ...), PMCID: ..., PMID: ...
   const tokenRegex = /(\*\*[^*]+\*\*|\*[^*]+\*|_[^_]+_|`[^`]+`|\[[^\]]+\]\([^)]+\)|【[^】]+】|\[PMC[0-9A-Za-z]+\]|\(PMCID[:\s]+[0-9A-Za-z]+\)|PMCID[:\s]+[0-9A-Za-z]+|PMID[:\s]+[0-9A-Za-z]+)/g;
 
-  const parts = text.split(tokenRegex);
+  const parts = sanitizedText.split(tokenRegex);
 
   return parts.map((part, index) => {
     if (!part) return null;
+
+    // Suppress standalone raw 'svg' token if accidentally split
+    if (part.trim().toLowerCase() === 'svg') {
+      return null;
+    }
 
     // Bold: **text**
     if (part.startsWith('**') && part.endsWith('**') && part.length >= 4) {
@@ -95,7 +106,7 @@ function renderInline(text) {
       part.includes('PMID')
     ) {
       const term = extractPubMedTerm(part);
-      const cleanLabel = part.replace(/[【】]/g, '');
+      const cleanLabel = part.replace(/[【】]/g, '').replace(/^svg/i, '').trim();
       return (
         <a
           key={index}
@@ -103,9 +114,10 @@ function renderInline(text) {
           target="_blank"
           rel="noopener noreferrer"
           title={`View on PubMed: ${term}`}
-          className="inline-flex items-center mx-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F7F4] dark:bg-surface-800 text-[#0F9D8A] border border-[#0F9D8A]/30 hover:border-[#0F9D8A] hover:bg-[#0F9D8A]/10 transition-colors align-baseline"
+          className="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E8F7F4] dark:bg-surface-800 text-[#0F9D8A] border border-[#0F9D8A]/30 hover:border-[#0F9D8A] hover:bg-[#0F9D8A]/10 transition-colors align-baseline"
         >
-          {cleanLabel}
+          <BookOpen size={10} className="inline shrink-0" />
+          <span>{cleanLabel}</span>
         </a>
       );
     }
@@ -117,7 +129,12 @@ function renderInline(text) {
 export default function MarkdownContent({ content, className = '' }) {
   if (!content) return null;
 
-  const lines = content.split('\n');
+  // Sanitize content from raw SVG artifacts
+  const cleanContent = content
+    .replace(/\bsvg\s*(\[PMC[0-9A-Za-z]+\])/gi, '$1')
+    .replace(/\b(svg)\b(?=\s*\[)/gi, '');
+
+  const lines = cleanContent.split('\n');
   const elements = [];
   let currentList = null;
   let listType = null; // 'ul' or 'ol'

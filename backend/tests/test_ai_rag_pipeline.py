@@ -129,3 +129,45 @@ async def test_ai_agent_execute_endpoint():
         data = resp.json()
         assert len(data["thought_trace"]) == 3
         assert "final_synthesis" in data
+
+
+@pytest.mark.asyncio
+async def test_dynamic_query_responses_across_distinct_questions():
+    """Verify that different user queries produce meaningfully distinct, dynamic responses."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as ac:
+        # 1. What is cancer?
+        res_cancer = await ac.post("/api/ai/chat", json={"query": "What is cancer?", "include_literature": True})
+        assert res_cancer.status_code == 200
+        d_cancer = res_cancer.json()
+        assert "uncontrolled proliferation" in d_cancer["response"].lower() or "hallmark" in d_cancer["response"].lower()
+        assert "In the context of the ADAM-1 multi-modal framework" not in d_cancer["response"]
+        assert len(d_cancer["citations"]) == 0
+
+        # 2. What is the gut microbiome?
+        res_gut = await ac.post("/api/ai/chat", json={"query": "What is the gut microbiome?", "include_literature": True})
+        assert res_gut.status_code == 200
+        d_gut = res_gut.json()
+        assert "100 trillion" in d_gut["response"] or "bacillota" in d_gut["response"].lower()
+        assert "cancer" not in d_gut["response"].lower()
+
+        # 3. Explain Shannon diversity
+        res_shannon = await ac.post("/api/ai/chat", json={"query": "Explain Shannon diversity.", "include_literature": True})
+        assert res_shannon.status_code == 200
+        d_shannon = res_shannon.json()
+        assert "shannon" in d_shannon["response"].lower()
+        assert "evenness" in d_shannon["response"].lower()
+
+        # 4. What does ROC-AUC mean?
+        res_auc = await ac.post("/api/ai/chat", json={"query": "What does ROC-AUC mean?", "include_literature": True})
+        assert res_auc.status_code == 200
+        d_auc = res_auc.json()
+        assert "receiver operating characteristic" in d_auc["response"].lower()
+
+        # 5. Patient sample prediction
+        res_patient = await ac.post("/api/ai/chat", json={"query": "Analyze this patient's prediction: sample DC001", "include_literature": True})
+        assert res_patient.status_code == 200
+        d_patient = res_patient.json()
+        assert "DC001" in d_patient["response"]
+        assert "SHAP" in d_patient["response"] or "XGBoost" in d_patient["response"]
+

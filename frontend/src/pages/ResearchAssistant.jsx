@@ -191,14 +191,19 @@ export default function ResearchAssistant() {
                   {isAssistant && m.citations && m.citations.length > 0 && (
                     <div className="flex flex-wrap gap-2 pt-1">
                       {m.citations.map((c, i) => (
-                        <div
+                        <a
                           key={i}
-                          className="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded bg-surface-900 border border-surface-700/60 text-accent-500 dark:text-accent-300 font-medium"
+                          href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(c.pmid || '')}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={`View on PubMed: ${c.title || c.pmid}`}
+                          className="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded bg-surface-900 border border-surface-700/60 text-accent-500 dark:text-accent-300 font-medium hover:border-accent-500/60 hover:bg-surface-800 transition-colors"
                         >
-                          <BookOpen size={10} />
+                          <BookOpen size={10} className="shrink-0" />
                           <span className="font-bold">[{c.pmid}]</span>
                           <span className="text-surface-400 truncate max-w-[200px]">{c.title}</span>
-                        </div>
+                          <ExternalLink size={9} className="opacity-60 shrink-0" />
+                        </a>
                       ))}
                     </div>
                   )}
