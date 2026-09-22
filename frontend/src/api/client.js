@@ -84,3 +84,28 @@ export const fetchMlBenchmark = () =>
 export const fetchAiStatus = () =>
   apiClient.get('/ai/status').then((r) => r.data)
 
+/**
+ * Fetch ADAM vs traditional ML performance comparison.
+ * @param {boolean} refresh - Force re-evaluation of models
+ * @returns {Promise<{published_benchmark: object, current_evaluation: object}>}
+ */
+export const fetchPerformanceComparison = (refresh = false) =>
+  apiClient.get(`/ml/performance/comparison?refresh=${refresh}`).then((r) => r.data)
+
+/**
+ * Execute end-to-end multi-agent ADAM diagnostic workflow on a patient record.
+ * @param {string} sampleId
+ * @returns {Promise<object>}
+ */
+export const executeAdamWorkflow = (sampleId) =>
+  apiClient.post('/ml/workflow/execute', { sample_id: sampleId }).then((r) => r.data)
+
+/**
+ * Fetch list of available cohort samples with clinical indicators.
+ * @param {number} limit
+ * @returns {Promise<Array<object>>}
+ */
+export const fetchAvailableSamples = (limit = 100) =>
+  apiClient.get(`/ml/samples?limit=${limit}`).then((r) => r.data)
+
+

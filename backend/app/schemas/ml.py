@@ -109,3 +109,21 @@ class ShapFeatureRank(BaseModel):
 class ShapGlobalResponse(BaseModel):
     total_biomarkers: int
     rankings: List[ShapFeatureRank]
+
+
+class WorkflowExecuteRequest(BaseModel):
+    sample_id: str = Field(..., description="Target sample ID to run through the complete ADAM multi-agent workflow")
+
+
+class MetricImprovementItem(BaseModel):
+    adam: Optional[float] = None
+    xgboost: Optional[float] = None
+    absolute_improvement: Optional[float] = None
+    relative_improvement_pct: Optional[float] = None
+    status: str = "Evaluated"
+
+
+class PerformanceComparisonResponse(BaseModel):
+    published_benchmark: Dict[str, Any]
+    current_evaluation: Dict[str, Any]
+

@@ -43,6 +43,9 @@ async def get_ai_status() -> AIStatusResponse:
     )
 
 
+from app.rag.intent import classify_query_intent
+
+
 @router.post(
     "/chat",
     response_model=ChatResponse,
@@ -52,13 +55,17 @@ async def get_ai_status() -> AIStatusResponse:
 async def chat_research_assistant(payload: ChatRequest) -> ChatResponse:
     try:
         llm = get_llm_client()
+        intent = classify_query_intent(payload.query)
+        
+        # Only activate RAG retrieval for inquiries that genuinely require literature evidence
         docs = []
-        if payload.include_literature:
-            docs = search_literature(payload.query, top_k=3)
+        if payload.include_literature and intent in ["biomedical_research", "data_record"]:
+            docs = search_literature(payload.query, top_k=3, min_threshold=0.05)
 
         res = await llm.generate_completion(
             prompt=payload.query,
             context_docs=docs,
+            intent=intent,
         )
 
         return ChatResponse(

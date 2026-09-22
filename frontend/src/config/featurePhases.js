@@ -219,6 +219,39 @@ export const FEATURE_CONFIG = {
     ],
     enabled: true,
   },
+  '/workflow': {
+    id: 'workflow',
+    name: 'ADAM Framework Workflow',
+    path: '/workflow',
+    phase: 4,
+    plannedPhaseName: 'Phase 4 – Multi-Agent Diagnostic Workflow',
+    description: 'Complete 8-stage interactive visual timeline: Record Selection -> Computational Agent -> ML Prediction -> TreeSHAP -> Diversity -> Summarization (10 Checkpoints) -> Classification (10 Checkpoints) -> Consensus Decision -> PDF Report.',
+    capabilities: [
+      'Interactive record selection across 335 longitudinal patient samples',
+      'Live Computational Agent calculating Shannon, Simpson, Berger-Parker, Bray-Curtis, Jaccard, and Canberra',
+      'TreeSHAP polynomial-time feature attributions with non-causal medical disclaimers',
+      '10-Checkpoint Summarization Agent (ADAM-1 Enhanced reasoning workflow)',
+      '10-Checkpoint Classification Agent (Enhanced implementation)',
+      'Auditable diagnostic consensus decisioning with downloadable clinical PDF report',
+    ],
+    enabled: true,
+  },
+  '/performance': {
+    id: 'performance',
+    name: 'ADAM Framework Performance',
+    path: '/performance',
+    phase: 4,
+    plannedPhaseName: 'Phase 4 – Framework Performance & Evaluation',
+    description: 'Separate dedicated comparative evaluation benchmarking the ADAM Framework against XGBoost, Random Forest, and Logistic Regression with absolute and relative improvement calculations.',
+    capabilities: [
+      'Dynamic calculation of Accuracy, Precision, Recall, F1 Score, and ROC-AUC',
+      'Strict separation of Published Paper Benchmark (30 seeds) vs Current Enhanced Results',
+      'Dynamic Absolute Improvement: ADAM - XGBoost',
+      'Dynamic Relative Improvement %: ((ADAM - XGBoost) / XGBoost) * 100',
+      'Transparent display of Not evaluated for unrecorded historical metrics without fabrication',
+    ],
+    enabled: true,
+  },
 };
 
 /**

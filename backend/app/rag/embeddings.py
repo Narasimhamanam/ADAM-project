@@ -39,8 +39,8 @@ class SemanticSearchEngine:
             self.doc_matrix = self.vectorizer.fit_transform(corpus)
             self.is_fitted = True
 
-    def search(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-        """Compute cosine similarity between query and indexed articles."""
+    def search(self, query: str, top_k: int = 5, min_threshold: float = 0.05) -> List[Dict[str, Any]]:
+        """Compute cosine similarity between query and indexed articles with relevance threshold."""
         if not self.is_fitted or not self.documents:
             return []
 
@@ -48,13 +48,17 @@ class SemanticSearchEngine:
         similarities = cosine_similarity(query_vec, self.doc_matrix).flatten()
         
         # Rank by similarity score descending
-        top_indices = np.argsort(similarities)[::-1][:top_k]
+        top_indices = np.argsort(similarities)[::-1]
 
         results = []
         for idx in top_indices:
             score = float(similarities[idx])
+            if score < min_threshold:
+                continue
             doc = self.documents[idx].copy()
             doc["similarity_score"] = round(score, 4)
             results.append(doc)
+            if len(results) >= top_k:
+                break
 
         return results

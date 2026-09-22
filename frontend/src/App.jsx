@@ -17,6 +17,8 @@ import LiteratureRAG     from './pages/LiteratureRAG'
 import AIAgents          from './pages/AIAgents'
 import Reports           from './pages/Reports'
 import Settings          from './pages/Settings'
+import AdamWorkflow      from './pages/AdamWorkflow'
+import AdamPerformance   from './pages/AdamPerformance'
 import { fetchHealth }   from './api/client'
 
 export default function App() {
@@ -60,6 +62,8 @@ export default function App() {
           <Route path="/assistant"   element={<PhaseFeatureGuard path="/assistant"><ResearchAssistant /></PhaseFeatureGuard>} />
           <Route path="/literature"  element={<PhaseFeatureGuard path="/literature"><LiteratureRAG /></PhaseFeatureGuard>} />
           <Route path="/agents"      element={<PhaseFeatureGuard path="/agents"><AIAgents /></PhaseFeatureGuard>} />
+          <Route path="/workflow"    element={<PhaseFeatureGuard path="/workflow"><AdamWorkflow /></PhaseFeatureGuard>} />
+          <Route path="/performance" element={<PhaseFeatureGuard path="/performance"><AdamPerformance /></PhaseFeatureGuard>} />
 
           <Route path="*"            element={<Navigate to="/dashboard" replace />} />
         </Routes>

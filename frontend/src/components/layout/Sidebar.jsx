@@ -19,6 +19,8 @@ import {
   Dna,
   X,
   Lock,
+  GitMerge,
+  Award,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useDemoPhase } from '../../context/DemoPhaseContext'
@@ -54,9 +56,11 @@ const NAV_SECTIONS = [
     label: 'AI & Literature — Phase 4',
     phaseRequired: 4,
     items: [
-      { to: '/assistant',  icon: MessageSquare, label: 'Research Assistant', phase: 4 },
-      { to: '/literature', icon: BookOpen,      label: 'Literature / RAG',   phase: 4 },
-      { to: '/agents',     icon: Bot,           label: 'AI Agents',          phase: 4 },
+      { to: '/workflow',    icon: GitMerge,      label: 'ADAM Workflow',     phase: 4 },
+      { to: '/performance', icon: Award,         label: 'ADAM Performance', phase: 4 },
+      { to: '/assistant',   icon: MessageSquare, label: 'Research Assistant', phase: 4 },
+      { to: '/literature',  icon: BookOpen,      label: 'Literature / RAG',   phase: 4 },
+      { to: '/agents',      icon: Bot,           label: 'AI Agents',          phase: 4 },
     ],
   },
 ]

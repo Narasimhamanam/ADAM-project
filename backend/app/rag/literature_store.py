@@ -119,10 +119,10 @@ def get_literature_engine() -> SemanticSearchEngine:
     return _SEARCH_ENGINE
 
 
-def search_literature(query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-    """Query the indexed scientific literature corpus."""
+def search_literature(query: str, top_k: int = 5, min_threshold: float = 0.05) -> List[Dict[str, Any]]:
+    """Query the indexed scientific literature corpus with optional minimum relevance threshold."""
     engine = get_literature_engine()
-    return engine.search(query, top_k=top_k)
+    return engine.search(query, top_k=top_k, min_threshold=min_threshold)
 
 
 def get_all_articles() -> List[Dict[str, Any]]:

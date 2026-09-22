@@ -32,7 +32,11 @@ from app.schemas.ml import (
     FeatureContribution,
     ShapGlobalResponse,
     ShapFeatureRank,
+    WorkflowExecuteRequest,
+    PerformanceComparisonResponse,
 )
+from app.ml.performance import get_full_performance_comparison
+from app.agents.adam_workflow import run_adam_pipeline
 
 logger = get_logger(__name__)
 
@@ -299,3 +303,71 @@ async def get_sample_shap(
 ) -> Dict[str, Any]:
     pred_res = await predict_risk(PredictRequest(model_name=model_name, sample_id=sample_id))
     return pred_res.model_dump()
+
+
+@router.get(
+    "/performance/comparison",
+    response_model=PerformanceComparisonResponse,
+    summary="Comprehensive ADAM vs Traditional ML Baseline Performance Comparison",
+    description="Returns dynamically calculated evaluation results for XGBoost, Random Forest, Logistic Regression, and ADAM, comparing both Published Paper Benchmarks and Current Test Cohort Results with absolute and relative improvements.",
+)
+async def get_performance_comparison(
+    refresh: bool = Query(False, description="Force re-evaluation of models on current test cohort"),
+) -> PerformanceComparisonResponse:
+    try:
+        data = await asyncio.to_thread(get_full_performance_comparison, seed=42, force_refresh=refresh)
+        return PerformanceComparisonResponse(
+            published_benchmark=data["published_benchmark"],
+            current_evaluation=data["current_evaluation"],
+        )
+    except Exception as e:
+        logger.error("Performance comparison failed", error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Performance comparison failed: {str(e)}",
+        )
+
+
+@router.post(
+    "/workflow/execute",
+    summary="Execute Complete Multi-Agent ADAM Framework Workflow",
+    description="Executes the full ADAM diagnostic sequence on a real patient record: Computational Agent (ML + TreeSHAP + Alpha/Beta Diversity), Summarization Agent (10 Checkpoints), Classification Agent (10 Checkpoints), and Final Consensus Decision.",
+)
+async def execute_adam_workflow(payload: WorkflowExecuteRequest) -> Dict[str, Any]:
+    try:
+        logger.info("Executing ADAM workflow", sample_id=payload.sample_id)
+        result = await asyncio.to_thread(run_adam_pipeline, sample_id=payload.sample_id)
+        return result
+    except ValueError as ve:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(ve),
+        )
+    except Exception as e:
+        logger.error("ADAM workflow execution failed", sample_id=payload.sample_id, error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Workflow execution failed: {str(e)}",
+        )
+
+
+@router.get(
+    "/samples",
+    summary="List available cohort samples for analysis",
+    description="Returns list of available sample IDs with study ID, diagnosis, age, sex, and CFS.",
+)
+async def list_available_samples(limit: int = Query(100, ge=1, le=350)) -> List[Dict[str, Any]]:
+    df = load_dataset_df()
+    samples = []
+    for _, row in df.head(limit).iterrows():
+        samples.append({
+            "sample_id": str(row.get("Sample ID", "")),
+            "study_id": str(row.get("study_id", "")),
+            "alzheimers": int(row.get("Alzheimers", 0)),
+            "age": float(row.get("age", 0.0)),
+            "gender": "Male" if float(row.get("male", 0.0)) == 1.0 else "Female",
+            "clinical_frailty_scale": float(row.get("clinical_frailty_scale", 0.0)),
+        })
+    return samples
+
+
