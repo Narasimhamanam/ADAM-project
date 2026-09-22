@@ -36,9 +36,12 @@ from app.schemas.ml import (
     PerformanceComparisonResponse,
 )
 from app.ml.performance import get_full_performance_comparison
+from app.ml.ablation import evaluate_ablation_run
+from app.ml.efficiency import profile_pipeline_efficiency
 from app.agents.adam_workflow import run_adam_pipeline
 
 logger = get_logger(__name__)
+
 
 router = APIRouter(prefix="/ml", tags=["machine-learning"])
 
@@ -309,16 +312,27 @@ async def get_sample_shap(
     "/performance/comparison",
     response_model=PerformanceComparisonResponse,
     summary="Comprehensive ADAM vs Traditional ML Baseline Performance Comparison",
-    description="Returns dynamically calculated evaluation results for XGBoost, Random Forest, Logistic Regression, and ADAM, comparing both Published Paper Benchmarks and Current Test Cohort Results with absolute and relative improvements.",
+    description="Returns dynamically calculated evaluation results for XGBoost, Random Forest, Logistic Regression, and ADAM, comparing both Published Paper Benchmarks and Current Test Cohort Results with absolute and relative differences.",
 )
 async def get_performance_comparison(
+    protocol: str = Query("full_cohort", description="Evaluation protocol: full_cohort | paper_reconstructed"),
+    seed: int = Query(42, description="Random seed for data split"),
     refresh: bool = Query(False, description="Force re-evaluation of models on current test cohort"),
 ) -> PerformanceComparisonResponse:
     try:
-        data = await asyncio.to_thread(get_full_performance_comparison, seed=42, force_refresh=refresh)
+        data = await asyncio.to_thread(
+            get_full_performance_comparison,
+            protocol=protocol,
+            seed=seed,
+            force_refresh=refresh,
+        )
         return PerformanceComparisonResponse(
             published_benchmark=data["published_benchmark"],
             current_evaluation=data["current_evaluation"],
+            ablation_study=data.get("ablation_study"),
+            efficiency_metrics=data.get("efficiency_metrics"),
+            active_protocol=data.get("active_protocol", protocol),
+            active_seed=data.get("active_seed", seed),
         )
     except Exception as e:
         logger.error("Performance comparison failed", error=str(e))
@@ -326,6 +340,47 @@ async def get_performance_comparison(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Performance comparison failed: {str(e)}",
         )
+
+
+@router.get(
+    "/performance/ablation",
+    summary="7-Condition Scientific Multi-Modal Ablation Study",
+    description="Returns evaluation across 7 conditions (XGBoost, Random Forest, Logistic Regression, Clinical-only, Taxa-only, Diversity, Full Multi-Agent) with mean and standard deviation.",
+)
+async def get_ablation_study(
+    protocol: str = Query("full_cohort", description="full_cohort | paper_reconstructed"),
+    seeds: Optional[str] = Query(None, description="Comma-separated seeds, e.g., '42,123,456'"),
+) -> Dict[str, Any]:
+    try:
+        seed_list = [int(s.strip()) for s in seeds.split(",") if s.strip()] if seeds else [42, 123, 456]
+        result = await asyncio.to_thread(evaluate_ablation_run, protocol=protocol, seeds=seed_list)
+        return result
+    except Exception as e:
+        logger.error("Ablation study failed", error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Ablation study failed: {str(e)}",
+        )
+
+
+@router.get(
+    "/performance/efficiency",
+    summary="Computational Efficiency & Resource Profiling",
+    description="Returns profiling metrics: single-sample latency, execution duration, peak memory delta, and agent steps.",
+)
+async def get_efficiency_metrics(
+    samples: int = Query(5, ge=1, le=50, description="Number of samples to profile"),
+) -> Dict[str, Any]:
+    try:
+        result = await asyncio.to_thread(profile_pipeline_efficiency, sample_count=samples)
+        return result
+    except Exception as e:
+        logger.error("Efficiency profiling failed", error=str(e))
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Efficiency profiling failed: {str(e)}",
+        )
+
 
 
 @router.post(

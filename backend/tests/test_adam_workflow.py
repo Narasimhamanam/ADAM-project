@@ -153,17 +153,48 @@ async def test_api_performance_and_workflow_endpoints():
     """Verify HTTP endpoints for performance comparison and workflow execution."""
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
-        # 1. Performance comparison endpoint
+        # 1. Performance comparison endpoint (default full cohort)
         resp_perf = await ac.get("/api/ml/performance/comparison")
         assert resp_perf.status_code == 200
         p_json = resp_perf.json()
         assert "published_benchmark" in p_json
         assert "current_evaluation" in p_json
+        assert "comparisons" in p_json["current_evaluation"]
+        assert "f1_score" in p_json["current_evaluation"]["comparisons"]
+
+        # 2. Performance comparison with paper-reconstructed balanced protocol
+        resp_paper = await ac.get("/api/ml/performance/comparison?protocol=paper_reconstructed&seed=42")
+        assert resp_paper.status_code == 200
+        paper_json = resp_paper.json()
+        assert paper_json["current_evaluation"]["sample_count"] == 30
+        assert paper_json["current_evaluation"]["positive_cases"] == 15
+        assert paper_json["current_evaluation"]["control_cases"] == 15
+
+        # 3. 7-Condition Ablation Study endpoint
+        resp_abl = await ac.get("/api/ml/performance/ablation?protocol=full_cohort")
+        assert resp_abl.status_code == 200
+        abl_json = resp_abl.json()
+        assert "results" in abl_json
+        assert len(abl_json["results"]) == 7
+        condition_ids = [c["condition_id"] for c in abl_json["results"]]
+        assert "xgboost_baseline" in condition_ids
+        assert "adam_full_multiagent" in condition_ids
+        assert "adam_with_diversity" in condition_ids
+
+        # 4. Computational Efficiency Profiling endpoint
+        resp_eff = await ac.get("/api/ml/performance/efficiency?sample_count=2")
+        assert resp_eff.status_code == 200
+        eff_json = resp_eff.json()
+        assert "metrics" in eff_json
+        assert "avg_inference_latency_ms" in eff_json["metrics"]
+        assert "memory_usage_mb" in eff_json["metrics"]
+        assert "agent_call_count" in eff_json["metrics"]
         
-        # 2. Workflow execute endpoint
+        # 5. Workflow execute endpoint
         resp_wf = await ac.post("/api/ml/workflow/execute", json={"sample_id": "DC001"})
         assert resp_wf.status_code == 200
         wf_json = resp_wf.json()
         assert wf_json["sample_id"] == "DC001"
         assert len(wf_json["summarization_agent"]["checkpoints"]) == 10
         assert len(wf_json["classification_agent"]["checkpoints"]) == 10
+

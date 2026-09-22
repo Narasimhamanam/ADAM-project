@@ -1,18 +1,20 @@
 """
-ADAM Framework Performance Evaluation Engine
-============================================
+ADAM Framework Performance & Benchmark Engine
+=============================================
 Calculates and distinguishes:
-1. Published ADAM-1 Paper Benchmark (30 independent experiment runs from paper CSVs)
-2. Current ADAM-1 Enhanced Test Cohort Evaluation (Live evaluated metrics on current test set)
-3. Dynamic computation of Absolute and Relative Improvements of ADAM over XGBoost.
-   - Absolute Improvement = ADAM metric − XGBoost metric
-   - Relative Improvement % = ((ADAM − XGBoost) / XGBoost) × 100
-   - Missing metrics are marked as 'Not evaluated', NEVER fabricated.
+1. Published ADAM-1 Paper Benchmark (30 independent experiment runs from original research CSVs)
+2. Current ADAM-1 Enhanced Evaluation (Live evaluated metrics supporting 'full_cohort' and 'paper_reconstructed' protocols)
+3. Dynamic computation of neutral comparative metrics between ADAM and baselines:
+   - Absolute Difference = ADAM metric − Baseline metric
+   - Relative Difference % = ((ADAM − Baseline) / Baseline) × 100
+   - Direction indicator: 'higher' | 'lower' | 'equal'
+4. Full 7-condition ablation evaluation (Clinical, Microbiome, Diversity, Multi-Agent)
+5. Independent computational efficiency and resource profiling (latency, memory, calls)
 """
 from __future__ import annotations
 
 import os
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 import pandas as pd
 import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
@@ -22,33 +24,49 @@ from app.ml.baseline_loader import get_base_research_dir
 from app.ml.data_loader import load_dataset_df, preprocess_and_split
 from app.ml.models import train_and_evaluate
 from app.agents.adam_workflow import run_adam_pipeline
+from app.ml.ablation import evaluate_ablation_run
+from app.ml.efficiency import profile_pipeline_efficiency
 
 logger = get_logger(__name__)
 
-# In-memory cache for current live evaluated results
-_CACHED_PERFORMANCE: Optional[Dict[str, Any]] = None
+# In-memory cache for live evaluated results keyed by (protocol, seed)
+_CACHED_PERFORMANCE: Dict[str, Any] = {}
 
 
-def calc_improvement(adam_val: Optional[float], xgb_val: Optional[float]) -> Dict[str, Any]:
-    """Calculate absolute and relative improvement dynamically."""
-    if adam_val is None or xgb_val is None:
+def calc_metric_comparison(adam_val: Optional[float], baseline_val: Optional[float]) -> Dict[str, Any]:
+    """Calculate neutral comparative metrics dynamically between ADAM and a baseline."""
+    if adam_val is None or baseline_val is None:
         return {
             "adam": None,
+            "baseline": None,
             "xgboost": None,
+            "absolute_diff": None,
+            "relative_pct": None,
             "absolute_improvement": None,
             "relative_improvement_pct": None,
+            "direction": "unevaluated",
             "status": "Not evaluated",
         }
 
-    abs_imp = round(float(adam_val) - float(xgb_val), 4)
-    rel_pct = round(((float(adam_val) - float(xgb_val)) / float(xgb_val)) * 100.0, 2) if xgb_val != 0 else 0.0
+    abs_diff = round(float(adam_val) - float(baseline_val), 4)
+    rel_pct = round(((float(adam_val) - float(baseline_val)) / float(baseline_val)) * 100.0, 2) if baseline_val != 0 else 0.0
+    direction = "higher" if abs_diff > 0 else "lower" if abs_diff < 0 else "equal"
+
     return {
         "adam": round(float(adam_val), 4),
-        "xgboost": round(float(xgb_val), 4),
-        "absolute_improvement": abs_imp,
+        "baseline": round(float(baseline_val), 4),
+        "xgboost": round(float(baseline_val), 4),
+        "absolute_diff": abs_diff,
+        "relative_pct": rel_pct,
+        "absolute_improvement": abs_diff,
         "relative_improvement_pct": rel_pct,
+        "direction": direction,
         "status": "Evaluated",
     }
+
+
+calc_improvement = calc_metric_comparison
+
 
 
 def get_published_paper_benchmarks() -> Dict[str, Any]:
@@ -71,8 +89,8 @@ def get_published_paper_benchmarks() -> Dict[str, Any]:
             "std_auc": round(float(df_adam["AUC"].std()), 4),
             "f1_score": round(float(df_adam["F1_Score"].mean()), 4),
             "std_f1": round(float(df_adam["F1_Score"].std()), 4),
-            "precision": None,  # Not evaluated in original paper summary CSV
-            "recall": None,     # Not evaluated in original paper summary CSV
+            "precision": None,  # Not recorded in original paper summary CSV
+            "recall": None,     # Not recorded in original paper summary CSV
             "experiment_count": len(df_adam),
             "notes": "Published ADAM-1 Paper 30-seed benchmark (F1: 0.7263 ± 0.0632). Precision/Recall not recorded in paper CSV.",
         }
@@ -115,33 +133,38 @@ def get_published_paper_benchmarks() -> Dict[str, Any]:
                     "notes": f"Paper model selection experiment runs (N={len(sub)}).",
                 }
 
-    # Improvements of ADAM over XGBoost in published paper
     adam_m = models.get("adam", {})
     xgb_m = models.get("xgboost", {})
 
-    improvements = {
-        "f1_score": calc_improvement(adam_m.get("f1_score"), xgb_m.get("f1_score")),
-        "accuracy": calc_improvement(adam_m.get("accuracy"), xgb_m.get("accuracy")),
-        "auc": calc_improvement(adam_m.get("auc"), xgb_m.get("auc")),
-        "precision": calc_improvement(adam_m.get("precision"), xgb_m.get("precision")),
-        "recall": calc_improvement(adam_m.get("recall"), xgb_m.get("recall")),
+    comparisons = {
+        "f1_score": calc_metric_comparison(adam_m.get("f1_score"), xgb_m.get("f1_score")),
+        "accuracy": calc_metric_comparison(adam_m.get("accuracy"), xgb_m.get("accuracy")),
+        "auc": calc_metric_comparison(adam_m.get("auc"), xgb_m.get("auc")),
+        "precision": calc_metric_comparison(adam_m.get("precision"), xgb_m.get("precision")),
+        "recall": calc_metric_comparison(adam_m.get("recall"), xgb_m.get("recall")),
     }
 
     return {
         "title": "Published ADAM-1 Paper Benchmark",
-        "description": "Historical results published in the ADAM-1 research paper across 30 independent experiment runs.",
+        "historical_title": "Historical Published ADAM-1 Paper Benchmark",
+        "description": "Results published in the ADAM-1 research paper (IEEE Access, 2025) aggregated across 30 independent experiment runs.",
+        "protocol": "paper_historical",
+        "sample_protocol": "Balanced test sets (15 Alzheimer's vs 15 Controls per seed, N=30)",
         "models": models,
-        "improvements": improvements,
+        "improvements": comparisons,  # Key for backwards compatibility
+        "comparisons": comparisons,
     }
 
 
-def evaluate_current_enhanced_cohort(seed: int = 42) -> Dict[str, Any]:
+
+def evaluate_current_enhanced_cohort(protocol: str = "full_cohort", seed: int = 42) -> Dict[str, Any]:
     """
-    Evaluate XGBoost, Random Forest, Logistic Regression, and the complete ADAM Framework
-    on the current test cohort split using actual inference and consensus logic.
+    Evaluate XGBoost, Random Forest, Logistic Regression, and ADAM Framework
+    on the current test cohort split using actual inference and multi-agent consensus.
+    Supports protocol='full_cohort' (natural prevalence) and 'paper_reconstructed' (balanced 15 AD / 15 Control).
     """
     df = load_dataset_df()
-    split = preprocess_and_split(df, seed=seed)
+    split = preprocess_and_split(df, test_size=0.25, seed=seed, protocol=protocol)
     X_train, y_train = split["X_train"], split["y_train"]
     X_test, y_test = split["X_test"], split["y_test"]
     feature_names = split["feature_columns"]
@@ -171,7 +194,7 @@ def evaluate_current_enhanced_cohort(seed: int = 42) -> Dict[str, Any]:
             "f1_score": round(float(met["f1_score"]), 4),
             "auc": round(float(met["auc"]), 4),
             "sample_count": len(y_test),
-            "notes": f"Evaluated live on current test split (N={len(y_test)}).",
+            "notes": f"Evaluated live on current {protocol} test split (N={len(y_test)}).",
         }
 
     # 2. Evaluate ADAM Framework across the test cohort
@@ -180,9 +203,9 @@ def evaluate_current_enhanced_cohort(seed: int = 42) -> Dict[str, Any]:
     for sid in test_sample_ids:
         pipe_res = run_adam_pipeline(sid)
         fin = pipe_res["final_result"]
-        lbl = fin["adam_binary_label"]
+        lbl = int(fin["adam_binary_label"])
         y_pred_adam.append(lbl)
-        conf = fin["adam_confidence"]
+        conf = float(fin["adam_confidence"])
         y_prob_adam.append(conf if lbl == 1 else 1.0 - conf)
 
     acc = float(accuracy_score(y_test, y_pred_adam))
@@ -199,37 +222,63 @@ def evaluate_current_enhanced_cohort(seed: int = 42) -> Dict[str, Any]:
         "f1_score": round(f1, 4),
         "auc": round(auc, 4),
         "sample_count": len(y_test),
-        "notes": f"Evaluated live using multi-agent consensus pipeline on current test split (N={len(y_test)}).",
+        "notes": f"Evaluated live using multi-agent consensus pipeline on current {protocol} test split (N={len(y_test)}).",
     }
 
-    # Improvements of ADAM over XGBoost on current cohort
     adam_m = models["adam"]
     xgb_m = models["xgboost"]
 
-    improvements = {
-        "f1_score": calc_improvement(adam_m["f1_score"], xgb_m["f1_score"]),
-        "recall": calc_improvement(adam_m["recall"], xgb_m["recall"]),
-        "accuracy": calc_improvement(adam_m["accuracy"], xgb_m["accuracy"]),
-        "precision": calc_improvement(adam_m["precision"], xgb_m["precision"]),
-        "auc": calc_improvement(adam_m["auc"], xgb_m["auc"]),
+    comparisons = {
+        "f1_score": calc_metric_comparison(adam_m["f1_score"], xgb_m["f1_score"]),
+        "recall": calc_metric_comparison(adam_m["recall"], xgb_m["recall"]),
+        "accuracy": calc_metric_comparison(adam_m["accuracy"], xgb_m["accuracy"]),
+        "precision": calc_metric_comparison(adam_m["precision"], xgb_m["precision"]),
+        "auc": calc_metric_comparison(adam_m["auc"], xgb_m["auc"]),
     }
+
+    n_pos = int(np.sum(y_test == 1))
+    n_neg = int(np.sum(y_test == 0))
+    protocol_label = "Natural Cohort Prevalence" if protocol == "full_cohort" else "Paper-Reconstructed Balanced Protocol"
 
     return {
         "title": "Current ADAM-1 Enhanced Results",
-        "description": f"Live dynamic evaluation on current test cohort (N={len(y_test)} samples, seed={seed}).",
+        "evaluation_title": "Current ADAM-1 Enhanced Evaluation",
+        "description": f"Live dynamic evaluation on current test cohort ({protocol_label}, N={len(y_test)} samples, seed={seed}).",
+        "protocol": protocol,
+        "protocol_label": protocol_label,
+        "sample_count": len(y_test),
+        "positive_cases": n_pos,
+        "control_cases": n_neg,
+        "seed": seed,
         "models": models,
-        "improvements": improvements,
+        "improvements": comparisons,  # Key for backwards compatibility
+        "comparisons": comparisons,
     }
 
 
-def get_full_performance_comparison(seed: int = 42, force_refresh: bool = False) -> Dict[str, Any]:
-    """Retrieve combined benchmarks with caching for sub-millisecond response time."""
-    global _CACHED_PERFORMANCE
-    if _CACHED_PERFORMANCE is None or force_refresh:
-        published = get_published_paper_benchmarks()
-        current = evaluate_current_enhanced_cohort(seed=seed)
-        _CACHED_PERFORMANCE = {
-            "published_benchmark": published,
-            "current_evaluation": current,
-        }
-    return _CACHED_PERFORMANCE
+def get_full_performance_comparison(
+    protocol: str = "full_cohort",
+    seed: int = 42,
+    force_refresh: bool = False,
+) -> Dict[str, Any]:
+    """Retrieve comprehensive comparison bundle including historical paper benchmark, current evaluation, ablation, and efficiency."""
+    cache_key = f"{protocol}_{seed}"
+    if not force_refresh and cache_key in _CACHED_PERFORMANCE:
+        return _CACHED_PERFORMANCE[cache_key]
+
+    published = get_published_paper_benchmarks()
+    current = evaluate_current_enhanced_cohort(protocol=protocol, seed=seed)
+    ablation = evaluate_ablation_run(protocol=protocol, seeds=[seed])
+    efficiency = profile_pipeline_efficiency(sample_count=5)
+
+    payload = {
+        "published_benchmark": published,
+        "current_evaluation": current,
+        "ablation_study": ablation,
+        "efficiency_metrics": efficiency,
+        "active_protocol": protocol,
+        "active_seed": seed,
+    }
+
+    _CACHED_PERFORMANCE[cache_key] = payload
+    return payload

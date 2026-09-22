@@ -50,6 +50,7 @@ def preprocess_and_split(
     test_size: float = 0.25,
     seed: int = 42,
     excluded_columns: Optional[List[str]] = None,
+    protocol: str = "full_cohort",
 ) -> Dict[str, Any]:
     """
     Perform subject-level stratified train/test split on `study_id`.
@@ -57,7 +58,9 @@ def preprocess_and_split(
     1. Aggregates diagnosis label per subject (`study_id`).
     2. Splits subjects with stratification on Alzheimer's status.
     3. Partitions all longitudinal sample rows accordingly.
-    4. Validates 0 subject overlap between train and test splits.
+    4. If protocol == 'paper_reconstructed', balances test cohort to 15 AD+ and 15 Controls
+       (matching Cell 13 of original ADAM research notebooks).
+    5. Validates 0 subject overlap between train and test splits.
     """
     if excluded_columns is None:
         excluded_columns = DEFAULT_EXCLUDED_COLUMNS
@@ -84,6 +87,17 @@ def preprocess_and_split(
     overlap = set(train_data["study_id"]).intersection(set(test_data["study_id"]))
     if overlap:
         raise ValueError(f"Subject leakage detected! Overlapping study_ids: {overlap}")
+
+    # If protocol is paper_reconstructed, balance test set to 15 AD+ and 15 Controls
+    if protocol == "paper_reconstructed":
+        pos_df = test_data[test_data["Alzheimers"] == 1]
+        neg_df = test_data[test_data["Alzheimers"] == 0]
+        n_pos = min(15, len(pos_df))
+        n_neg = min(15, len(neg_df))
+        pos_sample = pos_df.sample(n=n_pos, random_state=seed)
+        neg_sample = neg_df.sample(n=n_neg, random_state=seed)
+        test_data = pd.concat([pos_sample, neg_sample], axis=0).sample(frac=1.0, random_state=seed).reset_index(drop=True)
+
 
     # Determine feature columns (numerical only, non-excluded)
     feature_columns = [col for col in df_clean.columns if col not in excluded_columns]
@@ -118,4 +132,41 @@ def preprocess_and_split(
         "train_subjects_count": len(train_study_ids),
         "test_subjects_count": len(test_study_ids),
         "seed": seed,
+        "protocol": protocol,
     }
+
+
+def split_validation_from_train(
+    train_df: pd.DataFrame,
+    val_size: float = 0.20,
+    seed: int = 42,
+    excluded_columns: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """
+    Partition train_df at subject-level into train_sub and val_sub for threshold tuning.
+    Guarantees that test_df remains completely isolated.
+    """
+    if excluded_columns is None:
+        excluded_columns = DEFAULT_EXCLUDED_COLUMNS
+
+    study_labels = train_df.groupby("study_id")["Alzheimers"].max().reset_index()
+    tr_ids, val_ids = train_test_split(
+        study_labels["study_id"],
+        test_size=val_size,
+        stratify=study_labels["Alzheimers"],
+        random_state=seed,
+    )
+
+    tr_data = train_df[train_df["study_id"].isin(tr_ids)].copy().reset_index(drop=True)
+    val_data = train_df[train_df["study_id"].isin(val_ids)].copy().reset_index(drop=True)
+
+    feature_columns = [col for col in train_df.columns if col not in excluded_columns]
+    return {
+        "X_train": tr_data[feature_columns].values,
+        "y_train": tr_data["Alzheimers"].values.astype(int),
+        "X_val": val_data[feature_columns].values,
+        "y_val": val_data["Alzheimers"].values.astype(int),
+        "feature_columns": feature_columns,
+        "val_sample_ids": val_data["Sample ID"].tolist(),
+    }
+

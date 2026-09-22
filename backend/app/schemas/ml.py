@@ -126,4 +126,9 @@ class MetricImprovementItem(BaseModel):
 class PerformanceComparisonResponse(BaseModel):
     published_benchmark: Dict[str, Any]
     current_evaluation: Dict[str, Any]
+    ablation_study: Optional[Dict[str, Any]] = None
+    efficiency_metrics: Optional[Dict[str, Any]] = None
+    active_protocol: Optional[str] = "full_cohort"
+    active_seed: Optional[int] = 42
+
 

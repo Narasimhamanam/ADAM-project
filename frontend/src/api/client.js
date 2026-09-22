@@ -87,10 +87,29 @@ export const fetchAiStatus = () =>
 /**
  * Fetch ADAM vs traditional ML performance comparison.
  * @param {boolean} refresh - Force re-evaluation of models
- * @returns {Promise<{published_benchmark: object, current_evaluation: object}>}
+ * @param {string} protocol - 'full_cohort' or 'paper_reconstructed'
+ * @param {number} seed - Random seed for evaluation split
+ * @returns {Promise<{published_benchmark: object, current_evaluation: object, ablation_study: object, efficiency_metrics: object}>}
  */
-export const fetchPerformanceComparison = (refresh = false) =>
-  apiClient.get(`/ml/performance/comparison?refresh=${refresh}`).then((r) => r.data)
+export const fetchPerformanceComparison = (refresh = false, protocol = 'full_cohort', seed = 42) =>
+  apiClient.get(`/ml/performance/comparison?refresh=${refresh}&protocol=${protocol}&seed=${seed}`).then((r) => r.data)
+
+/**
+ * Fetch 7-condition ablation study results.
+ * @param {boolean} refresh
+ * @param {string} protocol
+ * @returns {Promise<object>}
+ */
+export const fetchAblationStudy = (refresh = false, protocol = 'full_cohort') =>
+  apiClient.get(`/ml/performance/ablation?refresh=${refresh}&protocol=${protocol}`).then((r) => r.data)
+
+/**
+ * Fetch computational efficiency and resource profiling metrics.
+ * @param {number} sampleCount
+ * @returns {Promise<object>}
+ */
+export const fetchEfficiencyMetrics = (sampleCount = 5) =>
+  apiClient.get(`/ml/performance/efficiency?sample_count=${sampleCount}`).then((r) => r.data)
 
 /**
  * Execute end-to-end multi-agent ADAM diagnostic workflow on a patient record.

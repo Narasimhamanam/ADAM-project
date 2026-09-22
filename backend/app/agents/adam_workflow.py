@@ -212,22 +212,31 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
 
     # 6. Classification Agent (10 Concise Classification Reasoning Checkpoints)
     # Labeled as Enhanced implementation
-    # Adaptive threshold decisioning logic
-    top3_positive = len([c for c in positive_drivers[:3] if c["shap_value"] > 0.05])
-    adaptive_threshold_applied = False
-    final_prob = ml_prob
-    if cfs >= 7.0 and alpha["shannon_index"] < 3.0 and ml_prob >= 0.35:
-        adaptive_threshold_applied = True
-        reasoning_rule = "High clinical frailty (>=7.0) combined with restricted alpha diversity (<3.0) adjusts threshold from 0.50 down to 0.35."
-    elif top3_positive >= 2 and ml_prob >= 0.40:
-        adaptive_threshold_applied = True
-        reasoning_rule = "Strong positive concordance across top SHAP biomarkers adjusts threshold from 0.50 down to 0.40."
-    else:
-        reasoning_rule = "Standard calibrated threshold of 0.50 applied."
+    # Multi-Factorial Classification Decisioning (Paper Methodology Alignment)
+    # Evaluates ML probability, host frailty, alpha/beta diversity, and SHAP biomarker concordance
+    pos_shap_sum = sum([c["shap_value"] for c in positive_drivers if c["shap_value"] > 0])
+    prot_shap_sum = abs(sum([c["shap_value"] for c in protective_drivers if c["shap_value"] < 0]))
+    net_dysbiosis_risk = pos_shap_sum > (prot_shap_sum * 1.1)
 
-    adam_binary_label = 1 if (final_prob >= 0.5 or (adaptive_threshold_applied and final_prob >= 0.35)) else 0
+    adaptive_adjustment_applied = False
+    calibrated_prob = ml_prob
+    reasoning_rule = "Standard calibrated classification threshold (0.50) applied based on concordance between ML probability and multi-omic markers."
+
+    if 0.40 <= ml_prob <= 0.55:
+        # Borderline evaluation: High frailty + documented ecological dysbiosis + net positive biomarker attribution
+        if cfs >= 7.0 and alpha["shannon_index"] < 3.0 and net_dysbiosis_risk:
+            adaptive_adjustment_applied = True
+            calibrated_prob = min(0.92, ml_prob + 0.12)
+            reasoning_rule = "Severe host frailty (CFS >= 7.0), restricted Shannon diversity (< 3.0), and pro-inflammatory biomarker dominance elevate risk in borderline case."
+        elif cfs <= 4.0 and alpha["shannon_index"] >= 3.2 and not net_dysbiosis_risk:
+            adaptive_adjustment_applied = True
+            calibrated_prob = max(0.08, ml_prob - 0.12)
+            reasoning_rule = "Preserved physical resilience (CFS <= 4.0), robust community diversity (>= 3.2), and protective commensal dominance adjust borderline case toward Cognitive Normal."
+
+    adam_binary_label = 1 if calibrated_prob >= 0.50 else 0
     adam_classification = "Alzheimer's Disease (Positive)" if adam_binary_label == 1 else "Cognitive Normal (Control)"
-    adam_confidence = float(max(final_prob, 1.0 - final_prob))
+    adam_confidence = float(max(calibrated_prob, 1.0 - calibrated_prob))
+
 
     classification_checkpoints = [
         {
@@ -248,12 +257,12 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         {
             "step": 4,
             "title": "Confidence Assessment",
-            "content": f"Classification certainty calculated at {adam_confidence * 100:.1f}%. Margin of certainty: {abs(final_prob - 0.5) * 200:.1f}%.",
+            "content": f"Classification certainty calculated at {adam_confidence * 100:.1f}%. Margin of certainty: {abs(calibrated_prob - 0.5) * 200:.1f}%.",
         },
         {
             "step": 5,
             "title": "Edge-Case Check",
-            "content": f"Borderline assessment: {'Adaptive threshold rule activated: ' + reasoning_rule if adaptive_threshold_applied else 'Clear margin from borderline threshold; standard decision boundary applied.'}",
+            "content": f"Borderline assessment: {'Adaptive threshold rule activated: ' + reasoning_rule if adaptive_adjustment_applied else 'Clear margin from borderline threshold; standard decision boundary applied.'}",
         },
         {
             "step": 6,
@@ -339,7 +348,7 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         "classification_agent": {
             "workflow_name": "ADAM-1 Enhanced Classification Implementation",
             "checkpoints": classification_checkpoints,
-            "adaptive_threshold_applied": adaptive_threshold_applied,
+            "adaptive_threshold_applied": adaptive_adjustment_applied,
             "reasoning_rule": reasoning_rule,
         },
         "final_result": {
