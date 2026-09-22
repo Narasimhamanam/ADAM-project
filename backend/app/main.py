@@ -37,6 +37,7 @@ settings = get_settings()
 # ---------------------------------------------------------------------------
 _ingestion_lock = asyncio.Lock()
 _ingestion_task: Optional[asyncio.Task] = None
+_prewarm_task: Optional[asyncio.Task] = None
 
 
 async def run_background_ingestion() -> None:
@@ -58,6 +59,31 @@ async def run_background_ingestion() -> None:
             logger.error("Background dataset ingestion failed", error=str(exc), exc_info=True)
 
 
+
+async def _prewarm_performance_cache() -> None:
+    """
+    Pre-warm the performance comparison cache on startup so the first user
+    request for /api/ml/performance/comparison is served in < 10 ms.
+
+    Runs both 'full_cohort' (seed 42) and 'paper_reconstructed' (seed 42)
+    protocols in sequence. Uses asyncio.to_thread so blocking ML computation
+    doesn't freeze the event loop.
+    """
+    try:
+        from app.ml.performance import get_full_performance_comparison
+        for protocol in ("full_cohort", "paper_reconstructed"):
+            logger.info(f"Pre-warming performance cache", protocol=protocol)
+            await asyncio.to_thread(
+                get_full_performance_comparison,
+                protocol=protocol,
+                seed=42,
+                force_refresh=False,  # Skip if disk cache already exists
+            )
+            logger.info(f"Performance cache ready", protocol=protocol)
+    except Exception as exc:
+        logger.warning("Performance cache pre-warming failed (non-fatal)", error=str(exc))
+
+
 # ---------------------------------------------------------------------------
 # Application lifespan
 # ---------------------------------------------------------------------------
@@ -77,19 +103,23 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # 2. Launch real data ingestion asynchronously in background
     _ingestion_task = asyncio.create_task(run_background_ingestion())
 
-    logger.info("FastAPI ready and listening on port immediately; background ingestion running")
+    # 3. Pre-warm performance cache so the first user page load is instant
+    _prewarm_task = asyncio.create_task(_prewarm_performance_cache())
+
+    logger.info("FastAPI ready and listening on port immediately; background ingestion and cache pre-warming running")
 
     yield
 
     # ── Shutdown ─────────────────────────────────────────────────────────
     logger.info("Shutting down ADAM-1 Enhanced backend")
-    if _ingestion_task and not _ingestion_task.done():
-        logger.info("Cancelling background ingestion task on shutdown")
-        _ingestion_task.cancel()
-        try:
-            await _ingestion_task
-        except asyncio.CancelledError:
-            pass
+    for task, name in [(_ingestion_task, "ingestion"), (_prewarm_task, "prewarm")]:
+        if task and not task.done():
+            logger.info(f"Cancelling background {name} task on shutdown")
+            task.cancel()
+            try:
+                await task
+            except asyncio.CancelledError:
+                pass
 
 
 # ---------------------------------------------------------------------------

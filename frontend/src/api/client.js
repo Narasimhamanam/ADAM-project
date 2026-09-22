@@ -86,13 +86,23 @@ export const fetchAiStatus = () =>
 
 /**
  * Fetch ADAM vs traditional ML performance comparison.
+ *
+ * Uses a 90-second timeout exclusively for this endpoint because:
+ *   - Normal response (cache hit): < 20 ms
+ *   - Cold-start fresh compute (first-ever request): 5–15 s
+ *   - Results are persisted to disk after first run; all subsequent requests hit cache.
+ *
  * @param {boolean} refresh - Force re-evaluation of models
  * @param {string} protocol - 'full_cohort' or 'paper_reconstructed'
  * @param {number} seed - Random seed for evaluation split
  * @returns {Promise<{published_benchmark: object, current_evaluation: object, ablation_study: object, efficiency_metrics: object}>}
  */
 export const fetchPerformanceComparison = (refresh = false, protocol = 'full_cohort', seed = 42) =>
-  apiClient.get(`/ml/performance/comparison?refresh=${refresh}&protocol=${protocol}&seed=${seed}`).then((r) => r.data)
+  apiClient
+    .get(`/ml/performance/comparison?refresh=${refresh}&protocol=${protocol}&seed=${seed}`, {
+      timeout: 90_000, // 90 s — handles rare cold-start; cached loads respond in < 20 ms
+    })
+    .then((r) => r.data)
 
 /**
  * Fetch 7-condition ablation study results.

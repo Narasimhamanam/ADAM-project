@@ -43,21 +43,35 @@ export default function AdamPerformance() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState(null)
+  const [errorDetails, setErrorDetails] = useState(null)
   const [activeTab, setActiveTab] = useState('current')
   const [selectedProtocol, setSelectedProtocol] = useState('full_cohort')
   const [selectedSeed, setSelectedSeed] = useState(42)
+  const [responseMs, setResponseMs] = useState(null)
 
   const loadData = async (forceRefresh = false, protocol = selectedProtocol, seed = selectedSeed) => {
     try {
       if (forceRefresh) setRefreshing(true)
       else setLoading(true)
       setError(null)
+      setErrorDetails(null)
 
+      const t0 = performance.now()
       const res = await fetchPerformanceComparison(forceRefresh, protocol, seed)
+      const elapsed = Math.round(performance.now() - t0)
+      setResponseMs(elapsed)
       setData(res)
     } catch (err) {
       console.error('Failed to load performance comparison:', err)
-      setError(err.message || 'Failed to load performance benchmark data')
+      const msg = err.message || 'Failed to load performance benchmark data'
+      setError(msg)
+      setErrorDetails({
+        message: msg,
+        isTimeout: msg.includes('timeout') || msg.includes('ECONNABORTED'),
+        hint: msg.includes('timeout')
+          ? 'The server is computing results for the first time. This happens once on a cold start. Wait 10 seconds and click Retry.'
+          : 'Check that the backend is running and reachable.',
+      })
     } finally {
       setLoading(false)
       setRefreshing(false)
@@ -142,36 +156,111 @@ export default function AdamPerformance() {
 
   if (loading && !data) {
     return (
-      <div className="space-y-6 max-w-7xl mx-auto animate-pulse">
+      <div className="space-y-6 max-w-7xl mx-auto">
+        {/* Header skeleton */}
         <div className="flex items-center justify-between">
-          <div className="h-8 w-64 bg-surface-800/60 rounded" />
-          <div className="h-9 w-32 bg-surface-800/60 rounded" />
+          <div className="space-y-2">
+            <div className="h-3 w-40 bg-surface-700/50 rounded animate-pulse" />
+            <div className="h-8 w-72 bg-surface-700/50 rounded animate-pulse" />
+            <div className="h-3 w-96 bg-surface-700/40 rounded animate-pulse" />
+          </div>
+          <div className="h-9 w-36 bg-surface-700/50 rounded-lg animate-pulse" />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="h-32 bg-surface-800/60 rounded-xl" />
+        {/* Protocol selector skeleton */}
+        <div className="h-12 w-full bg-surface-800/60 rounded-xl animate-pulse" />
+        {/* Pipeline stages loading indicator */}
+        <div className="rounded-xl border border-surface-700/40 bg-surface-900/60 p-6 space-y-4">
+          <div className="flex items-center gap-2 text-sm font-semibold text-surface-300">
+            <RefreshCw size={15} className="animate-spin text-accent-500" />
+            Loading ADAM Performance Benchmark...
+          </div>
+          <div className="space-y-3">
+            {[
+              { label: 'Historical Paper Benchmark (30-seed)', icon: FileSpreadsheet },
+              { label: 'Current ML Baseline Models (XGBoost, RF, LR)', icon: Database },
+              { label: 'ADAM Multi-Agent Consensus Pipeline', icon: Cpu },
+              { label: 'Ablation Study (7 Conditions)', icon: Layers },
+              { label: 'Computational Efficiency Profiling', icon: Zap },
+            ].map(({ label, icon: Icon }, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full border-2 border-surface-600 border-t-accent-500 animate-spin" style={{ animationDelay: `${i * 0.1}s` }} />
+                <span className="text-sm text-surface-400 font-mono">{label}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-surface-500 mt-2">
+            First load computes fresh results from real models and research CSVs. Subsequent loads are served from cache in &lt;20ms.
+          </p>
+        </div>
+        {/* Metric card skeletons */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-32 bg-surface-800/60 rounded-xl animate-pulse" />
           ))}
         </div>
-        <div className="h-96 bg-surface-800/60 rounded-xl" />
+        <div className="h-80 bg-surface-800/60 rounded-xl animate-pulse" />
       </div>
     )
   }
 
   if (error || !data) {
+    const isTimeout = errorDetails?.isTimeout
     return (
       <div className="max-w-7xl mx-auto">
-        <div className="p-6 rounded-xl border border-danger-500/30 bg-danger-500/10 text-danger-500 space-y-3">
-          <div className="flex items-center gap-2 font-bold">
-            <AlertCircle size={20} />
-            <span>Failed to Load Performance Metrics</span>
+        <div className="rounded-xl border border-danger-500/30 bg-danger-500/8 p-6 space-y-4">
+          {/* Error header */}
+          <div className="flex items-start gap-3">
+            <div className="flex-shrink-0 mt-0.5">
+              <AlertCircle size={20} className="text-danger-500" />
+            </div>
+            <div className="flex-1">
+              <h2 className="font-bold text-danger-400 text-base">
+                {isTimeout ? 'Request Timed Out — Backend Computing Results' : 'Failed to Load Performance Metrics'}
+              </h2>
+              <p className="text-sm text-surface-400 mt-1">
+                {error || 'Unknown error occurred while fetching benchmarks.'}
+              </p>
+            </div>
           </div>
-          <p className="text-sm">{error || 'Unknown error occurred while fetching benchmarks.'}</p>
-          <button
-            onClick={() => loadData(true)}
-            className="btn-danger text-xs px-4 py-2"
-          >
-            Retry Evaluation
-          </button>
+
+          {/* Diagnosis & hint */}
+          {errorDetails?.hint && (
+            <div className="rounded-lg bg-info-500/10 border border-info-500/20 p-4 text-sm">
+              <div className="flex items-center gap-2 text-info-400 font-semibold mb-1">
+                <Info size={14} />
+                Diagnosis
+              </div>
+              <p className="text-surface-300 leading-relaxed">{errorDetails.hint}</p>
+            </div>
+          )}
+
+          {isTimeout && (
+            <div className="rounded-lg bg-surface-800/60 border border-surface-700/40 p-4 text-xs font-mono space-y-1 text-surface-400">
+              <div>The backend is computing fresh evaluation metrics from real ML models.</div>
+              <div>This happens <strong className="text-surface-200">only once on a cold start</strong>. Results are cached to disk automatically.</div>
+              <div>After retrying, subsequent loads will complete in <strong className="text-accent-400">&lt;20ms</strong>.</div>
+            </div>
+          )}
+
+          {/* Action buttons */}
+          <div className="flex flex-wrap gap-2 mt-2">
+            <button
+              id="perf-retry-btn"
+              onClick={() => loadData(false)}
+              className="inline-flex items-center gap-2 btn-primary text-sm px-4 py-2"
+            >
+              <RefreshCw size={14} />
+              Retry
+            </button>
+            <button
+              id="perf-force-refresh-btn"
+              onClick={() => loadData(true)}
+              className="inline-flex items-center gap-2 btn-ghost text-sm px-4 py-2"
+            >
+              <RefreshCw size={14} className="text-accent-400" />
+              Force Recalculate
+            </button>
+          </div>
         </div>
       </div>
     )
@@ -245,7 +334,7 @@ export default function AdamPerformance() {
 
       {/* Cohort & Protocol Metadata Banner */}
       <div className="p-4 rounded-xl border border-surface-700/60 bg-surface-900/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 flex-wrap">
           <span className="px-2.5 py-1 rounded font-mono font-bold text-xs bg-surface-800 text-surface-200 border border-surface-700">
             Active Protocol: {curr.protocol_label || (selectedProtocol === 'full_cohort' ? 'Natural Cohort Prevalence' : 'Paper-Reconstructed Balanced')}
           </span>
@@ -254,10 +343,24 @@ export default function AdamPerformance() {
           </span>
           <span className="text-surface-400 font-mono">Random Seed: {curr.seed}</span>
         </div>
-        <div className="text-[11px] text-surface-400">
-          Threshold Rule: <strong>Host Frailty (CFS) + Shannon Diversity + Net Dysbiosis Consensus</strong>
+        <div className="flex items-center gap-3 flex-wrap">
+          {responseMs !== null && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-semibold bg-success-500/10 text-success-400 border border-success-500/20">
+              <Activity size={10} />
+              Response: {responseMs}ms
+              {data?._server_timing?.cache_hit && (
+                <span className="text-success-300">
+                  {' '}· {data._server_timing.cache_hit === 'memory' ? '⚡ Memory Cache' : data._server_timing.cache_hit === 'disk' ? '💾 Disk Cache' : '🔄 Fresh Computed'}
+                </span>
+              )}
+            </span>
+          )}
+          <div className="text-[11px] text-surface-400">
+            Threshold: <strong>CFS + Shannon + Net Dysbiosis Consensus</strong>
+          </div>
         </div>
       </div>
+
 
       {/* Primary Comparison Metric Cards (Neutral: ADAM vs XGBoost) */}
       <div className="space-y-3">
