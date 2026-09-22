@@ -1,6 +1,7 @@
 /**
  * Sidebar — navigation grouped by phase
  * Phase visibility is controlled only by ACTIVE_DEMO_PHASE in featurePhases.js
+ * Elevated clinical aesthetic with refined phase chips and smooth transitions
  */
 import React from 'react'
 import { NavLink } from 'react-router-dom'
@@ -76,25 +77,26 @@ function NavItem({ to, icon: Icon, label, phase, activeDemoPhase, onClose }) {
       className={({ isActive }) =>
         clsx(
           isActive ? 'nav-item-active' : 'nav-item',
-          isLocked && 'opacity-60 hover:opacity-90',
+          isLocked && 'opacity-60 hover:opacity-85',
         )
       }
       title={isLocked ? `${label} — Coming in Phase ${phase}` : `${label} — Phase ${phase}`}
     >
-      <Icon size={16} className={clsx('shrink-0', isLocked && 'text-surface-500')} />
-      <span className="flex-1 truncate">{label}</span>
+      <Icon size={16} className={clsx('shrink-0 transition-colors', isLocked && 'text-surface-500')} />
+      <span className="flex-1 truncate font-medium">{label}</span>
       {isLocked ? (
-        <span className="shrink-0 flex items-center gap-1 rounded text-[10px] px-1.5 py-0.5 bg-surface-800 text-amber-500/80 border border-amber-500/20 font-mono font-bold">
+        <span className="shrink-0 flex items-center gap-1 rounded-md text-[10px] px-1.5 py-0.5 bg-surface-800 text-amber-500/80 border border-amber-500/25 font-mono font-bold">
           <Lock size={9} />
           P{phase}
         </span>
       ) : isCurrentActive ? (
-        <span className="shrink-0 rounded text-[9px] px-1.5 py-0.5 bg-[#E8F7F4] dark:bg-surface-700 text-[#0F9D8A] font-mono font-bold border border-[#0F9D8A]/30">
+        <span className="shrink-0 flex items-center gap-1 rounded-md text-[9px] px-1.5 py-0.5 bg-accent-500/15 text-accent-600 dark:text-accent-400 font-mono font-bold border border-accent-500/30">
+          <span className="w-1.5 h-1.5 rounded-full bg-accent-500"></span>
           P{phase}
         </span>
       ) : (
-        <span className="shrink-0 rounded text-[9px] px-1.5 py-0.5 bg-surface-700/50 text-surface-400 font-mono font-semibold">
-          ✓ P{phase}
+        <span className="shrink-0 rounded-md text-[9px] px-1.5 py-0.5 bg-surface-800/80 text-surface-400 font-mono font-semibold border border-surface-700/50">
+          P{phase}
         </span>
       )}
     </NavLink>
@@ -109,7 +111,7 @@ export default function Sidebar({ isOpen, onClose }) {
       {/* Mobile overlay */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={onClose}
         />
       )}
@@ -117,7 +119,7 @@ export default function Sidebar({ isOpen, onClose }) {
       {/* Sidebar panel */}
       <aside
         className={clsx(
-          'fixed top-0 left-0 z-40 h-full w-64 bg-surface-900 border-r border-surface-700/60',
+          'fixed top-0 left-0 z-40 h-full w-64 bg-surface-900 border-r border-surface-700/70 shadow-sm',
           'flex flex-col transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : '-translate-x-full',
           'lg:translate-x-0 lg:static lg:z-auto lg:h-auto lg:flex-shrink-0',
@@ -126,10 +128,10 @@ export default function Sidebar({ isOpen, onClose }) {
         {/* Mobile header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-surface-700/60 lg:hidden">
           <div className="flex items-center gap-2">
-            <Dna size={16} className="text-accent-400" />
-            <span className="text-sm font-semibold text-white">Navigation</span>
+            <Dna size={16} className="text-accent-500" />
+            <span className="text-sm font-bold text-surface-50">Navigation</span>
           </div>
-          <button onClick={onClose} className="text-surface-400 hover:text-white">
+          <button onClick={onClose} className="p-1 rounded-md text-surface-400 hover:text-surface-100 hover:bg-surface-800">
             <X size={18} />
           </button>
         </div>
@@ -140,7 +142,7 @@ export default function Sidebar({ isOpen, onClose }) {
             const isSectionFuture = section.phaseRequired > activeDemoPhase
             return (
               <div key={section.label} className="space-y-1">
-                <div className="flex items-center justify-between px-3 mb-1">
+                <div className="flex items-center justify-between px-3 mb-1.5">
                   <p className={clsx(
                     'text-[10px] font-bold uppercase tracking-wider',
                     isSectionFuture ? 'text-surface-600' : 'text-surface-400',
@@ -169,9 +171,12 @@ export default function Sidebar({ isOpen, onClose }) {
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="border-t border-surface-700/60 px-4 py-3">
-          <p className="text-[10px] text-surface-500">ADAM-1 Enhanced v1.0.0</p>
-          <p className="text-[10px] text-[#0F9D8A] font-semibold">Research Edition — Phase {activeDemoPhase} Active</p>
+        <div className="border-t border-surface-700/60 px-4 py-3 bg-surface-950/30">
+          <p className="text-[10px] text-surface-500 font-medium">ADAM-1 Enhanced Platform</p>
+          <p className="text-[10px] text-accent-500 font-semibold mt-0.5 flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent-500 inline-block animate-pulse"></span>
+            Phase {activeDemoPhase} Production Active
+          </p>
         </div>
       </aside>
     </>

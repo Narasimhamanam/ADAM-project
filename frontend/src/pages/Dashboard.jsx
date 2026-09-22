@@ -3,19 +3,22 @@
  * ==============
  * Main research dashboard — dynamically reflects the active Phase configuration
  * from featurePhases.js, calls real /api/health and /api/system telemetry endpoints,
- * and displays accurate service connectivity and pipeline statuses.
+ * displays multi-agent pipeline overview, and presents clinical telemetry cards.
  */
 import React, { useState, useEffect, useCallback } from 'react'
 import {
   Activity, Database, Server, Brain, Cpu,
   Bot, BookOpen, TrendingUp, Zap, RefreshCw, Clock,
-  Dna,
+  Dna, Award, ArrowRight
 } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { fetchHealth, fetchSystemInfo, fetchDatasets, fetchMlBenchmark, fetchAiStatus } from '../api/client'
 import { useDemoPhase } from '../context/DemoPhaseContext'
 import StatusBadge from '../components/ui/StatusBadge'
+import StatCard from '../components/ui/StatCard'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ErrorAlert from '../components/ui/ErrorAlert'
+import AgentPipeline from '../components/ui/AgentPipeline'
 
 // ── Helpers ──────────────────────────────────────────────────────────────
 
@@ -29,7 +32,6 @@ function resolveHealthStatus(status) {
 function PipelineCard({ icon: Icon, title, phaseNumber, description, activeDemoPhase }) {
   const isComplete = phaseNumber < activeDemoPhase || (phaseNumber === activeDemoPhase && activeDemoPhase === 4)
   const isActive = phaseNumber === activeDemoPhase && activeDemoPhase < 4
-  const isUpcoming = phaseNumber > activeDemoPhase
 
   return (
     <div
@@ -44,9 +46,9 @@ function PipelineCard({ icon: Icon, title, phaseNumber, description, activeDemoP
       <div
         className={`rounded-xl p-2.5 shrink-0 ${
           isComplete
-            ? 'bg-success-600/20 text-success-400'
+            ? 'bg-success-600/20 text-success-500 dark:text-success-400'
             : isActive
-              ? 'bg-accent-600/25 text-accent-300'
+              ? 'bg-accent-600/25 text-accent-600 dark:text-accent-300'
               : 'bg-surface-800 text-surface-500'
         }`}
       >
@@ -54,13 +56,13 @@ function PipelineCard({ icon: Icon, title, phaseNumber, description, activeDemoP
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
-          <h3 className="text-sm font-semibold text-surface-50">{title}</h3>
+          <h3 className="text-sm font-bold text-surface-50">{title}</h3>
           <span
             className={`text-[10px] px-2 py-0.5 rounded-full border font-bold ${
               isComplete
                 ? 'bg-success-600/20 border-success-500/30 text-success-600 dark:text-success-400'
                 : isActive
-                  ? 'bg-accent-600/25 border-accent-500/40 text-[#0F9D8A] dark:text-accent-300'
+                  ? 'bg-accent-600/25 border-accent-500/40 text-accent-600 dark:text-accent-300'
                   : 'bg-surface-800 border-surface-700 text-surface-400'
             }`}
           >
@@ -125,21 +127,18 @@ export default function Dashboard() {
     try {
       const promises = [fetchHealth(), fetchSystemInfo()]
 
-      // Only fetch Phase 2+ endpoints if in active demo phase
       if (activeDemoPhase >= 2) {
         promises.push(fetchDatasets())
       } else {
         promises.push(Promise.resolve(null))
       }
 
-      // Only fetch Phase 3+ endpoints if in active demo phase
       if (activeDemoPhase >= 3) {
         promises.push(fetchMlBenchmark())
       } else {
         promises.push(Promise.resolve(null))
       }
 
-      // Only fetch Phase 4 endpoints if in active demo phase
       if (activeDemoPhase >= 4) {
         promises.push(fetchAiStatus())
       } else {
@@ -174,7 +173,6 @@ export default function Dashboard() {
   const backendStatus  = resolveHealthStatus(health?.status)
   const databaseStatus = resolveHealthStatus(health?.database)
 
-  // ML Engine: dynamic based on active phase and actual benchmark data
   let mlStatus = 'upcoming'
   let mlDetail = 'Upcoming in Phase 3'
   if (activeDemoPhase >= 3) {
@@ -193,7 +191,6 @@ export default function Dashboard() {
     }
   }
 
-  // LLM / RAG Layer: dynamic based on active phase and actual AI status
   let aiStatus = 'upcoming'
   let aiDetail = 'Upcoming in Phase 4'
   if (activeDemoPhase >= 4) {
@@ -224,7 +221,7 @@ export default function Dashboard() {
             <h1 className="text-2xl font-bold text-surface-50">
               Research Dashboard
             </h1>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-[#E8F7F4] text-[#0F9D8A] border border-[#0F9D8A]/30">
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-accent-500/15 text-accent-600 dark:text-accent-400 border border-accent-500/30">
               Phase {activeDemoPhase} Active
             </span>
           </div>
@@ -234,7 +231,7 @@ export default function Dashboard() {
         </div>
         <div className="flex items-center gap-2">
           {lastChecked && (
-            <span className="text-xs text-surface-500 flex items-center gap-1 font-medium">
+            <span className="text-xs text-surface-400 flex items-center gap-1 font-mono font-medium">
               <Clock size={12} />
               {lastChecked}
             </span>
@@ -252,119 +249,137 @@ export default function Dashboard() {
 
       {error && <ErrorAlert message={error} onRetry={loadData} />}
 
+      {/* ── Multi-Agent Diagnostic Pipeline Preview ── */}
+      <div className="card-raised p-5 border border-surface-700/70 bg-gradient-to-br from-surface-900 via-surface-900 to-surface-800">
+        <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
+          <div>
+            <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider flex items-center gap-2">
+              <Cpu size={16} className="text-accent-500" />
+              ADAM Multi-Agent Diagnostic Sequence
+            </h2>
+            <p className="text-xs text-surface-400 mt-0.5">
+              Live automated agent workflow tracing Computation &rarr; Summarization &rarr; Classification &rarr; Consensus
+            </p>
+          </div>
+          <Link
+            to="/workflow"
+            className="btn-teal text-xs py-1.5 px-3 flex items-center gap-1.5 font-semibold"
+          >
+            Open Live Workflow
+            <ArrowRight size={13} />
+          </Link>
+        </div>
+        <AgentPipeline
+          currentStage="computational"
+          stageStatuses={{
+            computational: 'complete',
+            summarization: 'complete',
+            classification: 'complete',
+            consensus: 'complete',
+          }}
+        />
+      </div>
+
+      {/* ── Quick Stats Grid (Upgraded with StatCard & font-data) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={Database}
+          label="Datasets Registered"
+          value={activeDemoPhase >= 2 ? (datasets?.total ?? (loading ? '…' : '5')) : '—'}
+          sub={activeDemoPhase >= 2 ? 'Phase 2 · 5 core research CSVs' : 'Available in Phase 2'}
+          accent="accent"
+        />
+        <StatCard
+          icon={TrendingUp}
+          label="ML Experiments"
+          value={activeDemoPhase >= 3 ? (mlData?.total_experiments ?? 30) : '—'}
+          sub={activeDemoPhase >= 3 ? '30 Experiment Seeds Benchmark' : 'Available in Phase 3'}
+          accent="primary"
+        />
+        <StatCard
+          icon={Activity}
+          label="Backend Health"
+          value={backendStatus === 'connected' ? 'Online' : backendStatus === 'loading' ? '…' : 'Offline'}
+          sub={health?.environment ? `Env: ${health.environment}` : 'Development'}
+          accent="success"
+        />
+        <StatCard
+          icon={Award}
+          label="Platform Status"
+          value={platformStatus.title}
+          sub={platformStatus.subtitle}
+          accent="warning"
+        />
+      </div>
+
       {/* ── System status card ── */}
-      <div className="card p-5 bg-surface-900 border border-surface-700 shadow-sm">
+      <div className="card-raised p-5 bg-surface-900 border border-surface-700/70">
         <div className="flex items-center gap-2 mb-4">
           <Activity size={16} className="text-accent-500" />
-          <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider">System Status</h2>
+          <h2 className="text-sm font-bold text-surface-50 uppercase tracking-wider">Service Telemetry &amp; Health</h2>
           {loading && <LoadingSpinner message="" />}
         </div>
         <div className="space-y-0">
           <StatusRow
             icon={Server}
-            label="Backend API"
+            label="Backend API Service"
             status={backendStatus}
             detail={health?.version ? `v${health.version}` : undefined}
           />
           <StatusRow
             icon={Database}
-            label="PostgreSQL + pgvector"
+            label="PostgreSQL + pgvector Vector Store"
             status={databaseStatus}
             detail={health?.uptime_seconds ? `${Math.round(health.uptime_seconds)}s uptime` : undefined}
           />
           <StatusRow
             icon={Cpu}
-            label="ML Engine"
+            label="ML Prediction Engine (XGBoost)"
             status={mlStatus}
             detail={mlDetail}
           />
           <StatusRow
             icon={Brain}
-            label="LLM / RAG Layer"
+            label="LLM / Literature RAG Agent (AIRA)"
             status={aiStatus}
             detail={aiDetail}
           />
         </div>
       </div>
 
-      {/* ── Quick stats ── */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Datasets count */}
-        <div className="card p-4 bg-gradient-to-br from-accent-600/15 to-transparent border-accent-500/20">
-          <p className="stat-label">Datasets Registered</p>
-          <p className="stat-value mt-1">
-            {activeDemoPhase >= 2 ? (datasets?.total ?? (loading ? '…' : '5')) : '—'}
-          </p>
-          <p className="text-xs text-surface-400 mt-1">
-            {activeDemoPhase >= 2 ? 'Phase 2 · 5 core research CSVs' : 'Available in Phase 2'}
-          </p>
-        </div>
-
-        {/* ML Experiments */}
-        <div className="card p-4 bg-gradient-to-br from-primary-600/15 to-transparent border-primary-500/20">
-          <p className="stat-label">ML Experiments</p>
-          <p className="stat-value mt-1">
-            {activeDemoPhase >= 3 ? (mlData?.total_experiments ?? 30) : '—'}
-          </p>
-          <p className="text-xs text-surface-400 mt-1">
-            {activeDemoPhase >= 3 ? '30 Experiment Seeds Benchmark' : 'Available in Phase 3'}
-          </p>
-        </div>
-
-        {/* Backend health */}
-        <div className="card p-4 bg-gradient-to-br from-success-600/15 to-transparent border-success-500/20">
-          <p className="stat-label">Backend Health</p>
-          <p className="stat-value mt-1 text-base">
-            {backendStatus === 'connected' ? 'Online' : backendStatus === 'loading' ? '…' : 'Offline'}
-          </p>
-          <p className="text-xs text-surface-400 mt-1">{health?.environment ?? 'development'}</p>
-        </div>
-
-        {/* Platform Status */}
-        <div className="card p-4 bg-gradient-to-br from-accent-600/15 to-transparent border-accent-500/30">
-          <p className="stat-label">Platform Status</p>
-          <p className="stat-value mt-1 text-xl text-accent-300 font-bold">
-            {platformStatus.title}
-          </p>
-          <p className="text-xs text-surface-400 mt-1 truncate">
-            {platformStatus.subtitle}
-          </p>
-        </div>
-      </div>
-
-      {/* ── Research pipeline ── */}
+      {/* ── Research pipeline cards ── */}
       <div>
-        <h2 className="section-title mb-1">Research Pipeline</h2>
+        <h2 className="section-title mb-1">Research Pipeline Implementation</h2>
         <p className="section-subtitle mb-4">
-          End-to-end pipeline from raw microbiome data to AI-powered Alzheimer's classification.
+          End-to-end pipeline from raw microbiome sequencing data to AI-powered multi-agent Alzheimer's classification.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <PipelineCard
             icon={Database}
             title="Data Foundation"
             phaseNumber={1}
-            description="PostgreSQL + pgvector database, dataset registry, API layer, and React dashboard."
+            description="PostgreSQL + pgvector database, dataset registry, API layer, and React dashboard shell."
             activeDemoPhase={activeDemoPhase}
           />
           <PipelineCard
             icon={Dna}
             title="Data Ingestion & Dataset Explorer"
             phaseNumber={2}
-            description="335 samples · 940 species · 5 datasets ingested · Shannon & Bray-Curtis · 5-tab Dataset Explorer UI."
+            description="335 patient samples · 940 species abundances · 5 datasets ingested · Shannon & Bray-Curtis diversity."
             activeDemoPhase={activeDemoPhase}
           />
           <PipelineCard
             icon={TrendingUp}
             title="ML Prediction Engine"
             phaseNumber={3}
-            description="XGBoost training pipeline, Optuna hyperparameter optimisation, 30-experiment cross-validation regime."
+            description="XGBoost training pipeline, Optuna hyperparameter tuning, 30-seed benchmark cross-validation regime."
             activeDemoPhase={activeDemoPhase}
           />
           <PipelineCard
             icon={Zap}
             title="SHAP Explainability"
             phaseNumber={3}
-            description="SHAP feature importance analysis, waterfall plots, and microbiome biomarker ranking."
+            description="TreeSHAP feature importance analysis, waterfall plots, and gut microbiome biomarker ranking."
             activeDemoPhase={activeDemoPhase}
           />
           <PipelineCard
@@ -376,9 +391,9 @@ export default function Dashboard() {
           />
           <PipelineCard
             icon={Bot}
-            title="AI Agents (AIRA)"
+            title="AI Agents (AIRA & ADAM)"
             phaseNumber={4}
-            description="Multi-agent system: Computation Agent, Summarization Agent, and Classification Agent with thought trace."
+            description="Multi-agent system: Computation Agent, Summarization Agent, and Classification Agent with 10 checkpoints."
             activeDemoPhase={activeDemoPhase}
           />
         </div>

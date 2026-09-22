@@ -27,6 +27,14 @@
   --card-bg: #FFFFFF;
   --card-border: #E2E8F0;
   --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.02);
+  --card-shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --card-shadow-raised: 0 4px 12px -2px rgba(15, 23, 42, 0.08), 0 2px 6px -1px rgba(15, 23, 42, 0.04);
+  --card-shadow-floating: 0 12px 28px -4px rgba(15, 23, 42, 0.14), 0 4px 10px -2px rgba(15, 23, 42, 0.06);
+
+  --shap-positive: #ef4444;
+  --shap-positive-bg: #fef2f2;
+  --shap-negative: #0d9488;
+  --shap-negative-bg: #f0fdfa;
 
   --btn-primary-bg: #2563EB;
   --btn-primary-hover: #1D4ED8;
@@ -53,6 +61,14 @@
   --card-bg: rgb(22 32 51);
   --card-border: rgb(36 52 77);
   --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+  --card-shadow-base: 0 2px 4px 0 rgba(0, 0, 0, 0.25);
+  --card-shadow-raised: 0 8px 20px -4px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(45, 212, 191, 0.08);
+  --card-shadow-floating: 0 20px 32px -8px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(45, 212, 191, 0.15);
+
+  --shap-positive: #f87171;
+  --shap-positive-bg: rgba(239, 68, 68, 0.15);
+  --shap-negative: #2dd4bf;
+  --shap-negative-bg: rgba(13, 148, 136, 0.18);
 
   --btn-primary-bg: #0d9488;
   --btn-primary-hover: #0f766e;
@@ -118,6 +134,35 @@
   }
   .card-hover {
     @apply card hover:border-[#0F9D8A] hover:shadow-md;
+  }
+  .card-raised {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow-raised);
+    @apply rounded-xl transition-all duration-200;
+  }
+  .card-floating {
+    background-color: var(--card-bg);
+    border: 1px solid var(--card-border);
+    box-shadow: var(--card-shadow-floating);
+    @apply rounded-xl backdrop-blur-md transition-all duration-200;
+  }
+  .font-data {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-feature-settings: 'tnum' on, 'zero' on;
+    font-variant-numeric: tabular-nums;
+  }
+  .data-value {
+    font-family: 'JetBrains Mono', Consolas, monospace;
+    font-feature-settings: 'tnum' on, 'zero' on;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+  .shap-bar-positive {
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.25), #ef4444);
+  }
+  .shap-bar-negative {
+    background: linear-gradient(90deg, rgba(13, 148, 136, 0.25), #0d9488);
   }
 
   /* ── Buttons ── */
@@ -300,10 +345,11 @@ html, body {
     padding: 0 !important;
     overflow: visible !important;
   }
-  .card {
+  .card, .card-raised, .card-floating {
     border: 1px solid #d1d5db !important;
     box-shadow: none !important;
     background: #ffffff !important;
     page-break-inside: avoid;
+    color: #000000 !important;
   }
 }

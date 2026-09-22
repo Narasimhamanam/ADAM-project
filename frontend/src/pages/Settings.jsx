@@ -1,15 +1,16 @@
 /**
- * Settings Page — Phase 1 Foundation
+ * Settings Page — Phase 1 Foundation & System Status
  */
 import React, { useState, useEffect } from 'react'
-import { Settings as SettingsIcon, Server, Database, Globe, Info, ExternalLink } from 'lucide-react'
+import { Settings as SettingsIcon, Server, Database, Globe, Info, ExternalLink, ShieldAlert, Cpu } from 'lucide-react'
 import { fetchSystemInfo } from '../api/client'
-import LoadingSpinner from '../components/ui/LoadingSpinner'
+import Skeleton from '../components/ui/Skeleton'
 
-function SettingsSection({ title, children }) {
+function SettingsSection({ title, icon: Icon, children }) {
   return (
-    <div className="card p-5 space-y-4">
-      <h2 className="text-sm font-semibold text-white flex items-center gap-2 uppercase tracking-wider">
+    <div className="card-raised p-5 space-y-4">
+      <h2 className="text-xs font-bold text-surface-50 flex items-center gap-2 uppercase tracking-wider">
+        {Icon && <Icon size={15} className="text-accent-500" />}
         {title}
       </h2>
       <div className="divider" />
@@ -20,9 +21,9 @@ function SettingsSection({ title, children }) {
 
 function SettingsRow({ label, value, mono = false }) {
   return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-sm text-surface-300">{label}</span>
-      <span className={`text-sm text-white ${mono ? 'font-mono text-xs bg-surface-700/60 px-2 py-0.5 rounded' : 'font-medium'}`}>
+    <div className="flex items-center justify-between py-1.5 text-xs">
+      <span className="text-surface-400 font-medium">{label}</span>
+      <span className={`text-surface-100 ${mono ? 'font-mono text-[11px] bg-surface-800/80 border border-surface-700/60 px-2 py-0.5 rounded text-accent-400' : 'font-semibold'}`}>
         {value ?? '—'}
       </span>
     </div>
@@ -41,51 +42,72 @@ export default function Settings() {
     <div className="space-y-6 max-w-2xl animate-fade-in">
       <div>
         <h1 className="section-title flex items-center gap-2">
-          <SettingsIcon size={20} className="text-accent-400" /> Settings
+          <SettingsIcon size={20} className="text-accent-500" /> Settings
         </h1>
-        <p className="section-subtitle">Application configuration and system information</p>
+        <p className="section-subtitle">Application configuration, runtime environment, and system diagnostics</p>
       </div>
 
-      {loading ? <LoadingSpinner message="Loading system info…" /> : (
-        <>
-          <SettingsSection title="Application">
-            <SettingsRow label="Name" value={info?.app_name} />
-            <SettingsRow label="Version" value={`v${info?.version}`} />
-            <SettingsRow label="Phase" value={info?.phase} />
-            <SettingsRow label="Environment" value={info?.environment} />
+      {loading ? (
+        <div className="space-y-4">
+          <div className="card-raised p-5 space-y-3">
+            <Skeleton variant="text" width="40%" height="16px" />
+            <div className="divider" />
+            <div className="space-y-2">
+              <Skeleton variant="text" width="100%" height="14px" />
+              <Skeleton variant="text" width="80%" height="14px" />
+              <Skeleton variant="text" width="90%" height="14px" />
+            </div>
+          </div>
+          <div className="card-raised p-5 space-y-3">
+            <Skeleton variant="text" width="30%" height="16px" />
+            <div className="divider" />
+            <div className="space-y-2">
+              <Skeleton variant="text" width="100%" height="14px" />
+              <Skeleton variant="text" width="70%" height="14px" />
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-5">
+          <SettingsSection title="Application Architecture" icon={Info}>
+            <SettingsRow label="Application Name" value={info?.app_name} />
+            <SettingsRow label="Release Version" value={`v${info?.version}`} mono />
+            <SettingsRow label="Implementation Phase" value={info?.phase} />
+            <SettingsRow label="Active Environment" value={info?.environment} mono />
           </SettingsSection>
 
-          <SettingsSection title="Backend Runtime">
-            <SettingsRow label="Python Version" value={info?.python_version?.split(' ')[0]} mono />
-            <SettingsRow label="Platform" value={`${info?.platform_system} ${info?.platform_release}`} />
-            <SettingsRow label="pgvector" value={info?.pgvector_enabled ? 'Enabled' : 'Disabled'} />
+          <SettingsSection title="Backend Runtime & Engine" icon={Server}>
+            <SettingsRow label="Python Runtime" value={info?.python_version?.split(' ')[0]} mono />
+            <SettingsRow label="Host OS Platform" value={`${info?.platform_system} ${info?.platform_release}`} />
+            <SettingsRow label="PostgreSQL pgvector Extension" value={info?.pgvector_enabled ? 'Enabled (Active)' : 'Disabled'} />
           </SettingsSection>
 
-          <SettingsSection title="API Endpoints">
-            <SettingsRow label="Health Check" value={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/health`} mono />
-            <SettingsRow label="System Info" value={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/system/info`} mono />
-            <SettingsRow label="Datasets" value={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/datasets`} mono />
+          <SettingsSection title="API Gateway & Endpoints" icon={Globe}>
+            <SettingsRow label="Health Diagnostics" value={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/health`} mono />
+            <SettingsRow label="System Telemetry" value={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/system/info`} mono />
+            <SettingsRow label="Metagenomic Datasets" value={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/datasets`} mono />
             <div className="pt-2">
               <a
                 href={`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/docs`}
                 target="_blank" rel="noopener noreferrer"
-                className="btn-ghost text-xs border border-surface-600/60 w-fit"
+                className="btn-ghost text-xs border border-surface-700 text-surface-200 hover:text-surface-50 w-fit inline-flex items-center gap-1.5"
               >
-                <ExternalLink size={13} /> Open Swagger UI
+                <ExternalLink size={13} className="text-accent-500" /> Open Interactive Swagger UI
               </a>
             </div>
           </SettingsSection>
 
-          <SettingsSection title="Future Configuration (Locked)">
-            <div className="card border-surface-600/30 bg-surface-700/20 p-3 text-xs text-surface-400 space-y-1">
-              <p className="text-surface-300 font-medium">These settings will be enabled in future phases:</p>
-              <p>• OpenAI API Key — Phase 4 (LLM/RAG)</p>
-              <p>• LangChain Configuration — Phase 4</p>
-              <p>• Optuna Hyperparameter Settings — Phase 3</p>
-              <p>• PubMed API Key — Phase 4</p>
+          <SettingsSection title="Future Integrations & Extensibility" icon={ShieldAlert}>
+            <div className="card border-surface-700/60 bg-surface-800/30 p-3.5 text-xs text-surface-400 space-y-1.5 rounded-lg">
+              <p className="text-surface-200 font-semibold flex items-center gap-1.5">
+                <Cpu size={13} className="text-accent-500" /> Staged Module Capabilities
+              </p>
+              <p className="text-[11px] leading-relaxed text-surface-400">
+                Advanced integrations (provider credentials, external embedding pipelines, on-demand automated training epochs) are managed via backend environment configurations (.env) to maintain zero secrets in browser builds.
+              </p>
             </div>
           </SettingsSection>
-        </>
+        </div>
       )}
     </div>
   )
