@@ -82,9 +82,18 @@ class Settings(BaseSettings):
     # pgvector
     pgvector_enabled: bool = True
 
-    # AI / LLM Provider (Groq)
+    # AI / LLM Provider (Groq — used for AIRA Research Assistant chatbot)
     groq_api_key: Optional[str] = None
     groq_model: str = "llama-3.3-70b-versatile"
+
+    # OpenAI — used for ADAM Classification & Summarization agents (paper-conformant)
+    openai_api_key: Optional[str] = None
+
+    # ADAM Agent Models
+    # Summarization Agent: paper specifies GPT-4o; Groq llama-3.3-70b used as fallback
+    adam_summarization_model: str = "gpt-4o"
+    # Classification Agent: paper specifies GPT-4o-mini; Groq llama-3.3-70b used as fallback
+    adam_classification_model: str = "gpt-4o-mini"
 
     @field_validator("groq_model", mode="before")
     @classmethod

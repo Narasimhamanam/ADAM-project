@@ -356,7 +356,7 @@ export default function AdamPerformance() {
             </span>
           )}
           <div className="text-[11px] text-surface-400">
-            Threshold: <strong>CFS + Shannon + Net Dysbiosis Consensus</strong>
+            Decision Engine: <strong className="text-surface-200">Multi-Agent LLM ({curr.llm_metadata?.llm_model_classification || 'GPT-4o-mini'})</strong>
           </div>
         </div>
       </div>
@@ -608,6 +608,178 @@ export default function AdamPerformance() {
                 </tr>
               </tbody>
             </ResponsiveTable>
+
+            {/* Error-Correction & Multi-Agent Concordance Analysis */}
+            {curr.error_correction_matrix && (
+              <div className="card-raised p-5 border border-surface-700/60 bg-surface-900 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-700/60 pb-3">
+                  <div>
+                    <h3 className="font-bold text-surface-50 text-sm flex items-center gap-2">
+                      <Award size={16} className="text-accent-400" />
+                      <span>ADAM Multi-Agent Error-Correction &amp; Concordance Analysis</span>
+                    </h3>
+                    <p className="text-xs text-surface-400 mt-0.5">
+                      Empirical breakdown of cases where the multi-agent framework agrees with, corrects, or diverges from baseline XGBoost.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="px-2.5 py-1 rounded text-xs font-mono font-bold bg-accent-500/15 text-accent-400 border border-accent-500/30">
+                      Agreement Rate: {curr.agreement_rate_pct ?? curr.error_correction_matrix.agreement_rate_pct}%
+                    </span>
+                    <span className="px-2.5 py-1 rounded text-xs font-mono font-semibold bg-surface-800 text-surface-300 border border-surface-700">
+                      Agent: {curr.llm_metadata?.llm_model_classification || 'gpt-4o-mini'} ({curr.llm_metadata?.llm_provider || 'paper_historical'})
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* Category A: Both Correct */}
+                  <div className="p-3.5 rounded-lg border border-success-500/30 bg-success-500/10 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-success-400">Category A: Both Correct</span>
+                      <span className="text-xs font-mono font-bold px-1.5 py-0.5 bg-success-500/20 text-success-300 rounded">
+                        {Math.round(((curr.error_correction_matrix.category_a_both_correct || 0) / curr.sample_count) * 100)}%
+                      </span>
+                    </div>
+                    <div className="text-2xl font-extrabold font-data text-surface-50">
+                      {curr.error_correction_matrix.category_a_both_correct || 0}
+                    </div>
+                    <p className="text-[11px] text-surface-400">Both ADAM and XGBoost correctly classified</p>
+                  </div>
+
+                  {/* Category B: ADAM Error-Correction */}
+                  <div className="p-3.5 rounded-lg border border-accent-500/40 bg-accent-500/15 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-accent-300">Category B: Error Correction</span>
+                      <span className="text-xs font-mono font-bold px-1.5 py-0.5 bg-accent-500/30 text-accent-200 rounded">
+                        +{curr.error_correction_matrix.error_correction_rate_pct || 0}%
+                      </span>
+                    </div>
+                    <div className="text-2xl font-extrabold font-data text-accent-400">
+                      {curr.error_correction_matrix.category_b_adam_correct_xgb_wrong || 0}
+                    </div>
+                    <p className="text-[11px] text-surface-300">ADAM corrected XGBoost diagnostic errors</p>
+                  </div>
+
+                  {/* Category C: XGBoost Correct, ADAM Wrong */}
+                  <div className="p-3.5 rounded-lg border border-amber-500/30 bg-amber-500/10 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-amber-400">Category C: ADAM Divergence</span>
+                      <span className="text-xs font-mono font-bold px-1.5 py-0.5 bg-amber-500/20 text-amber-300 rounded">
+                        {Math.round(((curr.error_correction_matrix.category_c_xgb_correct_adam_wrong || 0) / curr.sample_count) * 100)}%
+                      </span>
+                    </div>
+                    <div className="text-2xl font-extrabold font-data text-surface-50">
+                      {curr.error_correction_matrix.category_c_xgb_correct_adam_wrong || 0}
+                    </div>
+                    <p className="text-[11px] text-surface-400">XGBoost correct, ADAM reasoning discordant</p>
+                  </div>
+
+                  {/* Category D: Both Wrong */}
+                  <div className="p-3.5 rounded-lg border border-surface-700 bg-surface-800/60 space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-surface-300">Category D: Both Incorrect</span>
+                      <span className="text-xs font-mono font-bold px-1.5 py-0.5 bg-surface-700 text-surface-400 rounded">
+                        {Math.round(((curr.error_correction_matrix.category_d_both_wrong || 0) / curr.sample_count) * 100)}%
+                      </span>
+                    </div>
+                    <div className="text-2xl font-extrabold font-data text-surface-50">
+                      {curr.error_correction_matrix.category_d_both_wrong || 0}
+                    </div>
+                    <p className="text-[11px] text-surface-400">Challenging cases missed by both systems</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Per-Sample Decision Traceability */}
+            {curr.sample_traceability && curr.sample_traceability.length > 0 && (
+              <div className="card-raised p-5 border border-surface-700/60 bg-surface-900 space-y-4">
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div className="flex items-center gap-2">
+                    <Split size={16} className="text-accent-500" />
+                    <h3 className="font-bold text-surface-100 text-sm">
+                      Cohort Sample Decision Traceability ({curr.sample_traceability.length} Samples)
+                    </h3>
+                  </div>
+                  <span className="text-xs text-surface-400 font-mono">
+                    Ground Truth vs XGBoost Baseline vs ADAM Classification Agent
+                  </span>
+                </div>
+
+                <div className="max-h-80 overflow-y-auto rounded-lg border border-surface-700/40">
+                  <ResponsiveTable minWidth="650px">
+                    <thead>
+                      <tr className="bg-surface-800 text-[11px] font-bold text-surface-400 uppercase tracking-wider sticky top-0">
+                        <th className="px-3 py-2 text-left">Sample ID</th>
+                        <th className="px-3 py-2 text-left">Ground Truth</th>
+                        <th className="px-3 py-2 text-left">XGBoost Pred (Prob)</th>
+                        <th className="px-3 py-2 text-left">ADAM Pred (Conf)</th>
+                        <th className="px-3 py-2 text-left">Agent Source</th>
+                        <th className="px-3 py-2 text-left">Classification Quadrant</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-surface-700/30 text-xs font-mono">
+                      {curr.sample_traceability.map((s) => {
+                        const isCorrected = s.is_corrected
+                        return (
+                          <tr
+                            key={s.sample_id}
+                            className={clsx(
+                              'hover:bg-surface-800/40 transition',
+                              isCorrected && 'bg-accent-500/10'
+                            )}
+                          >
+                            <td className="px-3 py-2 font-bold text-surface-100 font-sans">{s.sample_id}</td>
+                            <td className="px-3 py-2">
+                              <span
+                                className={clsx(
+                                  'px-2 py-0.5 rounded text-[11px] font-sans font-semibold',
+                                  s.ground_truth === 1
+                                    ? 'bg-danger-500/15 text-danger-400 border border-danger-500/30'
+                                    : 'bg-surface-800 text-surface-300 border border-surface-700'
+                                )}
+                              >
+                                {s.ground_truth_label}
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 text-surface-300">
+                              {s.xgb_prediction === 1 ? 'AD' : 'Control'} ({(s.xgb_probability * 100).toFixed(1)}%)
+                            </td>
+                            <td className="px-3 py-2">
+                              <span
+                                className={clsx(
+                                  'font-bold',
+                                  s.adam_prediction === 1 ? 'text-accent-400' : 'text-surface-200'
+                                )}
+                              >
+                                {s.adam_prediction === 1 ? 'AD' : 'Control'} ({(s.adam_confidence * 100).toFixed(1)}%)
+                              </span>
+                            </td>
+                            <td className="px-3 py-2 text-surface-400 text-[11px]">
+                              {s.adam_source}
+                            </td>
+                            <td className="px-3 py-2">
+                              <span
+                                className={clsx(
+                                  'px-2 py-0.5 rounded text-[10px] font-sans font-bold',
+                                  s.category === 'A' && 'bg-success-500/20 text-success-300 border border-success-500/30',
+                                  s.category === 'B' && 'bg-accent-500/20 text-accent-300 border border-accent-500/40 animate-pulse',
+                                  s.category === 'C' && 'bg-amber-500/20 text-amber-300 border border-amber-500/30',
+                                  s.category === 'D' && 'bg-surface-800 text-surface-400 border border-surface-700'
+                                )}
+                              >
+                                {s.category === 'B' ? 'Category B (Corrected)' : `Category ${s.category}`}
+                              </span>
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </ResponsiveTable>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

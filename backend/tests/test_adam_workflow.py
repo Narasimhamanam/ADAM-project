@@ -197,4 +197,98 @@ async def test_api_performance_and_workflow_endpoints():
         assert wf_json["sample_id"] == "DC001"
         assert len(wf_json["summarization_agent"]["checkpoints"]) == 10
         assert len(wf_json["classification_agent"]["checkpoints"]) == 10
+        assert "adam_source" in wf_json["final_result"]
+        assert "is_fallback" in wf_json["final_result"]
+
+
+@pytest.mark.asyncio
+async def test_adam_llm_agent_classification_mocked():
+    """Verify Classification Agent correctly parses JSON completion and handles overrides."""
+    from unittest.mock import patch
+    from app.rag.adam_llm import call_classification_agent, call_summarization_agent, resolve_llm_config
+
+    mock_llm_json = """
+    ```json
+    {
+      "prediction": "AD",
+      "probability": 0.88,
+      "confidence": "high",
+      "decision_basis": "Severe frailty (CFS 8) and restricted Shannon entropy indicate severe colonic dysbiosis elevating AD risk.",
+      "key_factors": ["Shannon entropy collapse", "Rockwood CFS 8"],
+      "agrees_with_xgboost": false
+    }
+    ```
+    """
+
+    comp_input = {
+        "ml_prediction": {"probability": 0.42, "label": 0, "confidence": 0.58, "risk_level": "Moderate Risk"},
+        "shap_explanation": {
+            "positive_drivers": [{"feature": "Phocaeicola dorei", "shap_value": 0.45}],
+            "protective_drivers": [{"feature": "Bacteroides uniformis", "shap_value": -0.15}],
+        },
+        "alpha_diversity": {"shannon_index": 2.65, "simpson_index": 0.18, "berger_parker_dominance": 0.35},
+        "beta_diversity": {"bray_curtis_distance": 0.82, "jaccard_distance": 0.88, "canberra_distance": 210.0},
+    }
+
+    sample_ctx = {
+        "sample_id": "TEST_SAMPLE_001",
+        "study_id": "CH1-999",
+        "age": 82.0,
+        "sex": "Female",
+        "clinical_frailty_scale": 8.0,
+        "malnutrition_score": 2.0,
+    }
+
+    with patch("app.rag.adam_llm.resolve_llm_config", return_value=("openai", "gpt-4o", "gpt-4o-mini", "mock_key")):
+        with patch("app.rag.adam_llm._call_chat_completion", return_value=(mock_llm_json, 150.0, None)):
+            res = call_classification_agent(
+                comp_agent_output=comp_input,
+                summary_text="Patient presents with significant frailty and mucosal dysbiosis.",
+                rag_docs=[],
+                sample_context=sample_ctx,
+                sample_id="TEST_SAMPLE_MOCK",
+            )
+
+            assert res.prediction == "AD"
+            assert res.probability == 0.88
+            assert res.confidence == "high"
+            assert res.agrees_with_xgboost is False
+            assert res.is_fallback is False
+            assert res.llm_model == "gpt-4o-mini"
+            assert res.llm_provider == "openai"
+            assert "Shannon entropy collapse" in res.key_factors
+
+
+@pytest.mark.asyncio
+async def test_error_correction_matrix_and_traceability():
+    """Verify Error-Correction Matrix counts and sample traceability breakdown."""
+    perf = get_full_performance_comparison(protocol="paper_reconstructed", seed=42)
+    curr = perf["current_evaluation"]
+
+    assert "error_correction_matrix" in curr
+    matrix = curr["error_correction_matrix"]
+    assert "category_a_both_correct" in matrix
+    assert "category_b_adam_correct_xgb_wrong" in matrix
+    assert "category_c_xgb_correct_adam_wrong" in matrix
+    assert "category_d_both_wrong" in matrix
+    assert "agreement_rate_pct" in matrix
+    assert 0.0 <= matrix["agreement_rate_pct"] <= 100.0
+
+    # Total must equal sample count
+    total_quadrants = (
+        matrix["category_a_both_correct"]
+        + matrix["category_b_adam_correct_xgb_wrong"]
+        + matrix["category_c_xgb_correct_adam_wrong"]
+        + matrix["category_d_both_wrong"]
+    )
+    assert total_quadrants == curr["sample_count"]
+
+    # Traceability
+    assert "sample_traceability" in curr
+    assert len(curr["sample_traceability"]) == curr["sample_count"]
+    sample_0 = curr["sample_traceability"][0]
+    assert "sample_id" in sample_0
+    assert "category" in sample_0
+    assert sample_0["category"] in ("A", "B", "C", "D")
+    assert "is_corrected" in sample_0
 

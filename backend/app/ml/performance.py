@@ -39,6 +39,7 @@ from app.ml.models import train_and_evaluate, load_saved_model
 from app.ml.diversity import compute_alpha_diversity, get_taxa_columns, get_control_centroid
 from app.ml.ablation import evaluate_ablation_run
 from app.ml.efficiency import profile_pipeline_efficiency
+from app.agents.adam_workflow import run_adam_pipeline
 
 logger = get_logger(__name__)
 
@@ -222,7 +223,7 @@ def get_published_paper_benchmarks() -> Dict[str, Any]:
 
 
 # ---------------------------------------------------------------------------
-# Vectorised ADAM batch evaluation  (replaces 93× run_adam_pipeline loop)
+# Multi-Agent ADAM Batch Evaluation & Error-Correction Analysis
 # ---------------------------------------------------------------------------
 
 def _batch_evaluate_adam(
@@ -235,86 +236,54 @@ def _batch_evaluate_adam(
     seed: int,
 ) -> Dict[str, Any]:
     """
-    Evaluate the ADAM multi-agent pipeline over the full test cohort using
-    vectorised operations:
-      1. Batch TreeSHAP via XGBoost native predictor (one DMatrix call, ~15 ms).
-      2. Vectorised alpha & beta diversity via NumPy matrix maths (~18 ms).
-      3. Same calibration / borderline-correction rules as run_adam_pipeline.
-
-    Produces bit-for-bit identical metrics to the sequential loop while being
-    100–400× faster.
+    Evaluate the ADAM multi-agent pipeline over the test cohort using actual
+    per-sample agent inference (Summarization Agent + Classification Agent).
+    Calculates exact cohort metrics, Error-Correction breakdown against XGBoost,
+    and individual sample decision traceability.
     """
     t0 = time.perf_counter()
 
-    # ── 1. Load XGBoost model ────────────────────────────────────────────────
-    saved = load_saved_model("xgboost", seed=42)
-    clf = saved["model"]
+    # 1. Load XGBoost baseline predictions for comparison
+    saved = load_saved_model("xgboost", seed=seed)
+    if saved is not None and "model" in saved:
+        clf = saved["model"]
+    else:
+        saved_default = load_saved_model("xgboost", seed=42)
+        if saved_default is not None and "model" in saved_default:
+            clf = saved_default["model"]
+        else:
+            split_train = preprocess_and_split(df, seed=42, protocol=protocol)
+            clf_res = train_and_evaluate(
+                model_name="xgboost",
+                X_train=split_train["X_train"],
+                y_train=split_train["y_train"],
+                X_test=X_test,
+                y_test=y_test,
+                feature_names=feature_names,
+                seed=seed,
+                scale_pos_weight=split_train["scale_pos_weight"],
+            )
+            clf = clf_res["model_obj"]
 
-    probs = clf.predict_proba(X_test)[:, 1]
+    probs_xgb = clf.predict_proba(X_test)[:, 1]
+    y_pred_xgb = clf.predict(X_test)
 
-    # Native TreeSHAP — one call for all N samples
-    dmat = xgb.DMatrix(X_test)
-    contribs = clf.get_booster().predict(dmat, pred_contribs=True)  # (N, M+1)
-    shap_vals = contribs[:, :-1]  # (N, M)
-
-    # ── 2. Vectorised diversity ──────────────────────────────────────────────
-    taxa_cols = get_taxa_columns(df)
-    control_centroid = get_control_centroid(df)
-
-    # Index the full dataframe by Sample ID for O(1) row lookup
-    df_idx = df.set_index("Sample ID")
-    # Gather taxa and clinical rows in test order
-    test_df = df_idx.loc[test_sample_ids]
-
-    X_taxa = test_df[taxa_cols].values.astype(np.float64)
-    v_sum = X_taxa.sum(axis=1, keepdims=True)
-    p = np.where(v_sum > 0, X_taxa / v_sum, 0.0)
-
-    with np.errstate(divide="ignore", invalid="ignore"):
-        log_p = np.where(p > 0, np.log(p), 0.0)
-        shannon_all = -np.sum(p * log_p, axis=1)
-
-    cfs_all = pd.to_numeric(test_df["clinical_frailty_scale"], errors="coerce").fillna(5.0).values
-
-    feat_set = set(feature_names)
-    taxa_set = set(taxa_cols)
-
-    # ── 3. Apply same ADAM calibration rules ────────────────────────────────
+    # 2. Run ADAM multi-agent pipeline per sample
     y_pred_adam: List[int] = []
     y_prob_adam: List[float] = []
+    pipeline_results: List[Dict[str, Any]] = []
 
-    for i in range(len(test_sample_ids)):
-        ml_prob = float(probs[i])
-        cfs = float(cfs_all[i])
-        shannon = float(shannon_all[i])
-
-        shap_row = shap_vals[i]
-        abs_idx = np.argsort(np.abs(shap_row))[::-1][:15]
-        top_contribs = [
-            {"feature": feature_names[j], "shap_value": float(shap_row[j])}
-            for j in abs_idx
-            if j < len(feature_names)
-        ]
-
-        pos_drivers = [c for c in top_contribs if c["shap_value"] > 0][:5]
-        prot_drivers = [c for c in top_contribs if c["shap_value"] < 0][:5]
-        pos_shap_sum = sum(c["shap_value"] for c in pos_drivers if c["shap_value"] > 0)
-        prot_shap_sum = abs(sum(c["shap_value"] for c in prot_drivers if c["shap_value"] < 0))
-        net_dysbiosis_risk = pos_shap_sum > (prot_shap_sum * 1.1)
-
-        calibrated_prob = ml_prob
-        if 0.40 <= ml_prob <= 0.55:
-            if cfs >= 7.0 and shannon < 3.0 and net_dysbiosis_risk:
-                calibrated_prob = min(0.92, ml_prob + 0.12)
-            elif cfs <= 4.0 and shannon >= 3.2 and not net_dysbiosis_risk:
-                calibrated_prob = max(0.08, ml_prob - 0.12)
-
-        lbl = 1 if calibrated_prob >= 0.50 else 0
+    for sid in test_sample_ids:
+        res = run_adam_pipeline(sid)
+        pipeline_results.append(res)
+        fin = res["final_result"]
+        lbl = int(fin.get("adam_binary_label", 0))
         y_pred_adam.append(lbl)
-        conf = float(max(calibrated_prob, 1.0 - calibrated_prob))
-        y_prob_adam.append(conf if lbl == 1 else 1.0 - conf)
+        conf = float(fin.get("adam_confidence", 0.5))
+        prob = conf if lbl == 1 else 1.0 - conf
+        y_prob_adam.append(prob)
 
-    # ── 4. Cohort metrics ────────────────────────────────────────────────────
+    # 3. Compute Cohort Metrics
     acc = float(accuracy_score(y_test, y_pred_adam))
     prec = float(precision_score(y_test, y_pred_adam, zero_division=0))
     rec = float(recall_score(y_test, y_pred_adam, zero_division=0))
@@ -324,16 +293,96 @@ def _batch_evaluate_adam(
         if len(np.unique(y_test)) > 1 else 0.5
     )
 
+    # 4. Error Correction Matrix (Categories A, B, C, D)
+    cat_a = 0  # Both correct
+    cat_b = 0  # ADAM correct, XGB wrong (ADAM error-correction)
+    cat_c = 0  # XGB correct, ADAM wrong (ADAM error-introduction)
+    cat_d = 0  # Both wrong
+
+    sample_traceability = []
+    n_llm = 0
+    n_fallback = 0
+    models_used = set()
+    providers_used = set()
+
+    for i in range(len(test_sample_ids)):
+        sid = test_sample_ids[i]
+        yt = int(y_test[i])
+        ya = int(y_pred_adam[i])
+        yx = int(y_pred_xgb[i])
+        fin = pipeline_results[i]["final_result"]
+
+        if ya == yt and yx == yt:
+            cat_a += 1
+            cat = "A"
+        elif ya == yt and yx != yt:
+            cat_b += 1
+            cat = "B"
+        elif yx == yt and ya != yt:
+            cat_c += 1
+            cat = "C"
+        else:
+            cat_d += 1
+            cat = "D"
+
+        is_fb = bool(fin.get("is_fallback", False))
+        if is_fb:
+            n_fallback += 1
+        else:
+            n_llm += 1
+
+        src = str(fin.get("adam_source", "unknown"))
+        prov = str(fin.get("adam_provider", "unknown"))
+        models_used.add(src)
+        providers_used.add(prov)
+
+        sample_traceability.append({
+            "sample_id": sid,
+            "ground_truth": yt,
+            "ground_truth_label": "Alzheimer's" if yt == 1 else "Control",
+            "xgb_prediction": yx,
+            "xgb_probability": round(float(probs_xgb[i]), 4),
+            "adam_prediction": ya,
+            "adam_confidence": round(float(fin.get("adam_confidence", 0.5)), 4),
+            "adam_source": src,
+            "adam_provider": prov,
+            "is_fallback": is_fb,
+            "category": cat,
+            "is_discordant": ya != yx,
+            "is_corrected": ya == yt and yx != yt,
+        })
+
+    agree_count = sum(1 for ya, yx in zip(y_pred_adam, y_pred_xgb) if ya == yx)
+    n_samples = len(y_test)
+    agreement_rate_pct = round((agree_count / n_samples) * 100.0, 2) if n_samples > 0 else 0.0
+
+    error_correction_matrix = {
+        "category_a_both_correct": cat_a,
+        "category_b_adam_correct_xgb_wrong": cat_b,
+        "category_c_xgb_correct_adam_wrong": cat_c,
+        "category_d_both_wrong": cat_d,
+        "agreement_count": agree_count,
+        "total_evaluated": n_samples,
+        "agreement_rate_pct": agreement_rate_pct,
+        "error_correction_count": cat_b,
+        "error_correction_rate_pct": round((cat_b / n_samples) * 100.0, 2) if n_samples > 0 else 0.0,
+    }
+
     elapsed_ms = round((time.perf_counter() - t0) * 1000.0, 1)
     logger.info(
-        "Vectorised ADAM batch evaluation complete",
-        n_samples=len(test_sample_ids),
+        "ADAM multi-agent cohort evaluation complete",
+        n_samples=n_samples,
         protocol=protocol,
         seed=seed,
         f1=round(f1, 4),
-        auc=round(auc, 4),
+        recall=round(rec, 4),
+        agreement_pct=agreement_rate_pct,
+        error_corrections=cat_b,
         elapsed_ms=elapsed_ms,
     )
+
+    primary_model = sorted(list(models_used))[0] if models_used else "gpt-4o-mini"
+    primary_provider = sorted(list(providers_used))[0] if providers_used else "paper_historical"
 
     return {
         "model_name": "ADAM Framework (Current)",
@@ -342,11 +391,22 @@ def _batch_evaluate_adam(
         "recall": round(rec, 4),
         "f1_score": round(f1, 4),
         "auc": round(auc, 4),
-        "sample_count": len(y_test),
+        "sample_count": n_samples,
+        "error_correction_matrix": error_correction_matrix,
+        "agreement_rate_pct": agreement_rate_pct,
+        "llm_metadata": {
+            "llm_provider": primary_provider,
+            "llm_model_classification": primary_model,
+            "n_llm_classified": n_llm,
+            "n_fallback": n_fallback,
+            "models_evaluated": list(models_used),
+            "providers_evaluated": list(providers_used),
+        },
+        "sample_traceability": sample_traceability,
         "notes": (
-            f"Vectorised batch evaluation using XGBoost TreeSHAP + NumPy diversity on "
-            f"current {protocol} test split (N={len(y_test)}, seed={seed}). "
-            f"Computation time: {elapsed_ms:.0f} ms."
+            f"Evaluated via paper-conformant multi-agent reasoning (Classification Agent: {primary_model}) on "
+            f"current {protocol} test split (N={n_samples}, seed={seed}). "
+            f"ADAM achieved {rec*100:.1f}% Recall with {cat_b} error-corrections over base XGBoost."
         ),
         "_eval_ms": elapsed_ms,
     }
@@ -409,7 +469,7 @@ def evaluate_current_enhanced_cohort(protocol: str = "full_cohort", seed: int = 
         }
     t_baselines_end = time.perf_counter()
 
-    # 2. ADAM Framework — vectorised batch evaluation
+    # 2. ADAM Framework — multi-agent reasoning evaluation
     t_adam_start = time.perf_counter()
     adam_metrics = _batch_evaluate_adam(
         df=df,
@@ -420,8 +480,7 @@ def evaluate_current_enhanced_cohort(protocol: str = "full_cohort", seed: int = 
         protocol=protocol,
         seed=seed,
     )
-    models["adam"] = {**adam_metrics,
-                      "notes": f"Evaluated via vectorised multi-agent consensus pipeline on current {protocol} test split (N={len(y_test)})."}
+    models["adam"] = adam_metrics
     t_adam_end = time.perf_counter()
 
     adam_m = models["adam"]
@@ -458,6 +517,10 @@ def evaluate_current_enhanced_cohort(protocol: str = "full_cohort", seed: int = 
         "models": models,
         "improvements": comparisons,
         "comparisons": comparisons,
+        "error_correction_matrix": adam_metrics.get("error_correction_matrix"),
+        "agreement_rate_pct": adam_metrics.get("agreement_rate_pct"),
+        "llm_metadata": adam_metrics.get("llm_metadata", {}),
+        "sample_traceability": adam_metrics.get("sample_traceability", []),
         "_timing": {
             "data_loading_ms": round((t_data - t_start) * 1000.0, 1),
             "baseline_models_ms": round((t_baselines_end - t_baselines_start) * 1000.0, 1),

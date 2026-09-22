@@ -22,6 +22,7 @@ from app.ml.diversity import compute_sample_diversity_profile, get_taxa_columns
 from app.ml.shap_engine import explain_single_sample
 from app.ml.models import get_model_instance, load_saved_model, train_and_evaluate
 from app.rag.literature_store import search_literature
+from app.rag.adam_llm import call_summarization_agent, call_classification_agent, AdamClassificationResult
 
 logger = get_logger(__name__)
 
@@ -155,8 +156,51 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         for d in lit_results
     ]
 
-    # 5. Summarization Agent (10 Visible Reasoning Checkpoints)
-    # Labeled as ADAM-1 Enhanced reasoning workflow
+    # 5. Build Agent Structured Inputs
+    comp_agent_output = {
+        "ml_prediction": {
+            "probability": ml_prob,
+            "label": ml_label,
+            "confidence": ml_confidence,
+            "risk_level": ml_risk_level,
+        },
+        "shap_explanation": {
+            "positive_drivers": positive_drivers,
+            "protective_drivers": protective_drivers,
+            "all_contributions": all_contribs[:10],
+        },
+        "alpha_diversity": alpha,
+        "beta_diversity": beta,
+        "microbiome_overview": {
+            "total_species_profiled": div_profile["total_species_profiled"],
+            "species_present_count": div_profile["species_present_count"],
+            "top_abundant_taxa": top_abundant_taxa,
+        },
+    }
+
+    sample_context = {
+        "sample_id": clean_id,
+        "study_id": study_id,
+        "age": age,
+        "sex": "Male" if male == 1.0 else "Female",
+        "day": day,
+        "clinical_frailty_scale": cfs,
+        "malnutrition_score": malnutrition,
+        "ppi_use": bool(ppi == 1.0),
+        "antibiotics_6mo": bool(abx6mo == 1.0),
+        "hospitalization": bool(hopsn == 1.0),
+        "comorbidities": comorbidities,
+    }
+
+    # 6. Summarization Agent (Paper-Conformant 8-Step Synthesis)
+    sum_res = call_summarization_agent(
+        comp_agent_output=comp_agent_output,
+        rag_docs=lit_results,
+        sample_context=sample_context,
+        sample_id=clean_id,
+    )
+    summary_text = sum_res.get("summary_text", "")
+
     summarization_checkpoints = [
         {
             "step": 1,
@@ -206,37 +250,24 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         {
             "step": 10,
             "title": "Final Summary",
-            "content": f"Standardized analytical summary: Patient {study_id} presents with {ml_risk_level.lower()} risk profile driven by the combination of host vulnerability and gut community structure.",
+            "content": summary_text if summary_text else f"Standardized analytical summary: Patient {study_id} presents with {ml_risk_level.lower()} risk profile driven by the combination of host vulnerability and gut community structure.",
         },
     ]
 
-    # 6. Classification Agent (10 Concise Classification Reasoning Checkpoints)
-    # Labeled as Enhanced implementation
-    # Multi-Factorial Classification Decisioning (Paper Methodology Alignment)
-    # Evaluates ML probability, host frailty, alpha/beta diversity, and SHAP biomarker concordance
-    pos_shap_sum = sum([c["shap_value"] for c in positive_drivers if c["shap_value"] > 0])
-    prot_shap_sum = abs(sum([c["shap_value"] for c in protective_drivers if c["shap_value"] < 0]))
-    net_dysbiosis_risk = pos_shap_sum > (prot_shap_sum * 1.1)
+    # 7. Classification Agent (Multi-Modal LLM Decisioning)
+    cls_result = call_classification_agent(
+        comp_agent_output=comp_agent_output,
+        summary_text=summary_text,
+        rag_docs=lit_results,
+        sample_context=sample_context,
+        sample_id=clean_id,
+    )
 
-    adaptive_adjustment_applied = False
-    calibrated_prob = ml_prob
-    reasoning_rule = "Standard calibrated classification threshold (0.50) applied based on concordance between ML probability and multi-omic markers."
-
-    if 0.40 <= ml_prob <= 0.55:
-        # Borderline evaluation: High frailty + documented ecological dysbiosis + net positive biomarker attribution
-        if cfs >= 7.0 and alpha["shannon_index"] < 3.0 and net_dysbiosis_risk:
-            adaptive_adjustment_applied = True
-            calibrated_prob = min(0.92, ml_prob + 0.12)
-            reasoning_rule = "Severe host frailty (CFS >= 7.0), restricted Shannon diversity (< 3.0), and pro-inflammatory biomarker dominance elevate risk in borderline case."
-        elif cfs <= 4.0 and alpha["shannon_index"] >= 3.2 and not net_dysbiosis_risk:
-            adaptive_adjustment_applied = True
-            calibrated_prob = max(0.08, ml_prob - 0.12)
-            reasoning_rule = "Preserved physical resilience (CFS <= 4.0), robust community diversity (>= 3.2), and protective commensal dominance adjust borderline case toward Cognitive Normal."
-
-    adam_binary_label = 1 if calibrated_prob >= 0.50 else 0
+    adam_binary_label = 1 if cls_result.prediction == "AD" else 0
     adam_classification = "Alzheimer's Disease (Positive)" if adam_binary_label == 1 else "Cognitive Normal (Control)"
-    adam_confidence = float(max(calibrated_prob, 1.0 - calibrated_prob))
-
+    adam_confidence = float(cls_result.confidence_score)
+    reasoning_rule = cls_result.decision_basis
+    adaptive_adjustment_applied = bool(abs(cls_result.probability - ml_prob) > 0.01)
 
     classification_checkpoints = [
         {
@@ -257,12 +288,12 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         {
             "step": 4,
             "title": "Confidence Assessment",
-            "content": f"Classification certainty calculated at {adam_confidence * 100:.1f}%. Margin of certainty: {abs(calibrated_prob - 0.5) * 200:.1f}%.",
+            "content": f"Classification certainty calculated at {adam_confidence * 100:.1f}%. Model agent: {cls_result.llm_provider.upper()} ({cls_result.llm_model}).",
         },
         {
             "step": 5,
             "title": "Edge-Case Check",
-            "content": f"Borderline assessment: {'Adaptive threshold rule activated: ' + reasoning_rule if adaptive_adjustment_applied else 'Clear margin from borderline threshold; standard decision boundary applied.'}",
+            "content": f"Multi-modal synthesis: {'Adaptive threshold/LLM reasoning modulated borderline risk: ' + reasoning_rule if adaptive_adjustment_applied else 'Clear consensus observed across modalities; standard boundary applied.'}",
         },
         {
             "step": 6,
@@ -287,15 +318,16 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         {
             "step": 10,
             "title": "Final Decision",
-            "content": f"Consensus classification rendered: **{adam_classification}** with **{adam_confidence * 100:.1f}%** confidence. Rationale: {reasoning_rule}",
+            "content": f"Classification rendered by {cls_result.llm_model} ({cls_result.llm_provider}): **{adam_classification}** with **{adam_confidence * 100:.1f}%** confidence. Rationale: {reasoning_rule}",
         },
     ]
 
-    # 7. Final ADAM Result Card & Rationale
+    # 8. Final ADAM Result Card & Rationale
     final_explanation = (
         f"The ADAM framework rendered a final classification of **{adam_classification}** "
         f"for Sample **{clean_id}** with **{adam_confidence * 100:.1f}%** diagnostic confidence. "
-        f"This decision synthesizes quantitative gradient boosting probability ({ml_prob * 100:.1f}%), "
+        f"This decision was formulated by the {cls_result.llm_provider.upper()} Classification Agent ({cls_result.llm_model}), "
+        f"synthesizing quantitative gradient boosting probability ({ml_prob * 100:.1f}%), "
         f"TreeSHAP feature attributions, and ecological diversity metrics (Shannon H' = {alpha['shannon_index']:.2f}, "
         f"Bray-Curtis dissimilarity = {beta['bray_curtis_distance']:.4f}). "
         f"The primary positive features contributing toward classification were "
@@ -342,11 +374,26 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         },
         "summarization_agent": {
             "workflow_name": "ADAM-1 Enhanced Reasoning Workflow",
+            "summary_text": summary_text,
+            "llm_provider": sum_res.get("llm_provider"),
+            "llm_model": sum_res.get("llm_model"),
+            "is_fallback": sum_res.get("is_fallback", False),
             "checkpoints": summarization_checkpoints,
             "citations": citations,
         },
         "classification_agent": {
             "workflow_name": "ADAM-1 Enhanced Classification Implementation",
+            "prediction": cls_result.prediction,
+            "probability": cls_result.probability,
+            "confidence": cls_result.confidence,
+            "confidence_score": cls_result.confidence_score,
+            "decision_basis": cls_result.decision_basis,
+            "key_factors": cls_result.key_factors,
+            "agrees_with_xgboost": cls_result.agrees_with_xgboost,
+            "llm_provider": cls_result.llm_provider,
+            "llm_model": cls_result.llm_model,
+            "is_fallback": cls_result.is_fallback,
+            "elapsed_ms": cls_result.elapsed_ms,
             "checkpoints": classification_checkpoints,
             "adaptive_threshold_applied": adaptive_adjustment_applied,
             "reasoning_rule": reasoning_rule,
@@ -355,9 +402,13 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
             "adam_prediction": adam_classification,
             "adam_binary_label": adam_binary_label,
             "adam_confidence": adam_confidence,
+            "adam_source": cls_result.llm_model,
+            "adam_provider": cls_result.llm_provider,
+            "is_fallback": cls_result.is_fallback,
             "ml_model_probability": ml_prob,
             "ml_model_label": "Alzheimer's Disease" if ml_label == 1 else "Control",
             "is_discordant": bool(adam_binary_label != ml_label),
+            "is_discordant_with_xgboost": bool(not cls_result.agrees_with_xgboost),
             "matches_ground_truth": bool(adam_binary_label == actual_diagnosis),
             "major_contributing_features": positive_drivers[:4],
             "diversity_summary": {
@@ -370,6 +421,7 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
             },
             "citations": citations,
             "explanation": final_explanation,
-            "methodology_version": "ADAM-1 Enhanced Full-Stack Multi-Agent v2.0",
+            "methodology_version": "ADAM-1 Enhanced Full-Stack Multi-Agent v2.5",
         },
     }
+
