@@ -1,0 +1,1479 @@
+=== PAGE 1 ===
+Received 11 July 2025, accepted 9 August 2025, date of publication 18 August 2025, date of current version 25 August 2025.
+Digital Object Identifier 10.1 109/ACCESS.2025.3599857
+ADAM-1: An AI Reasoning and Bioinformatics
+Model for Alzheimer’s Disease Detection and
+Microbiome-Clinical Data Integration
+ZIYUAN HUANG
+ 1,2,3, (Member, IEEE), VISHALDEEP KAUR SEKHON 4,
+ROOZBEH SADEGHIAN
+ 5, (Member, IEEE), MARIA L. VAIDA
+ 5, CYNTHIA JO 2,
+BETH A. MCCORMICK
+ 1,3, DOYLE V. WARD
+ 1,3, VANNI BUCCI
+ 1,3, AND JOHN P. HARAN
+ 1,2,3
+1Department of Microbiology, UMass Chan Medical School, Worcester, MA 01655, USA
+2Department of Emergency Medicine, UMass Chan Medical School, Worcester, MA 01655, USA
+3Program in Microbiome Dynamics, UMass Chan Medical School, Worcester, MA 01655, USA
+4Department of Geriatric Medicine and Gerontology, Johns Hopkins University, Baltimore, MD 21224, USA
+5School of Analytics and Computational Sciences, Program in Data Sciences, Harrisburg University of Science and Technology, Harrisburg, PA 17101, USA
+Corresponding author: Ziyuan Huang (ziyuan.huang2@umassmed.edu)
+This work was supported by the National Institutes of Health (NIH) under Grant R01AG067483-01.
+This work involved human subjects or animals in its research. Approval of all ethical and experimental procedures and protocols was
+granted by the Institutional Review Board (IRB) of the University of Massachusetts Medical School under Application No. Docket
+H00010892.
+ABSTRACT Alzheimer’s Disease Analysis Model Generation 1 (ADAM-1) is a multi-agent reasoning large
+language model (LLM) framework designed to integrate and analyze multimodal data, including microbiome
+profiles, clinical datasets, and external knowledge bases, to enhance the understanding and classification
+of Alzheimer’s disease (AD). By leveraging the agentic system with LLM, ADAM-1 produces insights
+from diverse data sources and contextualizes the findings with literature-driven evidence. A comparative
+evaluation with XGBoost revealed a significantly improved mean F1 score and significantly reduced variance
+for ADAM-1, highlighting its robustness and consistency, particularly when utilizing human biological data.
+Although currently tailored for binary classification tasks with two data modalities, future iterations will aim
+to incorporate additional data types, such as neuroimaging and peripheral biomarkers, and expand them to
+predict disease progression, thereby broadening ADAM-1’s scalability and applicability in AD research and
+diagnostic applications.
+INDEX TERMS Alzheimer’s disease, artificial intelligence, multi-agent systems, knowledge based systems.
+I. INTRODUCTION
+The integration of multimodal data sources in biomedical
+research has accelerated with advances in deep learning, par-
+ticularly through the development of large language models
+(LLMs). The introduction of AlexNet in 2012 demonstrated
+the potential of deep neural networks for complex tasks such
+as image classification [1]. Subsequent developments, includ-
+ing transformer architecture in 2017 and the release of models
+like GPT-1 in 2018 and GPT-2 in 2019, marked significant
+milestones in natural language processing [2], [3]. Other
+The associate editor coordinating the review of this manuscript and
+approving it for publication was Jolanta Mizera-Pietraszko
+ .
+transformer-based LLM families, such as LLaMA, Gemini,
+Claude, and DeepSeek, have also demonstrated powerful
+structured and unstructured biomedical data processing [4],
+[5], [6], [7], [8], [9], [10]. More recently, reasoning-focused
+LLMs, including GPT-4.5, OpenAI o1, Gemini 2.5, Claude
+Sonnet 3.7, and DeepSeek R1, have further extended the
+role of artificial intelligence (AI) in scientific domains by
+enabling more complex inference and task coordination [11],
+[12], [13], [14], [15].
+In bioscience, LLMs have shown promise in clinical
+decision support, patient-trial matching, and biomedical
+question answering [16], [17], [18]. Concurrent develop-
+ments like AlphaFold and ESM-2 have led to breakthroughs
+VOLUME 13, 2025
+
+ 2025 The Authors. This work is licensed under a Creative Commons Attribution 4.0 License.
+For more information, see https://creativecommons.org/licenses/by/4.0/ 145953
+
+=== PAGE 2 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+in protein structure prediction and variant interpretation [19],
+[20]. Frameworks like BioLunar, ASD-cancer, and CHIEF
+exemplify the value of integrating multimodal evidence,
+including genomic, imaging, and text-based modalities, for
+enhanced diagnostics in cancer and other diseases [21],
+[22], [23].
+While cancer research has rapidly integrated AI tools
+across diagnostics, treatment planning, and drug discovery,
+research into Alzheimer’s disease (AD) has been slower to
+adopt these technologies on a comparable scale. AD is a
+multifactorial neurodegenerative disorder characterized by
+beta-amyloid plaques, tau protein tangles, immune system
+dysregulation, and changes in the gut microbiome [24], [25].
+Traditional studies often depend on single-modality datasets,
+which can limit comprehensive insights into the disease’s
+progression.
+This study presents the Alzheimer’s Disease Analysis
+Model Generation 1 (ADAM-1), a multi-agent reasoning
+framework leveraging large language models (LLMs) and
+retrieval-augmented generation (RAG) [26]. The current
+version, Generation 1 (ADAM-1, hereafter referred to as
+ADAM), integrates clinical and microbiome data, modu-
+lar agents with Chain-of-Thought (CoT) [27] reasoning to
+enhance interpretability and contextual relevance in disease
+classification. Trained and tested on a laboratory dataset
+of 335 multimodal data samples from older adults, ADAM
+achieved a significantly higher mean F1 score and a much
+lower prediction variance than the XGBoost baseline model.
+These findings highlight the methodological benefits of agen-
+tic reasoning systems in maintaining performance under
+data-limited situations.
+II. MULTIMODAL DATASET DESCRIPTION AND
+VISUALIZATION
+This study utilizes the nursing home clinical and metage-
+nomic dataset originally compiled by Haran et al. [28], which
+focused on the dysregulation of the anti-inflammatory P-
+glycoprotein pathway in AD, thereby providing valuable
+insights into microbiome-host interactions that may underlie
+AD pathogenesis and inform future therapeutic strategies.
+The original study received approval from the Institutional
+Review Board (IRB) of the University of Massachusetts
+Medical School (Docket H00010892), and informed consent
+was obtained from all participants. For the present analysis,
+only de-identified data were used. We repurposed this dataset
+to develop ADAM, an LLM-based classifier and report-
+ing system. The dataset comprises clinical and microbiome
+data from five nursing home sites in central Massachusetts,
+focusing on individuals with and without AD. The analysis
+included 335 stool samples collected from 102 unique par-
+ticipants, with some individuals providing multiple samples
+over a period of five months or more. This dataset includes
+older adults with Alzheimer’s disease and healthy controls,
+but does not include other types of dementia or individuals
+with mild cognitive impairment.
+FIGURE 1. The Nursing Home Cohort Clinical Data Description (source:
+[28]). (A) Bar plots illustrate the distribution of participants based on
+Alzheimer’s status and the prevalence of key comorbidities. 67 .16% of
+participants do not have Alzheimer’s disease, while 32.84% do. The most
+prevalent comorbidities include hypertension (HTN), and various
+cardiovascular diseases (CVD), with prevalence categorized by
+Alzheimer’s status. (B) The demographic characteristics of the cohort
+(N=335) encompass age distribution, with a mean age of 84.5 years and a
+median age of 86.0 years, alongside a pie chart depicting gender
+distribution, which shows a predominance of females (85.7%) in the
+cohort. (C) Study participation metrics include the distribution of stool
+samples per participant and a longitudinal sampling timeline for the top
+10 participants based on the number of samples collected. The median
+number of samples per participant is 3. Alzheimer’s status is color-coded
+across all visualizations.
+A. CLINICAL DATA
+Within the clinical dataset, each sample was annotated with
+detailed clinical metadata, including AD status, comorbidi-
+ties, demographic information, and longitudinal sampling
+data. Of the total sample, 32.84% came from individuals
+diagnosed with AD, while the remaining 67.16% came from
+individuals without dementia. The cohort is predominantly
+female (85.7%), with a mean age of 84.5 years and a median
+of 86.0 years, spanning an age range from 52 to 102 years.
+This age distribution reflects the demographic characteristics
+typical of long-term care populations (FIGURE 1).
+In addition to cross-sectional clinical features, the dataset
+included a longitudinal sampling component. Participants
+provided between one and 12 stool samples, with a median
+of three samples per participant, facilitating within-subject
+comparisons over time. Sampling timelines varied by indi-
+vidual, with consistent representation across the AD and
+non-AD groups. This temporal resolution supports dynamic
+145954 VOLUME 13, 2025
+
+=== PAGE 3 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+FIGURE 2. Nursing Home Cohort Bacteria Data Description (source: [28]).
+(A) Prevalence vs. Abundance of Bacterial Species: Scatter plot illustrating
+bacterial species by their prevalence (the number of samples in which
+each species appears) and proportional abundance across the dataset.
+Red dashed lines represent the filtering criteria applied during
+preprocessing: species present in fewer than 5% of samples (prevalence
+cutoff: 17) or with a total relative abundance below 1e-4 were removed
+to minimize noise and focus on biologically relevant taxa. (B) Volcano
+Plot of Differential Abundance: Log 2 fold change versus -log 10 (p-value)
+for all bacterial species. Species with significantly higher abundance in
+Alzheimer’s patients are shown in red; those lower in AD are shown in
+blue.
+analyses of microbiome profiles and disease status. The
+integrated design of the dataset, linking clinical diagnoses,
+demographic characteristics, comorbid conditions, and lon-
+gitudinal biospecimens, provides a robust framework for
+exploring the complex interactions between neurodegenera-
+tive diseases, aging, and host-associated microbial commu-
+nities. Ensuring data quality and biological relevance, our
+biologists addressed missing values and performed initial
+feature selection based on domain-specific biological con-
+siderations during the preprocessing stage. These clinical
+features were integrated into the reasoning and analytical
+processes of the ADAM framework.
+B. GUT MICROBIOME DATA
+The original microbiome dataset was generated through a
+standardized process, beginning with collecting stool samples
+from nursing home residents, followed by DNA extraction
+using a Qiagen DNeasy PowerSoil Pro Kit. The resulting
+DNA was used to create a pool containing 2 nM DNA, 12 µL
+RSB with Tween, and 4 µL of diluted PhiX prep, which
+was then pipetted into a P4 Illumina flow cell cartridge. The
+sequencing run was generated on the BaseSpace Illumina
+platform and validated using Illumina NextSeq 2000 prior to
+analysis. Post-sequencing, the dataset underwent prevalence
+and abundance-based filtering to reduce technical noise and
+enhance biological interpretability. Bacterial species were
+retained if they appeared in more than 5% of samples (i.e.,
+prevalence >17 samples) and exhibited a relative abundance
+greater than 0.01% of the total community (i.e., proportion
+>1e-4). This procedure reduced the dataset from 940 to
+247 species, focusing subsequent analyses on taxa consis-
+tently represented across the cohort.
+We characterized the dataset by analyzing species-level
+prevalence, abundance, and differential abundance metrics,
+as shown in FIGURE 2. The prevalence-abundance distribu-
+tion (FIGURE 2(A)) exhibits a typical long-tailed pattern,
+where most bacterial species show low prevalence and low
+proportional abundance. These rare taxa often add to noise
+and variance, reducing statistical power. To address this issue,
+we implemented filtering thresholds, retaining only species
+present in at least 5% of samples (prevalence ≥17) and with a
+total abundance greater than 1e-4. This approach ensures that
+our analysis focuses on reproducible and biologically relevant
+species.
+After preprocessing, we analyzed differential abundance to
+pinpoint taxa significantly linked to AD status. The volcano
+plot in FIGURE 2(B) displays log 2 fold changes versus –
+log10 (p-values), indicating species that are higher in AD
+(red) and those that are lower (blue). This thorough profiling
+approach improves the signal-to-noise ratio, ensuring that
+only reliable microbial features contribute to the ADAM
+framework. Other data types, like neuroimaging and periph-
+eral biomarkers, were not included in this study.
+III. ARCHITECTURE OF ADAM
+The ADAM framework comprises an agentic system,
+a semantic search engine, two base LLMs, and a report-
+ing module, along with new and existing laboratory data.
+FIGURE 3 illustrates the architecture of the ADAM frame-
+work. The ADAM framework begins with users inputting
+new data into the agentic system. The agentic system pro-
+cesses the new data in its computational agent and sends
+results to the summarization and classification agents, along
+with historical laboratory data. This information is then pro-
+cessed through a semantic research engine and the base
+LLMs, with cosine similarity controlling the return quality.
+Finally, a reporting system presents the output as a classifica-
+tion report.
+A. AGENTIC SYSTEM
+The agentic system within the ADAM framework is an AI
+architecture composed of three distinct yet interconnected
+agents that work collaboratively to perform specialized tasks
+toward a common analytical goal: a computational agent,
+a summarization agent, and a classification agent. This
+multi-agent design produces both computational outputs and
+VOLUME 13, 2025 145955
+
+=== PAGE 4 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+FIGURE 3. Workflow of the ADAM Framework. This diagram illustrates
+user interactions within the ADAM system. When a user submits a query
+along with new laboratory data, the framework employs the agentic
+system to refine the query and identify relevant literature evidence from a
+semantic search engine, integrating it with existing laboratory data. The
+semantic search engine collaborates with the agentic system, alongside
+the LLM, to reason, analyze, and interpret data, ultimately delivering
+precise analytical reports.
+FIGURE 4. Agentic System Workflow. The Diagram illustrates the
+coordinated interaction among three AI agents—Computational,
+Summarization, and Classification—within the agentic system. Each agent
+leverages Chain-of-Thought reasoning and communicates with the LLM to
+generate structured outputs. The system collectively produces
+Alzheimer’s-specific summarization and classification reports by
+integrating computational analysis with contextual interpretation.
+semantic outputs that are informed by computational analyses
+and peer-reviewed literature, thereby enhancing analytical
+strength while reducing hallucinations and the likelihood of
+misclassification inherent in the base LLMs. These agents
+transform clinical and metagenomic data into interpretable
+patient-specific insights. As illustrated in FIGURE 4, the
+computational agent processes the newly uploaded data
+to extract key features and analytical outputs. These out-
+puts, along with historical laboratory data, are then used
+for summarization with a proposed context window size
+of approximately 100,000 tokens and classification with
+a proposed context window size of approximately 50,000
+tokens, guided by CoT reasoning and supported by LLMs.
+The summarization agent generated context-aware narratives,
+whereas the classification agent determined the AD status.
+1) BASE LLM SELECTION RATIONALE
+GPT-4o and its light variant GPT-4o-mini were selected as
+the base LLM for ADAM-1 due to their consistently supe-
+rior performance across a wide range of biomedical and
+clinical benchmarks. In cancer genomics, GPT-4o achieved
+the highest accuracy (0.7318) when classifying clinically
+actionable variants from multiple knowledge bases, outper-
+forming Qwen 2.5 and Llama 3.1, and showing increased
+concordance with expert annotations even in complex evi-
+dentiary contexts [29]. In medical education, GPT-4o demon-
+strated top-tier performance, achieving an accuracy of 89.2%
+on the Japanese National Medical Examination (JNME),
+significantly exceeding Claude 3 Opus, Gemini 1.5, and
+earlier GPT versions [30]. It was notably reliable for easy-
+to-moderate tasks, reflecting its capacity for high factual
+retention and instructional consistency. Additionally, GPT-
+4o achieved the highest accuracy across multiple medical
+licensing examinations, including the United States Medi-
+cal Licensing Examination (USMLE), the Professional and
+Linguistic Assessments Board (PLAB), the Hong Kong Med-
+ical Licensing Examination (HKMLE), and the National
+Medical Licensing Examination (NMLE), demonstrating its
+robustness across diverse cultural and linguistic contexts in
+medicine [31]. These empirical advantages directly support
+its integration into ADAM-1, where high-stakes reasoning
+on clinical and microbiome data requires both precision and
+stability for the summarization and classification agents in
+biological studies.
+2) COMPUTATIONAL AGENT
+The computational agent comprises bioinformatics and
+machine learning. Alpha diversity (Shannon, Simpson,
+Berger-Parker dominance) and beta diversity (Bray-Curtis,
+Jaccard, Canberra) were calculated to provide a descrip-
+tive analysis of bacterial relationships. XGBoost [32] was
+chosen as the primary machine learning model, working in
+conjunction with SHAP [33] to generate feature importance
+information and SHAP values that describe feature interac-
+tions in relation to AD status from a global and an individual
+study subject perspective. The formula for the computational
+agent is as follows :
+CAcomp (MD, CF)
+= SHAP (XGB (MD, CF)) , Dα (MD) , Dβ (MD) (1)
+where:
+CAcomp is the Computational Agent responsible for pro-
+cessing microbiome and clinical data to generate inter-
+pretable outputs.
+MD is the Microbial Data input (e.g., microbial abundance
+profiles).
+CF is a clinical feature input (e.g., patient demographics
+and health records).
+SHAP(XGB(MD, CF)) represents the XGBoost model
+embedded within SHAP , which enables explainable machine
+learning via feature attributes and interactions.
+Da(MD) denotes the Alpha diversity metrics (Shannon,
+Simpson, Berger-Parker dominance) computed from micro-
+bial data.
+145956 VOLUME 13, 2025
+
+=== PAGE 5 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+Dβ (MD) denotes the Beta diversity metrics (Bray-
+Curtis, Jaccard, Canberra) representing microbial community
+dissimilarity.
+3) SUMMARIZATION AGENT
+The summarization agent integrates the computational
+agent’s results, CoT reasoning, semantic search engine, and
+GPT-4o model to provide an overall context summary. The
+model demonstrates superior language understanding and
+coherence in long text [34]. Its ability to maintain contextual
+relevance and accuracy in summaries is well documented,
+particularly in academic and technical domains. This makes it
+an ideal choice for summarization tasks that require precision
+and reliability. The formula for the summarization agent is as
+follows:
+SAsummary
+(
+CAcomp,CoTreasoning,SSsearch,LLMGPT−4o
+)
+=LLMGPT−4o
+(
+Integrate
+(
+CAcomp,CoTreasoning,SSsearch
+))
+(2)
+where:
+• SAsummary (Summarization Agent): Synthesizes context-
+aware insights.
+• CAcomp (Computational Agent ): Processes microbial
+and clinical data to generate structured outputs.
+• CoTreasoning (Chain-of-Thought reasoning ): Provides
+structured logical interpretive paths.
+• SSsearch (Semantic Search ): Retrieves relevant contex-
+tual information using RAG from a vector database.
+• LLMGPT−4o (Large Language Model ): GPT-4o model
+that generates accurate, coherent summaries.
+• Integrate(·): Combines multiple sources into a unified
+semantic context.
+We propose a logic for CoT reasoning for the sum-
+marization agent in the following eight steps to ensure a
+comprehensive understanding of the input:
+1. Patient Overview: Starts with basic patient demograph-
+ics and general health status
+2. Key Clinical Markers: Identifies important biomarkers
+or health indicators
+3. Gut Microbiome Profile: Analyzes the specific microor-
+ganisms present in the gut
+4. Diversity Metrics Analysis: Evaluates biodiversity mea-
+sures of the gut microbiome
+5. Interactions and Mechanisms: Examines relationships
+between the microbiome and clinical markers
+6. Descriptive Correlation: Identifies statistical relation-
+ships without implying causation
+7. Machine Learning analysis and probabilistic assess-
+ment: ML models were used to evaluate the patterns and
+make probabilistic predictions
+8. Final Comprehensive Descriptive Summary: Creates a
+holistic summary integrating all findings
+4) CLASSIFICATION AGENT
+The classification agent integrates the output of the compu-
+tational agent, the output of the summarization agent, CoT
+reasoning, our semantic search engine, and the GPT-4o-
+mini model for content classification. We used GPT-4o-mini
+for AD classification tasks because it efficiently processes
+extremely long texts, delivers high accuracy and reliabil-
+ity essential for medical diagnosis, and offers unmatched
+cost-effectiveness compared with similar models [35]. The
+formula for a classification agent is as follows :
+CAclass
+(
+CAcomp, SAsummary,
+CoTreasoning, SSsearch, LLMGPT−4o−mini
+)
+= LLMGPT−4o−mini
+(
+Integrate
+(
+CAcomp, SA, CoTreasoning,
+SSsearch)) (3)
+Where:
+• CAclass (Classification Agent): Responsible for generat-
+ing Alzheimer’s disease classification outputs.
+• CAcomp (Computational Agent) contains structured data
+features (e.g., predictions and feature importance).
+• SAsummary (Summarization Agent ): Provides high-level
+contextual insight.
+• CoTreasoning (Chain-of-Thought reasoning ): Guides
+interpretability through logical step-by-step inference.
+• SSsearch (Semantic Search): retrieves conceptually rele-
+vant knowledge from a vector-based index.
+• LLMGPT−4o−mini (Large Language Model ): Optimizes
+for fast and efficient classification tasks.
+• Integrate(·) is a function that merges multiple contextual
+and data-driven sources into a unified representation.
+We propose the CoT reasoning logic for the classification
+agent in the following eight steps to ensure robustness in the
+classification task.
+1. Historical Data Insights: Analyzes past patient data to
+establish baselines and trends
+2. Diversity Metrics & Classification Refinement: Uses
+microbiome diversity measures to improve classification
+accuracy
+3. Adaptive Threshold Decisioning: Determines dynamic
+thresholds for classification rather than fixed values
+4. Handling Edge Cases & Misclassifications: Identifies
+and addresses outliers or difficult-to-classify cases
+5. Comprehensive Summary of this Visit: Provides a com-
+plete analysis of the current patient data
+6. SHAP Feature Importance: Uses SHAP values and ML
+outputs to understand the features that influence the
+model’s predictions most
+7. Key Considerations for Prediction and Misclassification
+Adjustments: Identifying factors that might lead to mis-
+classification and how to adjust for them
+8. Prediction Decision Rules: Establishes clear rules for
+making final classification decisions
+VOLUME 13, 2025 145957
+
+=== PAGE 6 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+B. BASE LLMS
+This study utilized two OpenAI LLMs: GPT-4o (2024-11-
+20) for summarization and GPT-4o-mini (2024-07-18) for
+improved speed and cost efficiency. Their selection aligns
+with the design concepts of the summarization and classi-
+fication agents. Using an eight-step CoT reasoning logic,
+the summarization agent is designed to handle more contex-
+tual data, including single-visit and longitudinal data. Each
+step corresponds to a relevant RAG output, explaining the
+meaning of each step in summarizing an individual’s clinical
+conditions and microbiome profiles. The summarization task
+was designed to process approximately 100,000 tokens of text
+data at a time, given its superior ability to handle clinical text
+summarization [36]. Therefore, as a downstream counterpart
+to GPT-4o, GPT-4o-mini was proposed for focused binary
+classification tasks utilizing a dedicated CoT reasoning
+framework for classification. It processes data that has been
+preprocessed by computational and summarization agents
+powered by GPT-4o and is optimized for high-throughput
+classification over approximately 50,000 tokens per instance.
+C. SEMANTIC SEARCH ENGINE
+The knowledge base comprised 76,751 full-text publications
+or abstracts programmatically retrieved in October 2024 from
+PubMed Central (PMC) using the NCBI Entrez system via
+E-utilities and Entrez Direct. Articles were identified based
+on user-defined query terms applied to specific fields, such as
+titles, abstracts, or text words, and retrieved in XML format
+using the efetch utility. The collected records were subse-
+quently processed using an embedding model and indexed
+into two vector databases to support downstream retrieval
+tasks.
+The publications were divided into 2,058,502 text chunks,
+each containing 2,000 characters, with a 20 percent overlap
+with the previous chunk to ensure continuity and pre-
+serve context. This approach minimizes the risk of losing
+critical information when analyzing the AD-related liter-
+ature. The embedding model converts these chunks into
+high-dimensional vector representations, which are stored in
+two separate vector databases optimized for semantic search
+and retrieval (FIGURE 5). These databases enable rapid
+querying of relevant AD research, supporting tasks such as
+disease classification, summarization, and hypothesis gener-
+ation within the ADAM framework.
+1) PUBLICATIONS
+This component serves as a source of existing literature and
+the reasoning logic of the ADAM, integrating 76,751 publi-
+cations relevant to AD research at the time of this study. The
+keywords used for indexing included Alzheimer’s disease,
+Gut-Brain Axis, Gut Microbiome, and Immunosenescence
+(TABLE 1).
+Each publication Pi is indexed by a set of rele-
+vant keywords Ki,j, forming a keyword-embedding vector
+K (Pi):
+FIGURE 5. Semantic Search Engine Architecture. Semantic Search Engine.
+(A) The embedding model converts documents into and out of numerical
+vectors. (B) Vector databases work in parallel with the semantic search
+engine that returns the most relevant information measured by cosine
+similarity. Inside a Vector Database. Each publication is split into
+2000-character vector chunks, with a 20 percent overlap between the
+prior chunk of text and the next.
+TABLE 1. Publications and text segment counts by topic.
+K (Pi) =
+∑m
+j=1 wi,j · EmbeddingModel
+(
+Ki,j
+)
+(4)
+where:
+Pi represents the i-th publication.
+Ki,j is the j-th keyword associated with Pi.
+wi,j is the weight assigned to Ki,j based on its relevance
+to Pi.
+K (Pi) is the aggregated embedding vector representing the
+keywords of Pi, facilitates its retrieval from the knowledge
+base.
+The vector K (Pi) enables the efficient retrieval of publica-
+tions based on semantic relevance to query keywords in AD
+research.
+145958 VOLUME 13, 2025
+
+=== PAGE 7 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+TABLE 2. Embedding Model Comparison. Summary of key performance
+and usability attributes of the ADA-002 embedding model, highlighting its
+strong semantic representation, high computational efficiency, moderate
+storage demands, and broad adoption across applications.
+2) EMBEDDING MODEL
+The embedding model transforms textual data into embed-
+dings, thereby allowing the framework to process and
+effectively retrieve relevant information. We chose text-
+embedding-ada-002 because of its high-cost effectiveness
+and proven success in text processing since its release in
+December 2022. To determine the most suitable embed-
+ding models for this study, we compared three available
+embedding models from OpenAI: text-embedding-ada-002
+(hereafter referred to as ada-002), text-embedding-3-small
+(hereafter referred to as 3-small), and text-embedding-3-
+large (hereafter referred to as 3-large) to determine the
+most suitable embedding models for this study [37]. These
+three models were evaluated based on the following cri-
+teria: semantic richness, computational efficiency, storage
+requirements, cost-effectiveness, versatility, and adoption
+(TABLE 2).
+Furthermore, we applied these three embedding mod-
+els to a small-scale test vector database derived from
+gut microbiome publications, where each text chunk con-
+tained 2,000 characters and had a 20 percent overlap with
+the previous chunk, utilizing a cosine similarity threshold
+of 0.7. Our empirical findings indicated that the ada-002
+model yielded more consistent results within the LLM and
+vector database configurations during the RAG retrieval
+process.
+Given an input text T , the embedding model generates an
+embedding vector − →E as follows:
+− →E = EmbeddingModel (T ) (5)
+where:
+T represents the i-th publication.− →E is the resulting embedding vector in high-dimensional
+space.
+This embedding vector − →E captures semantic and contex-
+tual information from T , facilitating effective retrieval and
+matching within the framework.
+3) VECTOR DATABASES
+When embedding publications into a vector database, the
+publication text is divided into 2000-character segments, with
+a 20 percent overlap between segments, to maintain the infor-
+mation flow and provide a more continuous and coherent
+representation of the text.
+Given:
+Segment length s= 2000 characters
+Overlap o= 0.2×s= 400 characters
+Effective step size = s − o= 1600 characters
+pi = 1 + (i − 1) × (s − o) (6)
+This formula calculates the starting position of the i-th
+segment:
+Segment 1 starts at position 1
+Segment 2 starts at position 1601
+Segment 3 starts at position 3201, and so on. . .
+Total number of segmentsn required to cover the entire text
+L, each new segment after the first adds (s − o) = 1600 new
+characters. Subtraction of o from the numerator accounts for
+its overlap with the last segment.
+n =
+⌈ L − o
+s − o
+⌉
+(7)
+For example:
+If L = 5800 characters
+First segment covers positions 1-2000
+Second segment covers positions 1601-3600
+Third segment covers positions 3201-5200
+Fourth segment covers the position of 5211-7200
+Using the original formula n= ⌈ 5800−400
+2000−400 ⌉ = ⌈ 5400
+1600
+⌉ = ⌈ 3.375⌉ = 4, as a result, 5800 characters need
+4 segments.
+This configuration incorporated a 20 percent overlap
+between consecutive segments to maintain continuity in
+the embeddings. Consequently, the vector databases in
+the semantic search engine comprised 2,058,502 discrete
+overlapping segments derived from 76,751 publications
+(TABLE 1).
+IV. HARDWARE, SOFTWARE, AND COMPUTATIONAL
+COST
+The experiments were conducted on an Ubuntu 24.04.2 LTS
+workstation equipped with an Intel ® Core™ i9-10900X
+(20 threads), 128 GB RAM, and four NVIDIA GeForce
+RTX™3090 GPUs, providing a robust computing environ-
+ment for LLM and machine learning tasks. The software stack
+was built on Python 3.10.14, utilizing XGBoost 2.1.3, and
+Scikit-Learn 1.5.2 for model training, with Optuna 4.1.0 han-
+dling hyperparameter optimization.
+For LLM processing, the system integrates OpenAI 1.55.1,
+PandasAI 2.4.2, LangChain 0.3.8, and LangChain-Chroma
+0.1.4. Additionally, Scikit-Bio 0.6.2, SciPy 1.10.1, NumPy
+1.26.4, and Pandas 1.5.3 facilitated data processing and anal-
+ysis. For visualization and interpretability, the setup included
+Matplotlib 3.7.5, Seaborn 0.12.2, and SHAP 0.46.0. This
+VOLUME 13, 2025 145959
+
+=== PAGE 8 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+configuration ensures high computational efficiency and scal-
+ability for deep learning workflows.
+Within the ADAM framework, the summarization agent
+typically requires 2 to 5 minutes per observation, while
+the classification agent takes approximately 5 to 10 min-
+utes, depending on the availability of the OpenAI API.
+XGBoost, optimized using Optuna, consumes approximately
+310 to 350 MB of VRAM on an NVIDIA 3090 GPU
+and completes training and testing in 2 to 3 min-
+utes. For cost transparency, we also report token pricing:
+GPT-4o currently costs $2.50 per million input tokens and
+$10.00 per million output tokens, while GPT-4o-mini costs
+$0.15 per million input tokens and $0.60 per million output
+tokens [38].
+V. DATA SPLIT AND SEEDING POLICY
+A. DATA SPLIT POLICY
+We implemented two data-splitting policies: one for selecting
+the baseline model and the other for the ADAM frame-
+work. In the baseline model selection phase, the data were
+initially split at 75:25 by a unique Study ID and strat-
+ified according to the AD status. In the second phase,
+which involved the ADAM framework, 75% of the data
+was retained as the training or reference dataset. For
+testing, we randomly selected 15 positive and 15 neg-
+ative cases from the 25% portion owing to hardware
+limitations. This approach allowed us to work efficiently
+with the LLM while maintaining statistical significance
+(n = 30).
+B. SEEDING AND MEASURES
+We implemented two seeding strategies to support the
+different phases of the study: one for baseline model
+selection and the other for creating the ADAM frame-
+work. The initial phase involved applying 10 random seeds
+to identify the best-performing classifier based on the
+accuracy, AUC, and F1 score. The selected model was
+then integrated into ADAM, a language-model-based sys-
+tem designed to enhance the binary classification of AD.
+A broader evaluation was conducted using 30 random
+seeds to examine whether ADAM improved the mean F1
+score and reduced the performance variance compared with
+the baseline. This seeding policy design ensured that the
+performance metrics in both phases were derived from
+stable and reproducible evaluations, allowing for a fair
+assessment of ADAM’s added value over the baseline
+model.
+VI. BASELINE MODEL SELECTION
+We trained three classifiers on the AD dataset: XGBoost,
+random forest, and logistic regression. These models are
+commonly used in biological studies and are computation-
+ally efficient for laboratory computers. The best-performing
+model was selected as the baseline for this study. The
+model selection process involved two phases: feature selec-
+tion and model training, both optimized using Optuna, which
+TABLE 3. Base model performance averaged across 10 random seeds.
+is a Bayesian-based hyperparameter-tuning framework [39].
+To identify the most relevant features, we configured an
+XGBoost-based feature selector applied to all three machine
+learning models. The selected features are subsequently
+fed into the proposed models for further training and
+testing.
+We implemented several performance metrics to evaluate
+the model’s effectiveness, including accuracy, AUC, F1 score,
+and overall performance index. Each metric was calculated by
+averaging the results from 10 different random seeds, which
+helped capture the variability and enhance the robustness of
+the evaluation process. The results are shown in FIGURE 6
+and TABLE 3, which summarizes the comparative perfor-
+mance of each model across all metrics. By relying on multi-
+ple evaluation criteria, we aimed to assess not only how well
+each model classifies, but also how reliably and consistently
+it performs across different data splits, which is especially
+critical in clinical datasets where precision and balance are
+essential.
+As shown in TABLE 3, XGBoost consistently outper-
+formed logistic regression and Random Forest across all
+key metrics. It achieved the highest average accuracy, AUC,
+and F1 score, demonstrating its superior discriminative abil-
+ity and robustness. Furthermore, XGBoost exhibited the
+highest stability across different seeds, underscoring its
+reliability in managing complex and heterogeneous data
+related to AD. Owing to its strong performance and con-
+sistency, XGBoost was selected as the baseline model in
+this study. This served as the foundation against which
+the proposed ADAM framework was assessed, providing
+a high-performance and dependable benchmark for future
+model comparisons.
+VII. RESULTS AND EVALUATION
+A. EVALUATION STRATEGY
+The evaluation strategy aimed to determine whether ADAM
+outperformed the baseline XGBoost model in binary classi-
+fication tasks using the F1 score. The F1 score is directly
+affected by false negatives (FN) because it is the harmonic
+mean of precision and recall, with recall particularly sensitive
+145960 VOLUME 13, 2025
+
+=== PAGE 9 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+to false negatives [40]. This is especially critical in medical
+applications, where false negatives can lead to severe conse-
+quences [41], [42]. In the context of AD, false negatives can
+result in delayed diagnosis, leading to inadequate monitoring
+and treatment, loss of social and financial benefits, increased
+emotional distress for patients and caregivers, and ultimately,
+worse patient outcomes [43], [44], [45]. The mean F1 score
+quantifies the overall predictive performance, whereas the
+variance of the F1 score assesses the consistency and stability
+of the ADAM performance compared to XGBoost.
+Each model was fine-tuned using Optuna, with extensive
+cross-validation. For each of the 30 seeds, we conducted 200
+Optuna trials using Bayesian optimization (TPE sampling),
+with each trial evaluated via stratified 3-fold cross-validation,
+resulting in 600 evaluations per seed. The best hyperparame-
+ters identified for each seed were used exclusively for that
+seed’s final model, and the corresponding F1 scores were
+recorded. The statistical significance of the difference in
+mean F1 scores between ADAM and XGBoost was analyzed
+using the Mann-Whitney U test, a non-parametric test that
+does not require normality assumptions [46]. Additionally,
+an F-test was conducted to compare the variances in the F1
+scores, providing insights into the performance stability of
+each model [47].
+FIGURE 6. Comparative Analysis of XGBoost and ADAM. (A) Density plots
+and (B) boxplots of F1 scores comparing XGBoost and the ADAM
+framework across multiple runs. ADAM demonstrates a higher median F1
+score with reduced variance, suggesting more consistent and reliable
+classification performance for AD prediction.
+B. F1 SCORE AND VARIABILITY ANAL YSIS
+Following the evaluation strategy, we conducted a compar-
+ative analysis of ADAM and XGBoost based on 30 inde-
+pendent experimental runs. The focus was on two core
+aspects of model performance: accuracy, measured by the
+mean F1 score, and stability, indicated by the variability
+of F1 scores across runs. By assessing central tendency
+and dispersion, we determined which model performed
+better on average and which produced more consistent
+results.
+Across these runs, ADAM achieved a higher mean F1
+score (0.7263) than XGBoost (0.6774), as determined by
+the Mann-Whitney U test (p = 0.0418), indicating a statis-
+tically significant improvement at the 95% confidence level.
+In addition, ADAM demonstrated a lower standard deviation
+(0.0632) than XGBoost (0.1217), as supported by Levene’s
+test (p = 0.0300), indicating a more stable and consistent
+performance. The medium effect size (Cohen’s d = 0.5038)
+further underscores the practical relevance of ADAM’s supe-
+rior and reliable classification capability.
+The box plots and density distributions (FIGURE 6)
+demonstrate that ADAM maintains a narrower F1 score dis-
+tribution (FIGURE 6(B)) with a higher median and fewer
+extreme values than XGBoost. Although both models exhibit
+similar central performance around 0.7, the density plot
+(FIGURE 6(A)) reveals that ADAM’s F1 scores cluster more
+tightly around 0.75, whereas XGBoost displays a broader
+spread, ranging from 0.4 to nearly 1.0, indicating greater
+performance variability across different runs. This higher
+consistency in the ADAM performance suggests that it
+may offer more reliable predictions for AD classification
+(FIGURE 7).
+FIGURE 7. Performance Comparison of F1 Scores Between XGBoost and
+ADAM. Line plot comparing F1 scores of XGBoost and ADAM across
+30 random seeds. Each line connects paired runs for a given seed. ADAM
+consistently shows improved or more stable F1 performance relative to
+XGBoost, highlighting its robustness and reduced variability across
+repeated evaluations.
+These findings collectively demonstrate that ADAM sig-
+nificantly outperforms XGBoost, offering an improved aver-
+age performance and greater consistency and stability across
+experimental runs.
+VIII. REPORTING MODULE
+ADAM is not only a classifier but also a reporting system. Its
+classification is based on the combined results of the three AI
+agents presented in textual form. Its logical reasoning design
+classifies the AD status while generating analytical reports
+for each study subject. We listed two sample classification
+reports as follows:
+A. SAMPLE REPORTS
+TABLE 4 presents two sample reports produced by ADAM,
+one for a positive case and one for a negative case. Due
+VOLUME 13, 2025 145961
+
+=== PAGE 10 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+to the length of the full report, only the conclusion section
+is shown for each. The complete set of over 900 ADAM-
+generated case-specific classifications is available at
+https://github.com/melhzy/ADAM/tree/main/reporting.
+Analyses of samples FB151 and FB128 demonstrated that
+the gut microbiome composition significantly influenced AD
+classification. Sample FB151, from a 94-year-old female
+with severe frailty (CFS 7), exhibited clear microbiome dys-
+biosis, characterized by elevated pro-inflammatory species,
+absence of the beneficial Faecalibacterium prausnitzii, and
+lower diversity (Shannon index: 2.98), which led to a positive
+AD classification. In contrast, sample FB128, an 81-year-old
+male with moderate-to-severe frailty (score 6), maintained a
+more balanced microbiome with protective Faecalibacterium
+prausnitzii (1.28183) that counterbalanced the presence of
+AD-associated Neglecta timonensis, resulting in higher diver-
+sity metrics (Shannon, 3.50; Simpson, 0.93) and a negative
+classification despite a similar malnutrition risk (score 2).
+SHAP analyses for both patients highlighted the critical
+importance of Faecalibacterium prausnitzii as a protective
+factor and Neglecta timonensis as a risk-inducing factor,
+demonstrating how microbiome balance can mitigate clinical
+risk factors and potentially protect against AD development,
+even in advanced age and frailty.
+Figures 8 and 9 show SHAP waterfall plots for the same
+two samples. These plots display how individual features
+contributed to the final model prediction and visually support
+the textual reports in Table 4. In Figure 8, the model gave a
+high probability of Alzheimer’s disease for FB151, mainly
+driven by the malnutrition score, presence of Neglecta timo-
+nensis, and absence of Faecalibacterium prausnitzii. These
+factors increased the prediction toward AD, aligning with
+the patient’s clinical frailty and gut dysbiosis. In Figure 9,
+the SHAP values for FB128 demonstrate how protective
+microbial features, such as Faecalibacterium prausnitzii ,
+counteract the effects of seizure medications and Neglecta
+timonensis, reducing the predicted risk and supporting a non-
+AD classification. The inclusion of these visual explanations
+clarifies the alignment between computational attributions
+(SHAP+XGBoost) and the semantic narrative generated by
+the LLM agent. This combined approach strengthens inter-
+pretability and clinical relevance, satisfying both statistical
+and explanatory transparency.
+IX. DISCUSSION AND LIMITATIONS
+The ADAM framework demonstrates the potential of lever-
+aging LLMs via API calls by integrating bioinformatics,
+machine learning, explainable AI, and relevant literature
+with biological laboratory data analytics. RAG is facilitated
+through a web service hosting vector databases. ADAM is
+tailored to experimental settings common in Alzheimer’s
+disease research, where around 100 to 300 data points are
+generated per experiment due to the high cost. We have
+also successfully run ADAM on low-resource lab computers,
+TABLE 4. ADAM Sample Reports: Positive Classification and Negative
+Classification. Interpretability-focused summaries produced by ADAM for
+one positively and one negatively classified sample. Each report includes
+clinical variables, medication usage, gut microbiome composition,
+diversity metrics, and SHAP-based feature attributions to clarify the
+predicted Alzheimer’s disease status.
+145962 VOLUME 13, 2025
+
+=== PAGE 11 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+FIGURE 8. SHAP waterfall plot for Sample FB151 (AD-positive).
+Malnutrition and Neglecta timonensis contributed strongly to the
+prediction, while the absence of protective Faecalibacterium prausnitzii
+further increased AD risk.
+FIGURE 9. SHAP waterfall plot for Sample FB128 (AD-negative). The
+presence of Faecalibacterium prausnitzii lowered the prediction
+probability, counteracting other risk factors such as Neglecta timonensis
+and seizure medications.
+such as a Dell Inspiron (AMD Ryzen 5, 8 GB RAM)
+and an ASUS Vivobook S 14 (Intel Core Ultra 5, 16 GB
+RAM), where machine learning hardware requirements and
+GPT API availability bottleneck performance. Large-scale
+dataset experiments are beyond the scope of the current study.
+Biological datasets often exhibit substantial noise, which can
+hinder downstream analyses and affect the robustness of sci-
+entific conclusions. When dealing with human-derived data,
+the levels of noise and inter-individual variability are typi-
+cally higher, introducing additional complexity to analysis
+and interpretation. A primary goal of ADAM is to reduce
+reliance on manual intervention by employing systematic rea-
+soning, guided by literature, data, and computational logic,
+to identify and mitigate the influence of confounding factors
+through integrated computational and semantic strategies on
+a case-by-case basis.
+Despite these challenges, ADAM demonstrates that when
+combined with RAG, CoT reasoning, and traditional machine
+learning models, large language models can effectively con-
+textualize biological data, even in small-sample or high-noise
+scenarios such as the data used in this study, which was
+collected from five nursing home sites. In ADAM, CoT
+reasoning is guided by RAG to retrieve literature-grounded
+evidence for each inference step, while traditional mod-
+els contribute statistical robustness. This combination yields
+both computational precision and semantically grounded
+outputs, thereby reducing hallucination and enhancing reli-
+ability. This capability is particularly crucial in microbiome
+clinical research, where important patterns are often subtly
+dispersed across different data types. Employing explainable
+AI methods, such as SHAP , enhances interpretability, allow-
+ing researchers to connect a model’s predictions to specific
+features or insights drawn from the literature.
+However, this study has some limitations that should be
+acknowledged. First, although the evaluation was performed
+on a relatively small but high-dimensional dataset, the ADAM
+framework was designed to support various types of biolog-
+ical data by using a modular, agent-based architecture. This
+includes distinct agents for computation, summarization, and
+classification, each of which can be independently scaled and
+parallelized to handle increasing data complexity and volume.
+However, performance at larger scales still needs systematic
+validation. Second, while the ADAM framework demon-
+strated strong generalization in this study, additional training,
+fine-tuning, and reinforcement learning strategies are rec-
+ommended to reduce hallucinations when applied to unseen
+datasets or unfamiliar biomedical areas. Third, although the
+semantic search engine includes a broad literature corpus to
+reduce noise and variability in raw data and intermediate
+outputs, its effectiveness depends on the coverage, quality,
+and representativeness of the embedded knowledge. Gaps
+or biases in the literature may lead to missed connections
+or skewed interpretations, notably in underrepresented dis-
+ease areas. Additionally, the system currently relies on two
+LLMs pretrained for general-purpose use, which may lack
+the domain-specific accuracy needed for tasks in biological
+and clinical settings where small differences can be critical.
+Finally, the reasoning mechanisms within the summarization
+and classification agents are manually tuned, which may
+limit adaptability across different datasets. Future improve-
+ments will involve automated tuning and domain-specific
+VOLUME 13, 2025 145963
+
+=== PAGE 12 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+optimization to enhance portability and reduce reliance on
+manual adjustments.
+Confounding remains a significant obstacle in model-
+ing Alzheimer’s disease because of clinical heterogeneity.
+We included all structured clinical and microbiome features
+in the model to enable data-driven adjustment of observed
+covariates, using XGBoost with regularization and embedded
+feature selection. Known confounders such as polypharmacy
+and proton pump inhibitor use appeared as top contribu-
+tors. However, causal inference methods were not used, and
+residual confounding may still be present. SHAP values help
+interpretability but do not establish causality, so findings
+should be viewed with caution.
+In addition, while ADAM can operate on modest hardware
+by leveraging GPT API calls, the computational overhead of
+locally running multiple AI agents and performing real-time
+retrieval over large document bases may limit practicality in
+laboratory settings with constrained infrastructure. Further-
+more, although ADAM enables comprehensive data analysis
+and biological reasoning, expert interpretation is necessary
+to validate the findings and ensure scientific rigor. It is also
+important to recognize that the large language models used
+in this study have inherent limitations in consistency, as test-
+retest reliability remains imperfect even when the generation
+temperature is set to zero [48], [49]. Given the biological
+nature of the data and non-deterministic behavior of these
+models, we repeated result generation 30 times, following the
+Central Limit Theorem, to support the statistical reliability of
+our conclusions. The findings are further supported and con-
+textualized using the most relevant content retrieved from a
+corpus of 76,751 peer-reviewed publications on Alzheimer’s
+disease, which are integrated into the system’s semantic
+retrieval engine.
+X. CONCLUSION AND FUTURE WORK
+This study offers a thorough evaluation of the ADAM
+framework for classifying AD by comparing its perfor-
+mance with that of the widely used machine-learning base-
+line, XGBoost. By leveraging LLMs, explainable AI, and
+retrieval-augmented generation, ADAM achieved better pre-
+dictive performance and showed greater consistency across
+repeated experimental runs.
+Across 30 independent trials, ADAM consistently
+achieved a higher mean F1 score (0.7263) than XGBoost
+(0.6774), with a statistically significant difference confirmed
+by the Mann-Whitney U test (p = 0.0418). The lower
+standard deviation of the ADAM F1 scores (0.0632 vs.
+0.1217) and its favorable distribution characteristics further
+underscore its stability and robustness. The F1 variance of
+XGBoost (0.0148) indicated that XGBoost shows 3.71 times
+more variability than ADAM (0.0040), as supported by Lev-
+ene’s test (p= 0.0300). These performance characteristics are
+particularly important in the medical domain, where model
+stability and reproducibility are essential for building trust in
+diagnostic tools and supporting consistent decision-making
+in patient care.
+The ADAM framework offers a promising direction for
+integrating AI-driven inference with biological and clinical
+data, providing higher accuracy, greater interpretability, and
+operational stability. These results support its potential for
+adoption in biomedical research environments and clinical
+decision support systems, particularly in settings character-
+ized by small, noisy, or imbalanced datasets. Future work
+will examine scalability and generalizability across more
+complex, multimodal biological inputs, including integrated
+multi-omics datasets, to broaden the framework’s applicabil-
+ity and performance. It will also examine the integration of
+causal inference methods to enhance confounder adjustment
+and improve the interpretability of feature-outcome relation-
+ships in high-dimensional observational data.
+Overall, ADAM addresses the crucial gap between experi-
+mental biology and agentic AI. Future enhancements, such as
+domain-specific LLMs and fine-tuning, expanded knowledge
+integration with RAG model optimization, adaptive reasoning
+logic using reinforcement learning, and large-scale, real-time
+validation mechanisms, are essential for broader adoption and
+translational impact. The reasoning logic will include three
+modes: manual, automatic, and hybrid, in a future release of
+ADAM, allowing flexible adaptation across various research
+and data environments. These developments may ultimately
+enable a foundational LLM trained and explicitly tuned for
+AD research, driving this line of research toward the real-
+ization of physical AI systems capable of interacting with
+and reasoning about complex biological data in real-time.
+It is important to note that ADAM is currently designed
+as a research tool only and should not be used for clinical
+application in its current form. This represents a promising
+future development for ADAM, which, with further enhance-
+ment and validation, could be adapted to other datasets and
+clinical settings while offering clearer, more user-friendly
+interpretation of its outputs.
+CODE AVAILABILITY
+The complete code that supports all the findings and anal-
+yses presented in this study is available at https://github.
+com/melhzy/ADAM. This repository includes data prepro-
+cessing scripts, model training scripts, evaluation scripts, and
+documentation detailing the setup procedures and depen-
+dencies. The code is distributed under the MIT License,
+permitting reuse and modification with appropriate attribu-
+tion. Please use the repository issue tracker or contact the
+corresponding author, Dr. Ziyuan Huang, for any questions or
+concerns. For inquiries related to Alzheimer’s and its micro-
+biome, please contact Dr. John P . Haran. Dr. Bucci V anni
+should be contacted for computational biology inquiries.
+DATA AVAILABILITY
+All data are available under BioProject accession number
+PRJNA529586 at NCBI and are further described in the Sup-
+plementary Data at doi.org/10.1128/mBio.00632-19 at mBio.
+145964 VOLUME 13, 2025
+
+=== PAGE 13 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+ETHICS APPROVAL
+This prospective cohort study was approved by the Insti-
+tutional Review Board (IRB) of the University of Mas-
+sachusetts Medical School (Docket H00010892).
+CONFLICT OF INTEREST
+The authors declare that there are no conflicts of interest
+regarding the publication of this article.
+ACKNOWLEDGMENT
+The authors would like to express their sincere gratitude to
+the members of the Bucci Laboratory, UMass Chan Med-
+ical School, for their valuable contributions to this work.
+Their insightful feedback, technical support, and collab-
+orative spirit significantly enhanced the development and
+refinement of this manuscript. They are especially thankful
+for their expertise and dedication throughout the research
+process.
+The ADAM framework automatically generated the sam-
+ple reports provided in TABLE 4, utilizing GPT-4o and
+GPT-4o-mini as its backend LLMs, along with ADAM’s
+computational, summarization, and classification agents,
+to process and analyze clinical and microbiome data for
+Alzheimer’s disease summarization and classification. The
+project was conducted within the Haran Research Group,
+University of Massachusetts Chan Medical School, under the
+direction of Principal Investigator John P . Haran.
+REFERENCES
+[1] A. Krizhevsky, I. Sutskever, and G. E. Hinton, ‘‘ImageNet classification
+with deep convolutional neural networks,’’ in Proc. Adv. Neural Inf. Pro-
+cess. Syst., vol. 60, 2017, pp. 84–90, doi: 10.1145/3065386.
+[2] A. Radford, K. Narasimhan, T. Salimans, and I. Sutskever. (2018).
+Improving Language Understanding by Generative Pre-Training. OpenAI.
+Accessed: Jul. 11, 2025. [Online]. Available: https://cdn.openai.com/
+research-covers/language-unsupervised/language_understanding_paper.pdf
+[3] A. Radford, ‘‘Language models are unsupervised multitask learners,’’
+OpenAI, vol. 1, no. 8, p. 9, 2019. Accessed: Jul. 11, 2025.
+[Online]. Available: https://cdn.openai.com/better-language-models/
+language_models_are_unsupervised_multitask_learners.pdf
+[4] Anthropic. (2024). The Claude 3 Model Family: Opus, Sonnet,
+Haiku. Anthropic. Accessed: Jul. 11, 2025. [Online]. Available:
+https://wwwcdn.anthropic.com/de8ba9b01c9ab7cbabf5c33b80b7
+bbc618857627/Model_Card_Claude_3.pdf
+[5] T. B. Brown, ‘‘Language models are few-shot learners,’’ presented
+at the 34th Int. Conf. Neural Inf. Process. Syst., V ancouver,
+BC, Canada, 2020. Accessed: Jul. 11, 2025. [Online]. Available:
+https://dl.acm.org/doi/abs/10.5555/3495724.3495883
+[6] L. Ouyang, J. Wu, X. Jiang, D. Almeida, C. L. Wainwright, P . Mishkin,
+C. Zhang, S. Agarwal, K. Slama, A. Ray, J. Schulman, J. Hilton, F. Kelton,
+L. Miller, M. Simens, A. Askell, P . Welinder, P . Christiano, J. Leike, and
+R. Lowe, ‘‘Training language models to follow instructions with human
+feedback,’’ 2022, arXiv:2203.02155.
+[7] R. Anil et al., ‘‘Gemini: A family of highly capable multimodal models,’’
+2023, arXiv:2312.11805.
+[8] H. Touvron, T. Lavril, G. Izacard, X. Martinet, M.-A. Lachaux, T. Lacroix,
+B. Rozière, N. Goyal, E. Hambro, F. Azhar, A. Rodriguez, A. Joulin,
+E. Grave, and G. Lample, ‘‘LLaMA: Open and efficient foundation lan-
+guage models,’’ 2023, arXiv:2302.13971.
+[9] A. V aswani, ‘‘Attention is all you need,’’ presented at the 31st Int.
+Conf. Neural Inf. Process. Syst., Long Beach, CA, USA, 2017.
+Accessed: Jul. 11, 2025. [Online]. Available: https://dl.acm.org/
+doi/10.5555/3295222.3295349
+[10] X. Bi et al., ‘‘DeepSeek LLM: Scaling open-source language models with
+longtermism,’’ 2024, arXiv:2401.02954.
+[11] OpenAI. (2025). OpenAI GPT-4.5 System Card . Accessed: Jul. 11, 2025.
+[Online]. Available: https://openai.com/index/gpt-4-5-system-card/
+[12] OpenAI. (2025). OpenAI O1 System Card . Accessed: Jul. 11, 2025.
+[Online]. Available: https://openai.com/index/openai-o1-system-card/
+[13] K. Kavukcuoglu. Gemini 2.5: Our Most Intelligent AI Model . Accessed:
+Jul. 11, 2025. [Online]. Available: https://blog.google/technology/google-
+deepmind/gemini-model-thinking-updates-march-2025/
+[14] Anthropic. (2025). Claude 3.7 Sonnet and Claude Code .
+Accessed: Jul. 11, 2025. [Online]. Available: https://www.anthropic.
+com/news/claude-3-7-sonnet
+[15] D. Guo et al., ‘‘DeepSeek-r1: Incentivizing reasoning capability in LLMs
+via reinforcement learning,’’ 2025, arXiv:2501.12948.
+[16] P . Zhang, J. Shi, and M. N. K. Boulos, ‘‘Generative AI in medicine
+and healthcare: Moving beyond the ‘peak of inflated expectations,’’’
+Future Internet , vol. 16, no. 12, p. 462, Dec. 2024, doi: 10.3390/fi161
+20462.
+[17] A. Hanafi, M. Saad, N. Zahran, R. J. Hanafy, and M. E. Fouda, ‘‘A
+comprehensive evaluation of large language models on mental illnesses,’’
+2024, arxiv.2409.15687.
+[18] Q. Jin et al., ‘‘Demystifying large language models for medicine: A
+primer,’’ 2024, arXiv:2410.18856.
+[19] J. Jumper et al., ‘‘Highly accurate protein structure prediction with
+AlphaFold,’’ Nature, vol. 596, no. 7873, pp. 583–589, Aug. 2021, doi:
+10.1038/s41586-021-03819-2.
+[20] Z. Lin, H. Akin, R. Rao, B. Hie, Z. Zhu, W. Lu, N. Smetanin, R. V erkuil,
+O. Kabeli, Y . Shmueli, A. dos Santos Costa, M. Fazel-Zarandi, T. Sercu,
+S. Candido, and A. Rives, ‘‘Evolutionary-scale prediction of atomic-level
+protein structure with a language model,’’ Science, vol. 379, no. 6637,
+pp. 1123–1130, Mar. 2023, doi: 10.1126/science.ade2574.
+[21] O. Wysocki, M. Wysocka, D. Carvalho, A. T. Bogatu, D. M. Gusicuma,
+M. Delmas, H. Unsworth, and A. Freitas, ‘‘An LLM-based knowledge
+synthesis and scientific reasoning framework for biomedical discovery,’’
+2024, arXiv:2406.18626.
+[22] H. Zhang, X. Xiong, M. Cheng, L. Ji, and K. Ning, ‘‘Deep learning
+enabled integration of tumor microenvironment microbial profiles and
+host gene expressions for interpretable survival subtyping in diverse types
+of cancers,’’ mSystems, vol. 9, no. 12, Dec. 2024, Art. no. 0139524, doi:
+10.1128/msystems.01395-24.
+[23] X. Wang et al., ‘‘A pathology foundation model for cancer diagnosis and
+prognosis prediction,’’Nature, vol. 634, no. 8035, pp. 970–978, Oct. 2024,
+doi: 10.1038/s41586-024-07894-z.
+[24] E. H. Abdelaziz, R. Ismail, M. S. Mabrouk, and E. Amin, ‘‘Multi-omics
+data integration and analysis pipeline for precision medicine: Systematic
+review,’’Comput. Biol. Chem. , vol. 113, Dec. 2024, Art. no. 108254, doi:
+10.1016/j.compbiolchem.2024.108254.
+[25] J. Wu, Y . Chen, P . Wang, R. J. Caselli, P . M. Thompson, J. Wang,
+and Y . Wang, ‘‘Integrating transcriptomics, genomics, and imaging in
+Alzheimer’s disease: A federated model,’’ Frontiers Radiol. , vol. 1,
+Jan. 2022, Art. no. 777030, doi: 10.3389/fradi.2021.777030.
+[26] P . Lewis, ‘‘Retrieval-augmented generation for knowledge-intensive NLP
+tasks,’’ presented at the 34th Int. Conf. Neural Inf. Process. Syst.,
+V ancouver, BC, Canada, 2020. Accessed: Jul. 11, 2025. [Online]. Avail-
+able: https://dl.acm.org/doi/abs/10.5555/3495724.3496517
+[27] J. Wei et al., ‘‘Chain-of-thought prompting elicits reasoning in large
+language models,’’ presented at the 36th Int. Conf. Neural Inf. Process.
+Syst., New Orleans, LA, USA, 2022. Accessed: Jul. 11, 2025. [Online].
+Available: https://dl.acm.org/doi/10.5555/3600270.3602070
+[28] J. P . Haran, S. K. Bhattarai, S. E. Foley, P . Dutta, D. V . Ward, V . Bucci, and
+B. A. McCormick, ‘‘Alzheimer’s disease microbiome is associated with
+dysregulation of the anti-inflammatory P-glycoprotein pathway,’’ mBio,
+vol. 10, no. 3, pp. 10–1128, Jun. 2019, doi: 10.1128/mbio.00632-19.
+[29] K.-H. Lin, T.-H. Kao, L.-C. Wang, C.-T. Kuo, P . C.-H. Chen, Y .-C. Chu,
+and Y .-C. Y eh, ‘‘Benchmarking large language models GPT-4o, Llama
+3.1, and Qwen 2.5 for cancer genetic variant classification,’’ npj Pre-
+cis. Oncol. , vol. 9, no. 1, p. 141, May 2025, doi: 10.1038/s41698-025-0
+0935-4.
+[30] M. Liu, T. Okuhara, Z. Dai, W. Huang, L. Gu, H. Okada, E. Furukawa,
+and T. Kiuchi, ‘‘Evaluating the effectiveness of advanced large lan-
+guage models in medical knowledge: A comparative study using Japanese
+national medical examination,’’ Int. J. Med. Informat., vol. 193, Jan. 2025,
+Art. no. 105673, doi: 10.1016/j.ijmedinf.2024.105673.
+VOLUME 13, 2025 145965
+
+=== PAGE 14 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+[31] Y . Chen, X. Huang, F. Y ang, H. Lin, H. Lin, Z. Zheng, Q. Liang, J. Zhang,
+and X. Li, ‘‘Performance of ChatGPT and bard on the medical licensing
+examinations varies across different cultures: A comparison study,’’ BMC
+Med. Educ., vol. 24, no. 1, p. 1372, Nov. 2024, doi: 10.1186/s12909-024-
+06309-x.
+[32] T. Chen and C. Guestrin, ‘‘XGBoost: A scalable tree boosting system,’’
+presented at the 22nd ACM SIGKDD Int. Conf. Knowl. Discovery Data
+Mining, San Francisco, CA, USA, Aug. 2016.
+[33] S. M. Lundberg and S.-I. Lee, ‘‘A unified approach to interpreting model
+predictions,’’ presented at the 31st Int. Conf. Neural Inf. Process. Syst.,
+Long Beach, CA, USA, 2017, doi: 10.5555/3295222.3295230. Accessed:
+Jul. 11, 2025.
+[34] I. A. Murad, M. I. Khaleel, and M. Y . Shakor, ‘‘Unveiling GPT-
+4o: Enhanced multimodal capabilities and comparative insights with
+ChatGPT-4,’’Int. J. Electron. Commun. Syst. , vol. 4, no. 2, pp. 127–136,
+Dec. 2024, doi: 10.24042/ijecs.v4i2.25079.
+[35] OpenAI. (2024). GPT-4o-Mini: Advancing Cost-Efficient Intelligence .
+Accessed: Jul. 11, 2025. [Online]. Available: https://openai.com/index/gpt-
+4o-mini-advancing-cost-efficient-intelligence/
+[36] D. V an V een, C. V an Uden, L. Blankemeier, J.-B. Delbrouck, A. Aali,
+C. Bluethgen, A. Pareek, M. Polacin, E. P . Reis, A. Seehofnerová,
+N. Rohatgi, P . Hosamani, W. Collins, N. Ahuja, C. P . Langlotz, J. Hom,
+S. Gatidis, J. Pauly, and A. S. Chaudhari, ‘‘Adapted large language models
+can outperform medical experts in clinical text summarization,’’ Nature
+Med., vol. 30, no. 4, pp. 1134–1142, Apr. 2024, doi: 10.1038/s41591-024-0
+2855-5.
+[37] OpenAI. (2024). OpenAI Platform Documentation: Embed-
+dings. OpenAI. Accessed: Jul. 11, 2025. [Online]. Available:
+https://platform.openai.com/docs/guides/embeddings#embedding-models
+[38] OpenAI. (2025). Pricing. OpenAI. Accessed: Jul. 11, 2025. [Online].
+Available: https://platform.openai.com/docs/pricing
+[39] T. Akiba, S. Sano, T. Y anase, T. Ohta, and M. Koyama, ‘‘Optuna:
+A next-generation hyperparameter optimization framework,’’ in Proc.
+25th ACM SIGKDD Int. Conf. Knowl. Discovery Data Mining , Anchor-
+age, AK, USA, Jul. 2019, pp. 2623–2631, doi: 10.1145/3292500.33
+30701.
+[40] D. J. Hand, P . Christen, and N. Kirielle, ‘‘F*: An interpretable
+transformation of the F-measure,’’ Mach. Learn. , vol. 110,
+no. 3, pp. 451–456, Mar. 2021, doi: 10.1007/s10994-021-0
+5964-1.
+[41] W. Bokhari and A. Bansal, ‘‘Asymmetric error control for binary classi-
+fication in medical disease diagnosis,’’ in Proc. IEEE 3rd Int. Conf. Artif.
+Intell. Knowl. Eng. (AIKE), Laguna Hills, CA, USA, Dec. 2020, pp. 25–32,
+doi: 10.1109/AIKE48582.2020.00013.
+[42] G. Charizanos, H. Demirhan, and D. Içen, ‘‘Binary classification with
+fuzzy logistic regression under class imbalance and complete separation
+in clinical studies,’’ BMC Med. Res. Methodol. , vol. 24, no. 1, p. 145,
+Jul. 2024, doi: 10.1186/s12874-024-02270-x.
+[43] A. J. Larner, ‘‘Getting it wrong: The clinical misdiagnosis of Alzheimer’s
+disease,’’ Int. J. Clin. Pract. , vol. 58, no. 11, pp. 1092–1094, Nov. 2004,
+doi: 10.1111/j.1368-5031.2004.00314.x.
+[44] C. E. Emily, ‘‘‘Missed’ mild cognitive impairment: High false-negative
+error rate based conventional diagnostic criteria,’’ J. Alzheimer’s
+Disease, vol. 52, no. 2, pp. 685–691, 2016, doi: 10.3233/JAD-1
+50986.
+[45] L. D. McDaniel, T. Lukovits, and K. D. McDaniel, ‘‘Alzheimer’s
+disease: The problem of incorrect clinical diagnosis,’’ J. Geriatric
+Psychiatry Neurol. , vol. 6, no. 4, pp. 230–234, Oct. 1993, doi:
+10.1177/089198879300600409.
+[46] N. Nachar, ‘‘The mann-whitney U: A test for assessing whether
+two independent samples come from the same distribution,’’ Tuts.
+Quant. Methods Psychol. , vol. 4, no. 1, pp. 13–20, Mar. 2008, doi:
+10.20982/tqmp.04.1.p013.
+[47] G. R. Iversen and H. Norpoth, ‘‘Analysis of variance,’’ in Data Analysis
+Using Regression and Multilevel/Hierarchical Models . Cambridge, U.K.:
+Cambridge Univ. Press, 1987, pp. 487–502.
+[48] E. Klishevich, Y . Denisov-Blanch, S. Obstbaum, I. Ciobanu, and
+M. Kosinski, ‘‘Measuring determinism in large language models for soft-
+ware code review,’’ 2025, arXiv:2502.20747.
+[49] M. Lee, P . Liang, and Q. Y ang, ‘‘CoAuthor: Designing a human-AI col-
+laborative writing dataset for exploring language model capabilities,’’ in
+Proc. CHI Conf. Hum. Factors Comput. Syst. , Apr. 2022, pp. 1–19, doi:
+10.1145/3491102.3502030.
+ZIYUAN HUANG (Member, IEEE) received
+the master’s degree in management informa-
+tion systems from Metropolitan State University,
+Minneapolis, USA, in 2014, and the Ph.D. degree
+in data sciences from Harrisburg University of
+Science and Technology, Harrisburg, PA, USA,
+in 2023, with a focus on artificial neural networks
+and optimization.
+He is currently a Postdoctoral Associate with
+the Department of Emergency Medicine and the
+Department of Biology, University of Massachusetts Chan Medical School,
+Worcester, MA, USA, and part of the Microbiology and Microbiome Dynam-
+ics AI Hub Programs. He has expertise in large language models, deep
+learning, machine learning, and optimization. Previously, he was a Data Sci-
+ence Research Fellow at Harrisburg University of Science and Technology,
+where he supported the instruction of courses in data science and machine
+learning. During his academic tenure, he engaged in various research projects
+focused on the development and optimization of artificial neural network
+models, particularly in the areas of deep learning, retrieval-augmented
+generation, and large language model integration. He has contributed to pub-
+lications, poster presentations, book chapters, and paper reviews that advance
+the understanding of machine learning optimization and the application of
+deep learning in biological and medical research. He is dedicated to fostering
+interdisciplinary collaboration and advancing research at the intersection of
+artificial intelligence and biological science.
+Dr. Huang is a member of the Alzheimer’s Association International
+Society to Advance Alzheimer’s Research and Treatment (ISTAART) and
+the Gerontological Society of America (GSA). He is also an Active Member
+of the Microsoft Certified Professional Program.
+VISHALDEEP KAUR SEKHON is currently a Senior Biostatistician with the
+Division of Geriatrics, The Johns Hopkins University School of Medicine.
+Her expertise includes analyzing large datasets, such as electronic medical
+records and claims data, focusing on oncology and Alzheimer’s demen-
+tia. Her research interests include studying cancer treatment patterns and
+understanding the epidemiological landscape of neurodegenerative diseases
+to inform evidence-based healthcare decisions. She is a member of the
+Gerontological Society of America (GSA).
+ROOZBEH SADEGHIAN (Member, IEEE)
+received the B.S. degree in electrical engineer-
+ing from Isfahan University of Technology, Iran,
+in 2002, the M.S. degree in electrical engineering
+from Shiraz University, Iran, in 2005, and the
+Ph.D. degree in electrical engineering from the
+State University of New Y ork at Binghamton,
+USA, in 2017.
+His major field of study is speech recognition
+and data analytics, focusing on the intersection of
+machine learning and healthcare applications. He has extensive experience
+in academia and industry. He is currently the Interim Dean of the School
+of Analytics and Computational Sciences with Harrisburg University of
+Science and Technology, Harrisburg, PA, USA. He is also an Associate
+Professor, where his projects include applying machine learning to diagnose
+Alzheimer’s disease, using computer vision for wildlife-vehicle collision
+prevention, and designing AI systems for diagnosing and preventing several
+health disorders. He has also contributed significantly to mentoring Ph.D.
+and M.S. students, overseeing diverse research projects, and publishing
+several articles in prestigious journals.
+Dr. Sadeghian is a member of many professional societies. He has been
+recognized with awards, such as the PA Governor’s Award for Environmental
+Excellence and the Best Paper Award at the IEEE CSCI Conference.
+145966 VOLUME 13, 2025
+
+=== PAGE 15 ===
+Z. Huang et al.: ADAM-1: An AI Reasoning and Bioinformatics Model
+MARIA L. VAIDA is currently an Assistant
+Professor of data science with Harrisburg Uni-
+versity of Science and Technology, specializing
+in advanced computational methods within the
+realms of genomics and metabolomics. With a
+focus on graph neural networks and ensemble
+modeling, her research aims to develop innova-
+tive machine learning and graph neural network
+frameworks that can uncover complex biologi-
+cal insights and enhance predictive accuracy in
+multi-omics data analysis.
+CYNTHIA JO received the B.S. degree in biology
+from the University of Massachusetts Amherst,
+in 2023. She is currently a Research Associate
+with the Dr. John Haran’s Laboratory, Depart-
+ment of Emergency Medicine, University of
+Massachusetts Chan Medical School. She is also
+studying the relationships between immune sys-
+tem activity, variations in the gut microbiome, and
+the presence of Alzheimer’s.
+BETH A. MCCORMICK received the B.A. degree
+in microbiology with a minor in history from
+the University of New Hampshire, Durham, NH,
+USA, and the Ph.D. degree in microbiology from
+The University of Rhode Island, Kingston, RI,
+USA.
+She completed her postdoctoral training in
+gastrointestinal pathophysiology and infectious
+disease at the Children’s Hospital and Brigham
+and Women’s Hospital, Harvard Medical School,
+Boston, MA, USA. Her work has led to the development of novel therapeutic
+strategies for gastrointestinal disorders, including the co-founding of Adiso
+Therapeutics, which is advancing treatments for ulcerative colitis. She is
+currently Worcester Foundation for Biomedical Research Chair II and the
+Chair and a Professor with the Department of Microbiology, University of
+Massachusetts Chan Medical School, Worcester, MA, USA. She is also the
+Founding Director of the Program in Microbiome Dynamics and the Center
+for Microbiome Research. Her research interests include the interactions
+between gut microbes and gastrointestinal physiology, particularly the role
+of microbes and their metabolites in influencing host physiology through
+intestinal multidrug efflux transporters and epithelial cell nuclear factors.
+Dr. McCormock is an Elected Member of the Board of Directors for
+the American Physiological Society. She is an Elected Fellow of American
+Academy of Microbiology and American Gastroenterological Association.
+She was a recipient of American Gastroenterological Association Mentor
+of the Y ear. She was named a Distinguished Scientist by American Phys-
+iological Society. She holds leadership positions in several professional
+organizations, including the Chair of the Basic and Clinical Intestinal Dis-
+orders Council of the American Gastroenterological Association. She serves
+as the Editor-in-Chief for Gut Microbes journal.
+DOYLE V. WARD received the Ph.D. degree
+in molecular biology from Princeton University.
+He completed his postdoctoral training at the Uni-
+versity of California at Berkeley. He is currently
+an Associate Professor with the Department of
+Microbiology and the Program in Microbiome
+Dynamics and the Director of Operations with
+the Center for Microbiome, UMass Chan Medical
+School, Worcester, MA, USA. His research inter-
+ests include microbiome and microbial genomics
+in human diseases.
+VANNI BUCCI received the Bachelor of Science
+degree in civil engineering from the University of
+Florence, in 2006, and the Master of Science and
+Ph.D. degrees in civil engineering from Northeast-
+ern University, in 2008 and 2010, respectively.
+From 2010 to 2013, he was a Postdoctoral
+Researcher of computational biology at the Memo-
+rial Sloan Kettering Cancer Center. He is cur-
+rently a Microbiology Professor and co-directs
+the Microbiome Dynamics Program, UMass Chan
+Medical School. With a background in engineering and computational
+biology, he possesses extensive experience in microbiology and synthetic
+biology. His laboratory pioneered frequentist and Bayesian regression tech-
+niques to infer host-microbiome dynamics from time-series data. These
+methods have been applied to predict the dynamics of intestinal com-
+mensal and enteropathogenic bacteria and optimize bacterial consortia that
+induce microbiome-dependent immune responses. Furthermore, his labo-
+ratory developed novel interpretable machine learning and deep learning
+methods to link microbiome dynamics to clinical outcomes. This work has
+uncovered associations between the microbiome, innate immunity induc-
+tion, and Alzheimer’s disease risk, as well as microbiome links to C.
+difficile infection. These innovative computational and machine learning
+techniques have opened new research avenues into the relationship between
+the microbiome and host immunity in response to lung pathogens, such
+as Myc tuberculosis and SARS-CoV -2, as well as during interventions
+to address multiple inflammatory conditions. On the experimental front,
+his laboratory develops microbiome-based therapeutics to treat infectious,
+inflammatory, and neurological disorders. His team created one of the first
+synthetically engineered probiotics that inhibits pathogenic Salmonella by
+sensing Salmonella-induced intestinal inflammation. Leveraging this, his
+group explores targeted microbiome intervention strategies to eradicate drug-
+resistant Enterobacteriaceae, such as Carbapenem-Resistant Klebsiella and
+ESBL-producing E. coli, from the gastrointestinal tract. Recently, he dis-
+covered how succinate-producing bacteria promote the expansion of colonic
+Tuft Cells, demonstrating that supplementation with these microbes protects
+against C. difficile-associated disease in a Pou2f3-dependent manner. His
+research interests include developing computational modeling and exper-
+imental methods to understand complex microbial/microbiome dynamics,
+particularly how environmental influences, such as diet and medical inter-
+ventions and impact health and disease.
+JOHN P. HARAN received the B.S. degree in bio-
+chemistry from Rensselaer Polytechnic Institute,
+in 1999, the M.D. and Ph.D. degrees in biomedi-
+cal sciences from the University of Massachusetts
+Chan Medical School, Worcester, MA, USA, in
+2007 and 2018, respectively.
+He finished his residency training in emergency
+medicine at the Alpert Medical School, Brown
+University, in 2011. He is currently a Professor
+of emergency medicine and microbiology with the
+UMass Chan Medical School. He is also the Research Director of the
+Department of Emergency Medicine and the Clinical Director of the Pro-
+gram in Microbiome Dynamics, UMass Chan Medical School. His research
+background focuses on investigations into older adult health and associations
+with microbiome composition and health outcomes in both nursing home and
+community-dwelling patients. His earlier work had focused on the micro-
+biome and how dysbiosis can lead to increased risk of bacterial colonization
+and infection. The centerpiece of his current laboratory’s focus is on the
+microbiome-gut-brain axis and cognitive function in older adults, especially
+those suffering from Alzheimer’s disease. Working with longitudinal cohorts
+of older adults, his laboratory has begun to unravel the microbiome’s role
+in inflammation, immune dysfunction, and neurodegeneration. Importantly,
+they have published findings on the dysbiotic microbiome in older adults
+with Alzheimer’s disease and have replicated these results in both in vitro
+systems and transgenic Alzheimer’s disease mouse models. His laboratory
+includes a collaborative team that has demonstrated the power of machine
+learning and AI in interpreting complex findings and discovering possible
+causal mechanisms in Alzheimer’s disease.
+VOLUME 13, 2025 145967
+
