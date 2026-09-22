@@ -86,14 +86,20 @@ class Settings(BaseSettings):
     groq_api_key: Optional[str] = None
     groq_model: str = "llama-3.3-70b-versatile"
 
-    # OpenAI — used for ADAM Classification & Summarization agents (paper-conformant)
+    # OpenAI — legacy / direct provider option
     openai_api_key: Optional[str] = None
 
-    # ADAM Agent Models
-    # Summarization Agent: paper specifies GPT-4o; Groq llama-3.3-70b used as fallback
-    adam_summarization_model: str = "gpt-4o"
-    # Classification Agent: paper specifies GPT-4o-mini; Groq llama-3.3-70b used as fallback
-    adam_classification_model: str = "gpt-4o-mini"
+    # OpenRouter — Centralized provider for ADAM multi-agent reasoning (paper-conformant)
+    openrouter_api_key: Optional[str] = None
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    openrouter_app_name: str = "ADAM-1 Enhanced"
+    openrouter_site_url: str = "http://localhost:5173"
+
+    # ADAM Agent Models (OpenRouter identifiers for paper-conformant models)
+    # Summarization Agent: paper specifies GPT-4o -> openai/gpt-4o
+    adam_summarization_model: str = "openai/gpt-4o"
+    # Classification Agent: paper specifies GPT-4o-mini -> openai/gpt-4o-mini
+    adam_classification_model: str = "openai/gpt-4o-mini"
 
     @field_validator("groq_model", mode="before")
     @classmethod

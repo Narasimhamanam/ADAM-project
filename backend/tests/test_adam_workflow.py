@@ -239,8 +239,22 @@ async def test_adam_llm_agent_classification_mocked():
         "malnutrition_score": 2.0,
     }
 
-    with patch("app.rag.adam_llm.resolve_llm_config", return_value=("openai", "gpt-4o", "gpt-4o-mini", "mock_key")):
-        with patch("app.rag.adam_llm._call_chat_completion", return_value=(mock_llm_json, 150.0, None)):
+    from unittest.mock import MagicMock
+    from app.rag.openrouter_client import OpenRouterCompletionResult
+
+    mock_client = MagicMock()
+    mock_client.is_available = True
+    mock_client.chat_completion.return_value = OpenRouterCompletionResult(
+        content=mock_llm_json,
+        model="openai/gpt-4o-mini",
+        elapsed_ms=150.0,
+        prompt_tokens=220,
+        completion_tokens=65,
+        total_tokens=285,
+    )
+
+    with patch("app.rag.adam_llm.resolve_llm_config", return_value=("openrouter", "openai/gpt-4o", "openai/gpt-4o-mini", "mock_key")):
+        with patch("app.rag.adam_llm.get_openrouter_client", return_value=mock_client):
             res = call_classification_agent(
                 comp_agent_output=comp_input,
                 summary_text="Patient presents with significant frailty and mucosal dysbiosis.",
@@ -254,9 +268,10 @@ async def test_adam_llm_agent_classification_mocked():
             assert res.confidence == "high"
             assert res.agrees_with_xgboost is False
             assert res.is_fallback is False
-            assert res.llm_model == "gpt-4o-mini"
-            assert res.llm_provider == "openai"
+            assert res.llm_model == "openai/gpt-4o-mini"
+            assert res.llm_provider == "openrouter"
             assert "Shannon entropy collapse" in res.key_factors
+            assert res.token_usage["total_tokens"] == 285
 
 
 @pytest.mark.asyncio

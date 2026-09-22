@@ -356,7 +356,10 @@ export default function AdamPerformance() {
             </span>
           )}
           <div className="text-[11px] text-surface-400">
-            Decision Engine: <strong className="text-surface-200">Multi-Agent LLM ({curr.llm_metadata?.llm_model_classification || 'GPT-4o-mini'})</strong>
+            Decision Engine: <strong className="text-surface-200">Multi-Agent LLM ({curr.llm_metadata?.llm_model_classification || 'openai/gpt-4o-mini'})</strong>
+            {curr.llm_metadata?.llm_provider && (
+              <span className="ml-1 text-surface-400">via <span className="font-mono text-accent-400 font-semibold">{curr.llm_metadata.llm_provider}</span></span>
+            )}
           </div>
         </div>
       </div>
@@ -627,7 +630,7 @@ export default function AdamPerformance() {
                       Agreement Rate: {curr.agreement_rate_pct ?? curr.error_correction_matrix.agreement_rate_pct}%
                     </span>
                     <span className="px-2.5 py-1 rounded text-xs font-mono font-semibold bg-surface-800 text-surface-300 border border-surface-700">
-                      Agent: {curr.llm_metadata?.llm_model_classification || 'gpt-4o-mini'} ({curr.llm_metadata?.llm_provider || 'paper_historical'})
+                      Agent: {curr.llm_metadata?.llm_model_classification || 'openai/gpt-4o-mini'} ({curr.llm_metadata?.llm_provider || 'openrouter'})
                     </span>
                   </div>
                 </div>

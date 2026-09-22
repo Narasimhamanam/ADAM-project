@@ -336,10 +336,20 @@ def _batch_evaluate_adam(
         models_used.add(src)
         providers_used.add(prov)
 
+        p_res = pipeline_results[i]
+        comp_res = p_res.get("computational_agent", {})
+        pos_drivers = comp_res.get("shap_explanation", {}).get("positive_drivers", [])
+        alpha_div = comp_res.get("alpha_diversity", {})
+        beta_div = comp_res.get("beta_diversity", {})
+        sum_agent = p_res.get("summarization_agent", {})
+        cls_agent = p_res.get("classification_agent", {})
+
         sample_traceability.append({
             "sample_id": sid,
             "ground_truth": yt,
             "ground_truth_label": "Alzheimer's" if yt == 1 else "Control",
+            "xgboost_prediction": yx,
+            "xgboost_probability": round(float(probs_xgb[i]), 4),
             "xgb_prediction": yx,
             "xgb_probability": round(float(probs_xgb[i]), 4),
             "adam_prediction": ya,
@@ -350,6 +360,14 @@ def _batch_evaluate_adam(
             "category": cat,
             "is_discordant": ya != yx,
             "is_corrected": ya == yt and yx != yt,
+            "agreement_with_xgboost": ya == yx,
+            "shap_features": [c.get("feature", "") for c in pos_drivers[:3]],
+            "diversity_metrics": {
+                "shannon_index": round(float(alpha_div.get("shannon_index", 0.0)), 2),
+                "bray_curtis_distance": round(float(beta_div.get("bray_curtis_distance", 0.0)), 4),
+            },
+            "summarization_result": (sum_agent.get("summary_text", "")[:180] + "...") if len(sum_agent.get("summary_text", "")) > 180 else sum_agent.get("summary_text", ""),
+            "classification_result": cls_agent.get("decision_basis", ""),
         })
 
     agree_count = sum(1 for ya, yx in zip(y_pred_adam, y_pred_xgb) if ya == yx)
