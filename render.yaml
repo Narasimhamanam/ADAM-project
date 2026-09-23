@@ -43,12 +43,15 @@ services:
       - key: CORS_ORIGINS
         value: "*"
 
+      - key: LLM_PROVIDER
+        value: "groq"
+
       # Set securely in Render Dashboard
       - key: GROQ_API_KEY
         sync: false
 
       - key: GROQ_MODEL
-        value: "llama-3.3-70b-versatile"
+        value: "openai/gpt-oss-120b"
 
 
   # ─────────────────────────────────────────────────────────────
