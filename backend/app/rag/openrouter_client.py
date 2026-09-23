@@ -67,12 +67,14 @@ class OpenRouterClient:
         max_retries: int = 2,
     ):
         settings = get_settings()
-        self._api_key = (
-            api_key
-            or os.environ.get("OPENROUTER_API_KEY")
-            or settings.openrouter_api_key
-            or ""
-        ).strip()
+        if api_key is not None:
+            self._api_key = api_key.strip()
+        else:
+            self._api_key = (
+                os.environ.get("OPENROUTER_API_KEY")
+                or settings.openrouter_api_key
+                or ""
+            ).strip()
         self.base_url = (
             base_url
             or os.environ.get("OPENROUTER_BASE_URL")
@@ -229,6 +231,8 @@ class OpenRouterClient:
                 logger.warning("OpenRouter unexpected client exception", error=str(exc))
 
             retries += 1
+            if last_status in (401, 402):
+                break
             if retries <= self.max_retries:
                 # Exponential backoff with jitter: (1.0s, 2.0s...)
                 backoff = (1.5 ** retries) + random.uniform(0.1, 0.5)
@@ -347,6 +351,8 @@ class OpenRouterClient:
                 last_error = f"Unexpected client error: {str(exc)}"
 
             retries += 1
+            if last_status in (401, 402):
+                break
             if retries <= self.max_retries:
                 backoff = (1.5 ** retries) + random.uniform(0.1, 0.5)
                 await asyncio.sleep(backoff)

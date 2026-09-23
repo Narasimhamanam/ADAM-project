@@ -66,7 +66,11 @@ def get_trained_pipeline():
     return _CACHED_XGB_MODEL, _CACHED_FEATURE_NAMES, _CACHED_BACKGROUND
 
 
-def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
+def run_adam_pipeline(
+    sample_id: str,
+    use_rag: bool = True,
+    strict_research_mode: bool = False,
+) -> Dict[str, Any]:
     """Execute complete real-data ADAM pipeline for a specific sample."""
     clean_id = str(sample_id).strip().upper()
     df = load_dataset_df()
@@ -141,10 +145,27 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
     positive_drivers = [c for c in all_contribs if c["shap_value"] > 0][:5]
     protective_drivers = [c for c in all_contribs if c["shap_value"] < 0][:5]
 
-    # 4. Literature Grounding via RAG
-    # Query literature based on top biological biomarker
-    top_biomarker = positive_drivers[0]["feature"] if positive_drivers else "Phocaeicola dorei"
-    lit_results = search_literature(f"{top_biomarker} Alzheimer microbiome gut brain", top_k=2)
+    # 4. Literature Grounding via RAG (Dynamic Multi-Modal Retrieval)
+    if use_rag:
+        query_tokens = []
+        if positive_drivers:
+            query_tokens.extend([c["feature"] for c in positive_drivers[:2]])
+        if top_abundant_taxa and top_abundant_taxa[0]["species"] not in query_tokens:
+            query_tokens.append(top_abundant_taxa[0]["species"])
+        if cfs >= 6.0:
+            query_tokens.append("clinical frailty")
+        if malnutrition >= 2.0:
+            query_tokens.append("malnutrition")
+        if ppi == 1.0:
+            query_tokens.append("proton pump inhibitors")
+        if alpha.get("shannon_index", 3.0) < 2.5:
+            query_tokens.append("alpha diversity collapse")
+
+        rag_query = f"{' '.join(query_tokens)} Alzheimer gut microbiome dementia".strip()
+        lit_results = search_literature(rag_query, top_k=3)
+    else:
+        rag_query = ""
+        lit_results = []
 
     citations = [
         {
@@ -152,6 +173,8 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
             "title": d.get("title"),
             "journal": d.get("journal"),
             "year": d.get("year"),
+            "snippet": d.get("snippet", ""),
+            "relevance_score": d.get("similarity_score", 0.0),
         }
         for d in lit_results
     ]
@@ -198,6 +221,7 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         rag_docs=lit_results,
         sample_context=sample_context,
         sample_id=clean_id,
+        strict_research_mode=strict_research_mode,
     )
     summary_text = sum_res.get("summary_text", "")
 
@@ -261,13 +285,19 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
         rag_docs=lit_results,
         sample_context=sample_context,
         sample_id=clean_id,
+        strict_research_mode=strict_research_mode,
     )
 
-    adam_binary_label = 1 if cls_result.prediction == "AD" else 0
-    adam_classification = "Alzheimer's Disease (Positive)" if adam_binary_label == 1 else "Cognitive Normal (Control)"
-    adam_confidence = float(cls_result.confidence_score)
+    if cls_result.prediction == "FAILED":
+        adam_binary_label = -1
+        adam_classification = "FAILED"
+        adam_confidence = 0.0
+    else:
+        adam_binary_label = 1 if cls_result.prediction == "AD" else 0
+        adam_classification = "Alzheimer's Disease (Positive)" if adam_binary_label == 1 else "Cognitive Normal (Control)"
+        adam_confidence = float(cls_result.confidence_score)
     reasoning_rule = cls_result.decision_basis
-    adaptive_adjustment_applied = bool(abs(cls_result.probability - ml_prob) > 0.01)
+    adaptive_adjustment_applied = bool(abs(cls_result.probability - ml_prob) > 0.01) if cls_result.probability >= 0 else False
 
     classification_checkpoints = [
         {
@@ -378,6 +408,10 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
             "llm_provider": sum_res.get("llm_provider"),
             "llm_model": sum_res.get("llm_model"),
             "is_fallback": sum_res.get("is_fallback", False),
+            "fallback_used": sum_res.get("fallback_used", False),
+            "success": sum_res.get("success", False),
+            "error": sum_res.get("error"),
+            "prompt_hash": sum_res.get("prompt_hash"),
             "elapsed_ms": sum_res.get("elapsed_ms", 0.0),
             "token_usage": sum_res.get("token_usage", {}),
             "checkpoints": summarization_checkpoints,
@@ -395,6 +429,10 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
             "llm_provider": cls_result.llm_provider,
             "llm_model": cls_result.llm_model,
             "is_fallback": cls_result.is_fallback,
+            "fallback_used": cls_result.fallback_used,
+            "success": cls_result.success,
+            "error": cls_result.error,
+            "prompt_hash": cls_result.prompt_hash,
             "elapsed_ms": cls_result.elapsed_ms,
             "token_usage": cls_result.token_usage,
             "checkpoints": classification_checkpoints,
@@ -408,6 +446,23 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
             "adam_source": cls_result.llm_model,
             "adam_provider": cls_result.llm_provider,
             "is_fallback": cls_result.is_fallback,
+            "fallback_used": bool(sum_res.get("fallback_used", False) or cls_result.fallback_used),
+            "strict_research_mode": strict_research_mode,
+            "strict_mode_valid": bool(sum_res.get("success", False) and cls_result.success),
+            "failure_reason": (
+                None if (sum_res.get("success", False) and cls_result.success)
+                else (sum_res.get("error") or cls_result.error or "Pipeline execution failure")
+            ),
+            "rag_details": {
+                "query": rag_query,
+                "document_ids": [d.get("pmid") for d in lit_results],
+                "similarity_scores": [round(float(d.get("similarity_score", 0.0)), 4) for d in lit_results],
+                "retrieved_text": "\n\n".join([str(d.get("abstract") or d.get("content") or d.get("snippet", "")) for d in lit_results]) if use_rag else "",
+            },
+            "prompt_verification": {
+                "summarization_prompt_hash": sum_res.get("prompt_hash"),
+                "classification_prompt_hash": cls_result.prompt_hash,
+            },
             "ml_model_probability": ml_prob,
             "ml_model_label": "Alzheimer's Disease" if ml_label == 1 else "Control",
             "xgboost_prediction": ml_label,
@@ -435,8 +490,10 @@ def run_adam_pipeline(sample_id: str) -> Dict[str, Any]:
                 "provider": cls_result.llm_provider,
                 "classification_model": cls_result.llm_model,
                 "summarization_model": sum_res.get("llm_model"),
+                "fallback_used": bool(sum_res.get("fallback_used", False) or cls_result.fallback_used),
+                "strict_mode_valid": bool(sum_res.get("success", False) and cls_result.success),
             },
-            "methodology_version": "ADAM-1 Enhanced Full-Stack Multi-Agent v2.5",
+            "methodology_version": "ADAM-1 Paper-Aligned Enhanced Multi-Agent v2.5",
         },
     }
 

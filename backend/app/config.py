@@ -82,9 +82,12 @@ class Settings(BaseSettings):
     # pgvector
     pgvector_enabled: bool = True
 
-    # AI / LLM Provider (Groq — used for AIRA Research Assistant chatbot)
+    # AI / LLM Provider Selection
+    llm_provider: str = "groq"
+
+    # AI / LLM Provider (Groq)
     groq_api_key: Optional[str] = None
-    groq_model: str = "llama-3.3-70b-versatile"
+    groq_model: str = "openai/gpt-oss-120b"
 
     # OpenAI — legacy / direct provider option
     openai_api_key: Optional[str] = None
@@ -95,17 +98,19 @@ class Settings(BaseSettings):
     openrouter_app_name: str = "ADAM-1 Enhanced"
     openrouter_site_url: str = "http://localhost:5173"
 
-    # ADAM Agent Models (OpenRouter identifiers for paper-conformant models)
-    # Summarization Agent: paper specifies GPT-4o -> openai/gpt-4o
-    adam_summarization_model: str = "openai/gpt-4o"
-    # Classification Agent: paper specifies GPT-4o-mini -> openai/gpt-4o-mini
-    adam_classification_model: str = "openai/gpt-4o-mini"
+    # Google Gemini API
+    gemini_api_key: Optional[str] = None
+    gemini_model: str = "gemini-3.6-flash"
+
+    # ADAM Agent Models (defaults to openai/gpt-oss-120b via Groq)
+    adam_summarization_model: str = "openai/gpt-oss-120b"
+    adam_classification_model: str = "openai/gpt-oss-120b"
 
     @field_validator("groq_model", mode="before")
     @classmethod
     def normalize_groq_model(cls, v: Optional[str]) -> str:
-        if not v or "compound" in v.lower() or "mini" in v.lower():
-            return "llama-3.3-70b-versatile"
+        if not v:
+            return "openai/gpt-oss-120b"
         return v
 
 

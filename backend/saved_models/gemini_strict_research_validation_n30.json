@@ -1,0 +1,1613 @@
+{
+  "metadata": {
+    "title": "ADAM-1 Enhanced: Google Gemini API Strict Research Validation (N=30)",
+    "timestamp": "2026-09-23T13:50:43Z",
+    "provider": "Google Gemini API",
+    "model": "gemini-3.6-flash",
+    "sdk": "google-genai 2.25.0",
+    "cohort": "Balanced Test Set (N=30; 15 Control, 15 AD)",
+    "protocol": "paper_reconstructed",
+    "seed": 42,
+    "strict_research_mode": true
+  },
+  "summary": {
+    "total_samples": 30,
+    "gemini_live_calls_attempted": 120,
+    "gemini_live_calls_succeeded": 0,
+    "fallback_count": 0,
+    "prompts_differ_count": 30,
+    "prompts_differ_percent": 100.0,
+    "rag_changed_prediction_count": 0,
+    "rag_corrected_xgboost": 0,
+    "rag_introduced_error": 0,
+    "rag_had_no_effect": 30,
+    "xgboost_corrections": 0,
+    "harmful_divergences": 26,
+    "agreement_with_xgboost": 0,
+    "metrics": {
+      "xgboost_baseline": {
+        "accuracy": 0.8667,
+        "precision": 0.9231,
+        "recall": 0.8,
+        "f1_score": 0.8571,
+        "auc": 0.9333
+      },
+      "gemini_without_rag": {
+        "accuracy": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "auc": 0.0
+      },
+      "gemini_with_rag": {
+        "accuracy": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1_score": 0.0,
+        "auc": 0.0
+      }
+    }
+  },
+  "samples": [
+    {
+      "index": 0,
+      "sample_id": "DC036",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0662,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "09f16ae7d6beb643ac6946891f164718abd112b4ccb641a297cd45f894a81c0c",
+        "classification_prompt_hash": "1b9da7819c4a4465efdc0acd2d415385cbef838c15d4c23cd0194253cecbc14f",
+        "latency_ms": 593.44,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "malnutrition_indicator_sco Phocaeicola dorei clinical frailty malnutrition proton pump inhibitors Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC8112940",
+          "PMC8549102"
+        ],
+        "retrieved_similarity_scores": [
+          0.366,
+          0.1545,
+          0.14
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "752c5ca0b7058962b9a312374fb54620da0cced1cee9dedab42977ac7a503b75",
+        "classification_prompt_hash": "7d91398b82476661c8115569802d9aeef67893f7808e8fe59fe68e8b218087bc",
+        "latency_ms": 585.55,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 1,
+      "sample_id": "DC039",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0309,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "10f6739fa8007a78ba54300ac4dca7d33e95208f49bf342d80865f55e4065731",
+        "classification_prompt_hash": "1025d340a95a6cdc0eb8ff2a3dee70b20c3f01e46fd2ef823b4d8dc3b793ce7a",
+        "latency_ms": 528.69,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "malnutrition_indicator_sco Erysipelotrichaceae bacterium 3 1 53 Bacteroides ovatus clinical frailty malnutrition proton pump inhibitors Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC8549102",
+          "PMC7912345"
+        ],
+        "retrieved_similarity_scores": [
+          0.3876,
+          0.1483,
+          0.1304
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "36a2380718a75f235d5fb99d7784f88a3f502b74113955e286b83271eaf7e3e9",
+        "classification_prompt_hash": "0b84e607108dadab69f808227a19325c6cf821aa2fadd7fecb29528fb49ee0c6",
+        "latency_ms": 565.23,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 2,
+      "sample_id": "FB094",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0937,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "87363c2efbc5648b59e7265f2749107c9a294f352a6b09b48c385d506817b710",
+        "classification_prompt_hash": "9edc1b07a5728a2d68bed780194801edbf8774694a026c92afb6784e727e3f00",
+        "latency_ms": 514.13,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "clinical_frailty_scale malnutrition_indicator_sco Escherichia coli clinical frailty malnutrition proton pump inhibitors alpha diversity collapse Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC8549102",
+          "PMC8001235"
+        ],
+        "retrieved_similarity_scores": [
+          0.4063,
+          0.2716,
+          0.1856
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "6bfc5d9edec61848baedd6b7e2337527fcee89798cf13fb38d1e524c9fdfa00f",
+        "classification_prompt_hash": "d7cd373521c6f5b37c794d587f1ad549330d572924e11114e0c00bfe2736b0aa",
+        "latency_ms": 557.51,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 3,
+      "sample_id": "DC054",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0304,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "37ee95aebec48327b61e2814ba6b3d98af7f320b92f42e22879ced07b2873868",
+        "classification_prompt_hash": "e330e0d3ecee50b094bea63fe28a3fd3b5b286869d86967a1da429688baadb11",
+        "latency_ms": 509.78,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Phocaeicola dorei GGB3433 SGB4573 GGB9632 SGB15089 proton pump inhibitors Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC8112940",
+          "PMC7912345"
+        ],
+        "retrieved_similarity_scores": [
+          0.3617,
+          0.1746,
+          0.1299
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "c4556df42acc7260383c9f2ce05c73ca52ce3c7e5c6b84630b1576c3dc5531f4",
+        "classification_prompt_hash": "b790031b3188adb6b37a61a0b1e48ab3319f86b446a4525b11d9c6e71ba6f109",
+        "latency_ms": 533.13,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 4,
+      "sample_id": "FB121",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9656,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "008be2cd9a4ec7ded9a739eb2abdbc536eccb4adfed7fc78010f2476c836b190",
+        "classification_prompt_hash": "d2c5ed9607046fd41318ae61ee4548e63ddd8b3394d59ac9462cb4be4f611087",
+        "latency_ms": 497.58,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Neglecta timonensis clinical_frailty_scale Alistipes onderdonkii clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8472911",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.1741,
+          0.1652,
+          0.1228
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "732816c76703057a8321be9a0a62b382be133e52e0e5c805e63ac773685384cc",
+        "classification_prompt_hash": "a5fe4f52733f1bbdf26f5d670fd1755e004086c3dd49821e09bab60b4cc4ebb5",
+        "latency_ms": 518.78,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 5,
+      "sample_id": "DC099",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0189,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "3aee9f262fdfb8d2314a5ede386eadaf392bf0ebdee84592bdd4b6bd8d22dbcb",
+        "classification_prompt_hash": "45417a9e5c5502fedec3648fc55db9c944f45286a4ea7963b3c992a0c71799c3",
+        "latency_ms": 529.42,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "malnutrition_indicator_sco Phocaeicola dorei malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8112940",
+          "PMC8472911",
+          "PMC7912345"
+        ],
+        "retrieved_similarity_scores": [
+          0.241,
+          0.1752,
+          0.1056
+        ],
+        "retrieved_text_snippet": "Phocaeicola dorei (formerly Bacteroides dorei) possesses immunogenic lipid A modifications that stimulate Toll-like receptor 4 (TLR4) signaling. In elderly cohorts with neurodegenerative disease, increased abundance of P. dorei was identified as one of the strongest indicators of systemic low-grade ",
+        "summarization_prompt_hash": "f607c6a1fa947db9c8cc4dd7a01284d13c971beece613ddaf41c971919c354d3",
+        "classification_prompt_hash": "5cfe2226d24216dd1a6343a39f0a2aada3b881b534df0336b51033620fee0a34",
+        "latency_ms": 473.56,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 6,
+      "sample_id": "DC089",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0423,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "843419c10f24ec54b6baeccd24df79096bf264f0b3f6beb32afa044099eb01da",
+        "classification_prompt_hash": "21246e1c26a51ed5764d9af97806eddcf584aad232948a0ebaa5fe198d927185",
+        "latency_ms": 497.82,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Barnesiella intestinihominis Phocaeicola dorei Ruminococcus sp NSJ 71 Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8112940",
+          "PMC8472911",
+          "PMC7912345"
+        ],
+        "retrieved_similarity_scores": [
+          0.2576,
+          0.1873,
+          0.1129
+        ],
+        "retrieved_text_snippet": "Phocaeicola dorei (formerly Bacteroides dorei) possesses immunogenic lipid A modifications that stimulate Toll-like receptor 4 (TLR4) signaling. In elderly cohorts with neurodegenerative disease, increased abundance of P. dorei was identified as one of the strongest indicators of systemic low-grade ",
+        "summarization_prompt_hash": "0bb626210b7fa39a7779036ef055affd9087c0ae41bb215cd7dcb740dd5e284f",
+        "classification_prompt_hash": "c503467fe7f6c0930693d5c9dfc1b78aeb4163a1523e581d4cf27d8a2757e80f",
+        "latency_ms": 603.48,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 7,
+      "sample_id": "FB185",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.013,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "8570dba548d0c1974c9dbd85dea085cbad1b7220be64e3a586368011bc818b2d",
+        "classification_prompt_hash": "3c17114585afbc2330c029c4fe262dbb901ff77091ac94c6c994d5c56c33b593",
+        "latency_ms": 495.18,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "cholinesterase inhibitors Clostridia bacterium Lactococcus petauri alpha diversity collapse Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC7912345",
+          "PMC8549102",
+          "PMC8619023"
+        ],
+        "retrieved_similarity_scores": [
+          0.2846,
+          0.2423,
+          0.2028
+        ],
+        "retrieved_text_snippet": "Cholinesterase inhibitors (donepezil, galantamine, rivastigmine) are standard pharmacological agents prescribed for cognitive symptoms in Alzheimer's disease. Acetylcholinesterase inhibition modulates vagal nerve stimulation and enteric motility, inducing secondary compositional shifts in gut taxa w",
+        "summarization_prompt_hash": "5675ef0decb9e94124621015f9ccc32dc39e444861eff5af0127da95c165390f",
+        "classification_prompt_hash": "e731f5b133da294a707cd91e8f15f72538df08bd85984b522d287720323f5e2e",
+        "latency_ms": 529.02,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 8,
+      "sample_id": "FB079",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9804,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "f2be410b48bb8ebfc94832a257313a94daea25ceb1ad8d4877f6274e3338cfa6",
+        "classification_prompt_hash": "714dd37d8e5ef171daccaf45338dba741653d0973bf79d3d01b0850a91b4e67a",
+        "latency_ms": 501.22,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Neglecta timonensis malnutrition_indicator_sco Clostridia bacterium clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8472911",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.1741,
+          0.1652,
+          0.1228
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "4d32fafbdba763087105354a2d4d3418f99938c35c8e5f45d319afb43b6a5f1b",
+        "classification_prompt_hash": "b7b706110ca6262ef5033236f0d86bd53da3db165ab7f0e2c51ae7240bc3458f",
+        "latency_ms": 595.32,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 9,
+      "sample_id": "FB386",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.941,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "fc1780483569faeaa9e67ce9088a8c110ad2f6dc1244768a6587313d1636dcff",
+        "classification_prompt_hash": "4ab2198c7d404488a177e6e7b4eed0a3a8c1a69b32e0a19c652023e5e6c8a6ad",
+        "latency_ms": 499.42,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "clinical_frailty_scale malnutrition_indicator_sco Bacteroides caccae clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC9284102",
+          "PMC8396518"
+        ],
+        "retrieved_similarity_scores": [
+          0.2046,
+          0.1444,
+          0.1437
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "3af27c51f2ec333cb5426316e05e27880cbffe9da65eedf4d42eb4f63b372bd9",
+        "classification_prompt_hash": "9404e1a95456d1a7f9e72ab85be8955ff36dabadb63399df421ac2a3a87a6696",
+        "latency_ms": 501.76,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 10,
+      "sample_id": "FB109",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9583,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "300bccb581a7585b5697ba1293a8ba31797ef28fc06feb32edf067ca9a0f0248",
+        "classification_prompt_hash": "64f80946f26c5d4455eee944a7d002cb5549d8339f8467e5ffc2cb487201dc43",
+        "latency_ms": 519.4,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Neglecta timonensis malnutrition_indicator_sco Akkermansia sp BIOML A40 clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8472911",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.1741,
+          0.1652,
+          0.1228
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "3f72c17d3ac2411a0aaf64340d6497a1e535e324da49da4b9da3ea2d337323e1",
+        "classification_prompt_hash": "a66909dcfb2ae746c297fac0af516b3e81650e5d1e96cc8e3ad76af0854606d9",
+        "latency_ms": 511.05,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 11,
+      "sample_id": "FB186",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0112,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "487d3198516ee2d5aa84c690c41ac06d140e50f78d629ea9a1adbfaa03126914",
+        "classification_prompt_hash": "ca647f47941fea43c9342ac7377eda04faf2a1682c078a2eb5b47b9e64ee5fdd",
+        "latency_ms": 498.21,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "cholinesterase inhibitors Clostridia bacterium Lactococcus petauri alpha diversity collapse Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC7912345",
+          "PMC8549102",
+          "PMC8619023"
+        ],
+        "retrieved_similarity_scores": [
+          0.2846,
+          0.2423,
+          0.2028
+        ],
+        "retrieved_text_snippet": "Cholinesterase inhibitors (donepezil, galantamine, rivastigmine) are standard pharmacological agents prescribed for cognitive symptoms in Alzheimer's disease. Acetylcholinesterase inhibition modulates vagal nerve stimulation and enteric motility, inducing secondary compositional shifts in gut taxa w",
+        "summarization_prompt_hash": "8975214810ea368171512130260bff498bd253064a69ed1445cffa0c26ad4243",
+        "classification_prompt_hash": "1bcbcddd73eab727a19ca2b88ac345fac27dd5b479324d70135db69678dfa8f7",
+        "latency_ms": 504.23,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 12,
+      "sample_id": "FB161",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.5146,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "c4c0a366f28e7b9272f9734b68cc4ead26e8abbd4cfd90842e91b46d5e61e4c8",
+        "classification_prompt_hash": "16401858be750687bdbef74d8c36eb55cfe1588ce52f82fd6a2405cf9ec3027d",
+        "latency_ms": 522.43,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "malnutrition_indicator_sco Phocaeicola dorei Methanobrevibacter smithii clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8112940",
+          "PMC8549102",
+          "PMC8472911"
+        ],
+        "retrieved_similarity_scores": [
+          0.2035,
+          0.1844,
+          0.148
+        ],
+        "retrieved_text_snippet": "Phocaeicola dorei (formerly Bacteroides dorei) possesses immunogenic lipid A modifications that stimulate Toll-like receptor 4 (TLR4) signaling. In elderly cohorts with neurodegenerative disease, increased abundance of P. dorei was identified as one of the strongest indicators of systemic low-grade ",
+        "summarization_prompt_hash": "d2b88f9c6516f3d0256f2922a6e559f9b7bc7762c1c8279bbf711caa2f45feb6",
+        "classification_prompt_hash": "358ba1092dc1f988c78b0b6103395a4674e1bf57a086ea15a595ed2014fd1656",
+        "latency_ms": 577.52,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 13,
+      "sample_id": "FB151",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9899,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "918b65b23c3eba2d2491f07bdd9fa03232cc51b90211290daa7cbc09017539d9",
+        "classification_prompt_hash": "e7cd1800b9c68fd58fb542d6b540352b3e19d8bab04d7f93a029fcfe69546878",
+        "latency_ms": 675.76,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Neglecta timonensis malnutrition_indicator_sco Alistipes onderdonkii clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8472911",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.1741,
+          0.1652,
+          0.1228
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "88fae74d2885c5d4d61214980b7d221872378d25631a181f0b3f60e1fb194a6e",
+        "classification_prompt_hash": "8fd9135711d213b64b4170d7721911c9e147b4fe42df941afc7ee263bdd5701d",
+        "latency_ms": 500.2,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 14,
+      "sample_id": "FB225",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9409,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "cbe928f52d39af37c42ba12b6737e1575f7e6aaae99aacff709124023c29914e",
+        "classification_prompt_hash": "e24f70896054dcc92e22ad7b439fc6c0ef5edb902a7f27c240fe4c1085e4ee2a",
+        "latency_ms": 493.46,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Neglecta timonensis malnutrition_indicator_sco GGB3005 SGB3996 clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8472911",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.1741,
+          0.1652,
+          0.1228
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "42641e0299bd6f992968bc8182284f69272163baa5acdbb0d6f80db19f2068b2",
+        "classification_prompt_hash": "19cb398c7906f08eee7fb3e1f17a53b81ac980c60f07f9b5e5cb835206cc85d8",
+        "latency_ms": 522.88,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 15,
+      "sample_id": "DC088",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0378,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "d059307c46e46962e2e0a2bf29bff223ff58f6bf4b0f1ee508d815d473907c85",
+        "classification_prompt_hash": "d63851174b704980e74578660771ba5c4581e03b374eb5aba0343f44cd063109",
+        "latency_ms": 509.25,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Barnesiella intestinihominis Phocaeicola dorei Akkermansia sp KLE1605 Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8112940",
+          "PMC8472911",
+          "PMC7912345"
+        ],
+        "retrieved_similarity_scores": [
+          0.2576,
+          0.1873,
+          0.1129
+        ],
+        "retrieved_text_snippet": "Phocaeicola dorei (formerly Bacteroides dorei) possesses immunogenic lipid A modifications that stimulate Toll-like receptor 4 (TLR4) signaling. In elderly cohorts with neurodegenerative disease, increased abundance of P. dorei was identified as one of the strongest indicators of systemic low-grade ",
+        "summarization_prompt_hash": "79d810db0fde811366605079e2d50dd6f7e69b048ca09ed286360ad815a84491",
+        "classification_prompt_hash": "dcb6d91a653ad18bceb25183485571d0cfad6caaafddeb78a4494ea5a9bc0a91",
+        "latency_ms": 509.63,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 16,
+      "sample_id": "FB177",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9931,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "485df3f792fe91812086c1681113b914f3529c85637f9975f9ea969658088cb9",
+        "classification_prompt_hash": "4965aea7b55c4fb53845286da51e4ec4aa97bbd7bfaccc5059b5ccbed67cef58",
+        "latency_ms": 503.67,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Neglecta timonensis malnutrition_indicator_sco Alistipes onderdonkii clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8472911",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.1741,
+          0.1652,
+          0.1228
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "1c0db37836c326a35867fd0b55e7a17633e2f30953b057205bb7067fdd2bb379",
+        "classification_prompt_hash": "fbf5ad27b17ea9d7ff3f2d0816f88f55de1b906246589a37156616c39d26a3ef",
+        "latency_ms": 516.37,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 17,
+      "sample_id": "FB302",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9595,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "a2f17e7a753820fbde9b5351b233b249f60320227a7d111f24817e1fee53e9b4",
+        "classification_prompt_hash": "6e84254183413dc82d08a3670592ba908b1c954edd8506a2669b7254e25004fd",
+        "latency_ms": 579.9,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "clinical_frailty_scale malnutrition_indicator_sco Escherichia coli clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8001235",
+          "PMC8549102",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.281,
+          0.1741,
+          0.1228
+        ],
+        "retrieved_text_snippet": "Expansion of facultative anaerobic Enterobacteriaceae, particularly Escherichia coli, is frequently observed in institutionalized elderly individuals with severe frailty. High relative abundance of E. coli correlates with systemic LPS influx, acute phase reactant elevation, and accelerated cognitive",
+        "summarization_prompt_hash": "c08d61ea2365bd6d272e14e350e6f85871a64f347939ecd3ef99cba98490c7aa",
+        "classification_prompt_hash": "d2e64f5d36c52bb9736cc80a9f70c5b7c3dc2fd39e0a18adbd325d50248cee1b",
+        "latency_ms": 589.4,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 18,
+      "sample_id": "FB159",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.05,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "493aeac4eb6ec0598b259a543775c0bfecb8d07f1e70c457f843ce7abec77a28",
+        "classification_prompt_hash": "ca30282c1876cbafcfd51b81b0d7bc493f33d87322fd035cf4b598dfdacd284d",
+        "latency_ms": 532.33,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "cholinesterase inhibitors Barnesiella intestinihominis Blautia wexlerae clinical frailty Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC7912345",
+          "PMC8619023",
+          "PMC9284102"
+        ],
+        "retrieved_similarity_scores": [
+          0.3257,
+          0.155,
+          0.108
+        ],
+        "retrieved_text_snippet": "Cholinesterase inhibitors (donepezil, galantamine, rivastigmine) are standard pharmacological agents prescribed for cognitive symptoms in Alzheimer's disease. Acetylcholinesterase inhibition modulates vagal nerve stimulation and enteric motility, inducing secondary compositional shifts in gut taxa w",
+        "summarization_prompt_hash": "a0915d61ca04729bcb5aac54845238a424eb11d4cdbdc6333a365b124b01d409",
+        "classification_prompt_hash": "7acfbf4a5015c20e3deb3a1e43304bd9a9fc9df24de59361e0d50c5c2a99b319",
+        "latency_ms": 496.0,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 19,
+      "sample_id": "FB247",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.7021,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "c135847fff1e77e5476b6adb6b8ebf60ce066118cfb7e78942ebbe54b00af001",
+        "classification_prompt_hash": "2cc44221a52e2267d2588fab30d57dea3a36d9bcbf3071ef4a7bfbed2f2f6827",
+        "latency_ms": 510.63,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "clinical_frailty_scale malnutrition_indicator_sco Bacteroides intestinalis clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC9284102",
+          "PMC8396518"
+        ],
+        "retrieved_similarity_scores": [
+          0.2046,
+          0.1444,
+          0.1437
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "17a6d3cfc2d199d831f0cf144467e61981377eb35f41163f7b1c16842fa1c359",
+        "classification_prompt_hash": "2f3f206bd1ca844c9cc68d0c795466acd82e477ef504420f9f34270dfc601b4a",
+        "latency_ms": 577.84,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 20,
+      "sample_id": "FB014",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0165,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "1c3a06b33d43deee3b07e93d53b0de4af095c4e17870ff8c3e742c77962783c7",
+        "classification_prompt_hash": "0e622acdef3d859008a7d035123f3cf88b6c6ec85f4592a21660c89f587d4fcf",
+        "latency_ms": 613.63,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Bacteroides ovatus Clostridiales bacterium Bacteroides uniformis Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC7912345",
+          "PMC8472911",
+          "PMC8112940"
+        ],
+        "retrieved_similarity_scores": [
+          0.1047,
+          0.0846,
+          0.0806
+        ],
+        "retrieved_text_snippet": "Cholinesterase inhibitors (donepezil, galantamine, rivastigmine) are standard pharmacological agents prescribed for cognitive symptoms in Alzheimer's disease. Acetylcholinesterase inhibition modulates vagal nerve stimulation and enteric motility, inducing secondary compositional shifts in gut taxa w",
+        "summarization_prompt_hash": "6c33b85d24ea246a3c3ed89ae3fbcc14d520f069c9b0bfc126ffe1c3566e4f31",
+        "classification_prompt_hash": "02de376a09dfdbcd1322401a503a83309d23d5f97d6ed51898d7076950baec63",
+        "latency_ms": 494.12,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 21,
+      "sample_id": "DC063",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0064,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "356391849e401c697aab6500252f49096f6005687215ac111f8f3a69c45238dd",
+        "classification_prompt_hash": "8647fe92ea593b930a419526fa2a7c709f17b0bb2fa9a852f26a64472c881ddd",
+        "latency_ms": 499.4,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Phocaeicola dorei Alistipes putredinis Bacteroides cellulosilyticus proton pump inhibitors Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC8112940",
+          "PMC7912345"
+        ],
+        "retrieved_similarity_scores": [
+          0.3427,
+          0.1984,
+          0.1231
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "62bd8b2f913549156365c744a37e951f7d1a34d92b95213c996119e5b8eb37b0",
+        "classification_prompt_hash": "67d42698ef10d34233afdf12253d881e7a22f495f128c99416aeb0cca1d8282f",
+        "latency_ms": 447.12,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 22,
+      "sample_id": "FB187",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.013,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "c439e27814ef2dc7e5cb02fa6ee932245815a72b089b082095633ac1d6a5c74c",
+        "classification_prompt_hash": "dda6d331ebbbfb51f34dbccc58a960393fad82e61fed76a6d833270c734b875f",
+        "latency_ms": 411.11,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "cholinesterase inhibitors Clostridia bacterium Lactococcus petauri alpha diversity collapse Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC7912345",
+          "PMC8549102",
+          "PMC8619023"
+        ],
+        "retrieved_similarity_scores": [
+          0.2846,
+          0.2423,
+          0.2028
+        ],
+        "retrieved_text_snippet": "Cholinesterase inhibitors (donepezil, galantamine, rivastigmine) are standard pharmacological agents prescribed for cognitive symptoms in Alzheimer's disease. Acetylcholinesterase inhibition modulates vagal nerve stimulation and enteric motility, inducing secondary compositional shifts in gut taxa w",
+        "summarization_prompt_hash": "5b884c7b7774e75b0d01c7752349719240671c97d24545a69037ca0ee1ec24a6",
+        "classification_prompt_hash": "b7f48d6f8cc915ab911a7ac90e1ecaa969c086026d46be562ce3cd8aff525074",
+        "latency_ms": 426.84,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 23,
+      "sample_id": "FB240",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.7829,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "efb62b1d405283d4b38080371d0c516c49d4665c9a96b3b87491d752e93565b1",
+        "classification_prompt_hash": "2dd8f55465821f30275a2adfd84af78d30bd6233cdfc8ac063046673c7ac6e54",
+        "latency_ms": 426.7,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "GABA Analogs clinical_frailty_scale Streptococcus lutetiensis clinical frailty malnutrition proton pump inhibitors Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC8549102",
+          "PMC7912345"
+        ],
+        "retrieved_similarity_scores": [
+          0.4086,
+          0.1563,
+          0.1375
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "d7aeaf19c4369625d45847a59105855156cd56288b231d226c84195be1835a24",
+        "classification_prompt_hash": "dc7978ca49bbea8946724867fe08ef72fe9df794de7c56d08de672e56258e4b6",
+        "latency_ms": 411.62,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 24,
+      "sample_id": "DC037",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0475,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "8e0889247cc4b08f76ca9d8e59aef952ddd8c7d7037f74347ec29095ec01030d",
+        "classification_prompt_hash": "27133b284491474553d1e79ad9879cbbbcfa4336a3984d89791413fb58be2bfc",
+        "latency_ms": 593.41,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "malnutrition_indicator_sco Phocaeicola dorei Clostridia bacterium clinical frailty malnutrition proton pump inhibitors Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC8112940",
+          "PMC8549102"
+        ],
+        "retrieved_similarity_scores": [
+          0.366,
+          0.1545,
+          0.14
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "ab0915f14d862ec4ddf1b157aea2a12304b1c4f3bfee7c931befa5c600a7754c",
+        "classification_prompt_hash": "6d6fceefbdb25dcb44c3b08e214ce55e50268e91e1fe156b64c2b3ea00434356",
+        "latency_ms": 600.79,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 25,
+      "sample_id": "FB363",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0952,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "25e2948838c6385bc2139a6f3d2428449445c22b58311976cfec6850e544ff92",
+        "classification_prompt_hash": "2c4471eb6ac331979809779ce3c2654ad7142819a2b8cb72ff6aeba9ca966adf",
+        "latency_ms": 624.36,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "cholinesterase inhibitors Catabacter hongkongensis Blautia wexlerae clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC7912345",
+          "PMC8549102",
+          "PMC8619023"
+        ],
+        "retrieved_similarity_scores": [
+          0.2977,
+          0.1658,
+          0.1417
+        ],
+        "retrieved_text_snippet": "Cholinesterase inhibitors (donepezil, galantamine, rivastigmine) are standard pharmacological agents prescribed for cognitive symptoms in Alzheimer's disease. Acetylcholinesterase inhibition modulates vagal nerve stimulation and enteric motility, inducing secondary compositional shifts in gut taxa w",
+        "summarization_prompt_hash": "263dee3e4f71f5dd89f5b4e75f477d9f5e600257e4f42f2ce4667c2fc2ca2c91",
+        "classification_prompt_hash": "a3876bba9d07115ee25f8a17e085908b8946c9c2146b43dd9238e5b5f4fdd29a",
+        "latency_ms": 551.04,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 26,
+      "sample_id": "FB076",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.2024,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "5f8e543ac0bd924887deff56689b8a8c99287f14fe37c6f3bd103f836551691a",
+        "classification_prompt_hash": "6fd30f9618dcba6d841ef41804643e0f8ccc6279072544972ff32a51cc487f15",
+        "latency_ms": 515.82,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "clinical_frailty_scale malnutrition_indicator_sco Akkermansia sp BIOML A40 clinical frailty malnutrition alpha diversity collapse Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8619023",
+          "PMC8472911"
+        ],
+        "retrieved_similarity_scores": [
+          0.3948,
+          0.2073,
+          0.1576
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "bcd15360571901c2dbbc060a0060c56520364ef7eaeea40d3f316e0e274ba505",
+        "classification_prompt_hash": "420558422cb37bf47df99a84942f120f8199f3742d9409e8c05e8413e27d6cb4",
+        "latency_ms": 604.48,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 27,
+      "sample_id": "FB087",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.9735,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "652cd7fcaad5045021718790270737c1f1d05e7cbfe210beb570b4bae9e1eb63",
+        "classification_prompt_hash": "ab13459b23b782187dae677b15ee4986e80caf8a209289c17041e6b7f2bebe9e",
+        "latency_ms": 568.57,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "clinical_frailty_scale malnutrition_indicator_sco Phocaeicola vulgatus clinical frailty malnutrition Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC9284102",
+          "PMC8396518"
+        ],
+        "retrieved_similarity_scores": [
+          0.2099,
+          0.1482,
+          0.1474
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "dfc3b578c3ded6680f6f629d9795e594c48f73e6d58fce5b8c6f3dc6d1ffaa3c",
+        "classification_prompt_hash": "4fbf01b372127e4825fad9961066f8d3e9b9988069169dc5e3a5eb577c95410b",
+        "latency_ms": 502.06,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 28,
+      "sample_id": "DC059",
+      "ground_truth": 0,
+      "ground_truth_label": "Control",
+      "xgboost_prediction": 0,
+      "xgboost_probability": 0.0423,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "da7ffc7911d89ce048f9ec17a817ac7d6e30d5d4b71ec8885d12e2ee126f4b47",
+        "classification_prompt_hash": "ca5c91ff5a2709d8f5717916ba94cde898bdad227d7933a4798b049b069b8a6c",
+        "latency_ms": 519.54,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "Phascolarctobacterium faecium Clostridiales bacterium 1 7 47FAA GGB9632 SGB15089 proton pump inhibitors Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8619023",
+          "PMC7912345",
+          "PMC8472911"
+        ],
+        "retrieved_similarity_scores": [
+          0.4184,
+          0.1503,
+          0.0715
+        ],
+        "retrieved_text_snippet": "Chronic use of Proton Pump Inhibitors (PPIs) alters gastric pH, permitting downstream translocation of oral taxa into the lower gastrointestinal tract and significantly reducing Shannon alpha-diversity. In multivariable models, PPI usage combined with Clinical Frailty Scale scores interacted with gu",
+        "summarization_prompt_hash": "83137abe4f52c95410f624a6bd57cc8ac41b614abae77caa2382d7c5b58a5391",
+        "classification_prompt_hash": "77df04280cf5a653ac1a97bb23f4531d0d34f278cfe3b876975bfb7f0535dc0e",
+        "latency_ms": 504.0,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    },
+    {
+      "index": 29,
+      "sample_id": "FB336",
+      "ground_truth": 1,
+      "ground_truth_label": "AD",
+      "xgboost_prediction": 1,
+      "xgboost_probability": 0.7488,
+      "without_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "summarization_prompt_hash": "6090f6dd002c39421ed17561977f4c497c4703c60a396028a30e47c275d7745e",
+        "classification_prompt_hash": "621f93d8ebff21aadf8098d81882836731a3a7160e2982f886bc9528b276ca72",
+        "latency_ms": 508.52,
+        "status": "LIVE_FAILED"
+      },
+      "with_rag": {
+        "prediction": "CN",
+        "binary_label": -1,
+        "confidence": 0.0,
+        "probability": 1.0,
+        "rag_query": "GABA Analogs clinical_frailty_scale Clostridium leptum clinical frailty malnutrition alpha diversity collapse Alzheimer gut microbiome dementia",
+        "retrieved_document_ids": [
+          "PMC8549102",
+          "PMC8619023",
+          "PMC8472911"
+        ],
+        "retrieved_similarity_scores": [
+          0.3948,
+          0.2073,
+          0.1576
+        ],
+        "retrieved_text_snippet": "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates an inflammatory milieu that accelerates neurodegenerati",
+        "summarization_prompt_hash": "2f311371633f5bf61b97aa3696a281c149cbc03023f904242085a41b6069e109",
+        "classification_prompt_hash": "0deb8facedc1807e31ceb71414aeba3c8c3c086a21984617a68b9b9ab468fedb",
+        "latency_ms": 500.69,
+        "status": "LIVE_FAILED",
+        "token_usage": {
+          "summarization_input_tokens": null,
+          "summarization_output_tokens": null,
+          "classification_input_tokens": 0,
+          "classification_output_tokens": 0,
+          "total_tokens": 0
+        }
+      },
+      "prompts_differ": true,
+      "prediction_changed_by_rag": false,
+      "model_name": "gemini-3.6-flash",
+      "provider": "Google Gemini API",
+      "fallback_used": false
+    }
+  ]
+}

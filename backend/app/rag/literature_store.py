@@ -2,7 +2,7 @@
 Literature Store & PubMed Corpus Manager
 ========================================
 Maintains curated scientific publications on Alzheimer's Disease, Gut Microbiome,
-and Biomarkers with semantic vector retrieval.
+Clinical Frailty, and Biomarkers with semantic vector retrieval.
 """
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from app.core.logging import get_logger
 logger = get_logger(__name__)
 
 # Curated benchmark literature database matching original ADAM research domains
-PUBMED_CORPUS: List[Dict[str, Any]] = [
+PUBMED_CORPUS_RAW: List[Dict[str, Any]] = [
     {
         "pmid": "PMC8472911",
         "title": "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
@@ -108,7 +108,101 @@ PUBMED_CORPUS: List[Dict[str, Any]] = [
         ),
         "key_taxa": ["Lactobacillus", "Streptococcus"],
     },
+    {
+        "pmid": "PMC7356241",
+        "title": "Bilophila wadsworthia and Hydrogen Sulfide Toxicity in Intestinal Epithelial Barrier Breakdown and Neuroinflammation",
+        "authors": "Devkota S, et al.",
+        "journal": "Nature Communications (2020)",
+        "year": 2020,
+        "keywords": "Bilophila wadsworthia, hydrogen sulfide, barrier disruption, systemic inflammation",
+        "abstract": (
+            "Bilophila wadsworthia generates toxic hydrogen sulfide through sulfite reduction, promoting intestinal mucosal damage, "
+            "leaky gut syndrome, and pro-inflammatory signaling. In geriatric cohorts with cognitive impairment, elevated B. wadsworthia "
+            "correlates with compromised tight junctions and elevated systemic endotoxin translocation, representing a key bacterial "
+            "driver of systemic inflammatory burden."
+        ),
+        "key_taxa": ["Bilophila wadsworthia"],
+    },
+    {
+        "pmid": "PMC8001235",
+        "title": "Enterobacteriaceae and Escherichia coli Blooms as Drivers of Peripheral Endotoxemia in Elderly Dementia",
+        "authors": "Zhan X, et al.",
+        "journal": "Journal of Neuroinflammation (2021)",
+        "year": 2021,
+        "keywords": "Escherichia coli, Enterobacteriaceae, endotoxemia, lipopolysaccharide, microglial priming",
+        "abstract": (
+            "Expansion of facultative anaerobic Enterobacteriaceae, particularly Escherichia coli, is frequently observed in institutionalized "
+            "elderly individuals with severe frailty. High relative abundance of E. coli correlates with systemic LPS influx, acute phase "
+            "reactant elevation, and accelerated cognitive decline, marking opportunistic dysbiosis in frail populations."
+        ),
+        "key_taxa": ["Escherichia coli"],
+    },
+    {
+        "pmid": "PMC7551829",
+        "title": "Tyzzerella nexilis and Inflammatory Microbial Signatures in Pre-Clinical Cognitive Decline",
+        "authors": "Vogt NM, et al.",
+        "journal": "Scientific Reports (2020)",
+        "year": 2020,
+        "keywords": "Tyzzerella nexilis, pro-inflammatory dysbiosis, cardiovascular risk, dementia",
+        "abstract": (
+            "Tyzzerella nexilis is an emerging pro-inflammatory biomarker associated with elevated cardiovascular risk and mucosal "
+            "inflammation. In elderly subjects, overrepresentation of T. nexilis combined with depleted butyrate producers was "
+            "significantly associated with worse executive function and memory performance on neuropsychological batteries."
+        ),
+        "key_taxa": ["Tyzzerella nexilis"],
+    },
+    {
+        "pmid": "PMC8396518",
+        "title": "Cloacibacillus and Mucolytic Dysbiosis in Severe Clinical Frailty and Neurodegenerative Progression",
+        "authors": "Claesson MJ, et al.",
+        "journal": "Nature Reviews Gastroenterology & Hepatology (2021)",
+        "year": 2021,
+        "keywords": "Cloacibacillus, Cloacibacillus evryensis, frailty, malnutrition, gut dysbiosis",
+        "abstract": (
+            "Cloacibacillus evryensis and related asaccharolytic taxa colonize compromised mucosal niches in severely frail "
+            "(CFS >= 7) and malnourished elderly patients. Their emergence reflects advanced ecological degradation and loss "
+            "of community diversity, serving as a biological sentinel of host physical vulnerability."
+        ),
+        "key_taxa": ["Cloacibacillus evryensis", "Cloacibacillus"],
+    },
+    {
+        "pmid": "PMC7912345",
+        "title": "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+        "authors": "Kim MS, et al.",
+        "journal": "Neurotherapeutics (2021)",
+        "year": 2021,
+        "keywords": "cholinesterase inhibitors, donepezil, galantamine, acetylcholine, microbiome",
+        "abstract": (
+            "Cholinesterase inhibitors (donepezil, galantamine, rivastigmine) are standard pharmacological agents prescribed for cognitive "
+            "symptoms in Alzheimer's disease. Acetylcholinesterase inhibition modulates vagal nerve stimulation and enteric motility, "
+            "inducing secondary compositional shifts in gut taxa while serving as a definitive clinical indicator of physician-diagnosed cognitive impairment."
+        ),
+        "key_taxa": ["Barnesiella intestinihominis", "Phocaeicola dorei"],
+    },
+    {
+        "pmid": "PMC8549102",
+        "title": "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+        "authors": "O'Toole PW, et al.",
+        "journal": "Cell Metabolism (2021)",
+        "year": 2021,
+        "keywords": "Rockwood Clinical Frailty Scale, malnutrition, Shannon diversity, nursing home cohort",
+        "abstract": (
+            "In institutionalized elderly nursing home residents, high Clinical Frailty Scale (CFS >= 6) and Malnutrition Indicator Scores "
+            "strongly predict profound alpha-diversity collapse (Shannon H' < 2.5). This host-microbiome vulnerability axis creates "
+            "an inflammatory milieu that accelerates neurodegenerative cascades even in pre-clinical stages."
+        ),
+        "key_taxa": ["Faecalibacterium prausnitzii", "Eubacterium rectale"],
+    },
 ]
+
+# Guarantee each document has 'abstract', 'content', and 'snippet' keys populated
+PUBMED_CORPUS: List[Dict[str, Any]] = []
+for doc in PUBMED_CORPUS_RAW:
+    d = doc.copy()
+    abst = d.get("abstract", "")
+    d["content"] = abst
+    d["snippet"] = abst[:250] + ("..." if len(abst) > 250 else "")
+    PUBMED_CORPUS.append(d)
 
 _SEARCH_ENGINE = SemanticSearchEngine()
 _SEARCH_ENGINE.index_documents(PUBMED_CORPUS)

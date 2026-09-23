@@ -1,0 +1,1562 @@
+[
+  {
+    "index": 1,
+    "sample_id": "DC036",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0662,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.066,
+    "rag_prediction": 0,
+    "rag_probability": 0.066,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3742.7,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1098,
+        "completion_tokens": 146,
+        "total_tokens": 1244
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 8098.9,
+      "classification_elapsed_ms": 4273.6,
+      "summarization_tokens": {
+        "prompt_tokens": 873,
+        "completion_tokens": 642,
+        "total_tokens": 1515
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1341,
+        "completion_tokens": 148,
+        "total_tokens": 1489
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 2,
+    "sample_id": "DC039",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0309,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.969,
+    "rag_prediction": 1,
+    "rag_probability": 0.969,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 7634.0,
+      "classification_elapsed_ms": 3769.0,
+      "summarization_tokens": {
+        "prompt_tokens": 552,
+        "completion_tokens": 680,
+        "total_tokens": 1232
+      },
+      "classification_tokens": {
+        "prompt_tokens": 767,
+        "completion_tokens": 156,
+        "total_tokens": 923
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 6938.6,
+      "classification_elapsed_ms": 2735.7,
+      "summarization_tokens": {
+        "prompt_tokens": 881,
+        "completion_tokens": 627,
+        "total_tokens": 1508
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1034,
+        "completion_tokens": 142,
+        "total_tokens": 1176
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 3,
+    "sample_id": "FB094",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0937,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.94,
+    "rag_prediction": 1,
+    "rag_probability": 0.94,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Enterobacteriaceae and Escherichia coli Blooms as Drivers of Peripheral Endotoxemia in Elderly Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 7314.4,
+      "classification_elapsed_ms": 6331.1,
+      "summarization_tokens": {
+        "prompt_tokens": 540,
+        "completion_tokens": 610,
+        "total_tokens": 1150
+      },
+      "classification_tokens": {
+        "prompt_tokens": 754,
+        "completion_tokens": 137,
+        "total_tokens": 891
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 6816.0,
+      "classification_elapsed_ms": 2623.0,
+      "summarization_tokens": {
+        "prompt_tokens": 868,
+        "completion_tokens": 638,
+        "total_tokens": 1506
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1011,
+        "completion_tokens": 157,
+        "total_tokens": 1168
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 4,
+    "sample_id": "DC054",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0304,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.03,
+    "rag_prediction": 0,
+    "rag_probability": 0.03,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2949.9,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 778,
+        "completion_tokens": 155,
+        "total_tokens": 933
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2355.4,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1359,
+        "completion_tokens": 140,
+        "total_tokens": 1499
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 5,
+    "sample_id": "FB121",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9656,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.966,
+    "rag_prediction": 1,
+    "rag_probability": 0.966,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2716.2,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1095,
+        "completion_tokens": 133,
+        "total_tokens": 1228
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 4681.7,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1344,
+        "completion_tokens": 137,
+        "total_tokens": 1481
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 6,
+    "sample_id": "DC099",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0189,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.019,
+    "rag_prediction": 0,
+    "rag_probability": 0.019,
+    "retrieved_sources": [
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 10124.1,
+      "classification_elapsed_ms": 4100.9,
+      "summarization_tokens": {
+        "prompt_tokens": 544,
+        "completion_tokens": 653,
+        "total_tokens": 1197
+      },
+      "classification_tokens": {
+        "prompt_tokens": 766,
+        "completion_tokens": 145,
+        "total_tokens": 911
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 7848.4,
+      "classification_elapsed_ms": 2635.8,
+      "summarization_tokens": {
+        "prompt_tokens": 872,
+        "completion_tokens": 729,
+        "total_tokens": 1601
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1028,
+        "completion_tokens": 169,
+        "total_tokens": 1197
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 7,
+    "sample_id": "DC089",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0423,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.042,
+    "rag_prediction": 0,
+    "rag_probability": 0.042,
+    "retrieved_sources": [
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 7918.3,
+      "classification_elapsed_ms": 4102.7,
+      "summarization_tokens": {
+        "prompt_tokens": 550,
+        "completion_tokens": 641,
+        "total_tokens": 1191
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1078,
+        "completion_tokens": 142,
+        "total_tokens": 1220
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 5638.8,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1334,
+        "completion_tokens": 156,
+        "total_tokens": 1490
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 8,
+    "sample_id": "FB185",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.013,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.013,
+    "rag_prediction": 0,
+    "rag_probability": 0.013,
+    "retrieved_sources": [
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 6889.0,
+      "classification_elapsed_ms": 2337.2,
+      "summarization_tokens": {
+        "prompt_tokens": 536,
+        "completion_tokens": 605,
+        "total_tokens": 1141
+      },
+      "classification_tokens": {
+        "prompt_tokens": 749,
+        "completion_tokens": 132,
+        "total_tokens": 881
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 10403.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1359,
+        "completion_tokens": 164,
+        "total_tokens": 1523
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 9,
+    "sample_id": "FB079",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9804,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.98,
+    "rag_prediction": 1,
+    "rag_probability": 0.98,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2243.4,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1066,
+        "completion_tokens": 139,
+        "total_tokens": 1205
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 4023.6,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1315,
+        "completion_tokens": 146,
+        "total_tokens": 1461
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 10,
+    "sample_id": "FB386",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.941,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.941,
+    "rag_prediction": 1,
+    "rag_probability": 0.941,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia",
+      "Cloacibacillus and Mucolytic Dysbiosis in Severe Clinical Frailty and Neurodegenerative Progression"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2124.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1088,
+        "completion_tokens": 134,
+        "total_tokens": 1222
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2941.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1358,
+        "completion_tokens": 141,
+        "total_tokens": 1499
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 11,
+    "sample_id": "FB109",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9583,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.958,
+    "rag_prediction": 1,
+    "rag_probability": 0.958,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 20685.1,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1076,
+        "completion_tokens": 139,
+        "total_tokens": 1215
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2486.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1325,
+        "completion_tokens": 147,
+        "total_tokens": 1472
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 12,
+    "sample_id": "FB186",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0112,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.011,
+    "rag_prediction": 0,
+    "rag_probability": 0.011,
+    "retrieved_sources": [
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2645.6,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1087,
+        "completion_tokens": 157,
+        "total_tokens": 1244
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 4785.6,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1352,
+        "completion_tokens": 154,
+        "total_tokens": 1506
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 13,
+    "sample_id": "FB161",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.5146,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.515,
+    "rag_prediction": 1,
+    "rag_probability": 0.515,
+    "retrieved_sources": [
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 12592.5,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1094,
+        "completion_tokens": 154,
+        "total_tokens": 1248
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 4033.4,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1352,
+        "completion_tokens": 141,
+        "total_tokens": 1493
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 14,
+    "sample_id": "FB151",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9899,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.99,
+    "rag_prediction": 1,
+    "rag_probability": 0.99,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2430.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1085,
+        "completion_tokens": 138,
+        "total_tokens": 1223
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3242.6,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1334,
+        "completion_tokens": 148,
+        "total_tokens": 1482
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 15,
+    "sample_id": "FB225",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9409,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.941,
+    "rag_prediction": 1,
+    "rag_probability": 0.941,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 6457.8,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1060,
+        "completion_tokens": 151,
+        "total_tokens": 1211
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 4632.9,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1309,
+        "completion_tokens": 147,
+        "total_tokens": 1456
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 16,
+    "sample_id": "DC088",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0378,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.038,
+    "rag_prediction": 0,
+    "rag_probability": 0.038,
+    "retrieved_sources": [
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2635.3,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1066,
+        "completion_tokens": 159,
+        "total_tokens": 1225
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3776.3,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1325,
+        "completion_tokens": 160,
+        "total_tokens": 1485
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 17,
+    "sample_id": "FB177",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9931,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.993,
+    "rag_prediction": 1,
+    "rag_probability": 0.993,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3455.2,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1072,
+        "completion_tokens": 146,
+        "total_tokens": 1218
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3654.1,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1321,
+        "completion_tokens": 149,
+        "total_tokens": 1470
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 18,
+    "sample_id": "FB302",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9595,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.959,
+    "rag_prediction": 1,
+    "rag_probability": 0.959,
+    "retrieved_sources": [
+      "Enterobacteriaceae and Escherichia coli Blooms as Drivers of Peripheral Endotoxemia in Elderly Dementia",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3253.6,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1067,
+        "completion_tokens": 142,
+        "total_tokens": 1209
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2330.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1332,
+        "completion_tokens": 149,
+        "total_tokens": 1481
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 19,
+    "sample_id": "FB159",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.05,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.05,
+    "rag_prediction": 0,
+    "rag_probability": 0.05,
+    "retrieved_sources": [
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2870.6,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1079,
+        "completion_tokens": 142,
+        "total_tokens": 1221
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 7016.5,
+      "classification_elapsed_ms": 4383.8,
+      "summarization_tokens": {
+        "prompt_tokens": 870,
+        "completion_tokens": 650,
+        "total_tokens": 1520
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1326,
+        "completion_tokens": 136,
+        "total_tokens": 1462
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 20,
+    "sample_id": "FB247",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.7021,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.702,
+    "rag_prediction": 1,
+    "rag_probability": 0.702,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia",
+      "Cloacibacillus and Mucolytic Dysbiosis in Severe Clinical Frailty and Neurodegenerative Progression"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2419.5,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1071,
+        "completion_tokens": 152,
+        "total_tokens": 1223
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2737.5,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1341,
+        "completion_tokens": 151,
+        "total_tokens": 1492
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 21,
+    "sample_id": "FB014",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0165,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.016,
+    "rag_prediction": 0,
+    "rag_probability": 0.016,
+    "retrieved_sources": [
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology",
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3227.4,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1076,
+        "completion_tokens": 139,
+        "total_tokens": 1215
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2933.7,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1335,
+        "completion_tokens": 155,
+        "total_tokens": 1490
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 22,
+    "sample_id": "DC063",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0064,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.006,
+    "rag_prediction": 0,
+    "rag_probability": 0.006,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2646.9,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1006,
+        "completion_tokens": 132,
+        "total_tokens": 1138
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "analytical_template"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2739.9,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1276,
+        "completion_tokens": 139,
+        "total_tokens": 1415
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "analytical_template"
+    }
+  },
+  {
+    "index": 23,
+    "sample_id": "FB187",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.013,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.013,
+    "rag_prediction": 0,
+    "rag_probability": 0.013,
+    "retrieved_sources": [
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2433.5,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1078,
+        "completion_tokens": 138,
+        "total_tokens": 1216
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3854.2,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1343,
+        "completion_tokens": 150,
+        "total_tokens": 1493
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 24,
+    "sample_id": "FB240",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.7829,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.783,
+    "rag_prediction": 1,
+    "rag_probability": 0.783,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3942.9,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1059,
+        "completion_tokens": 159,
+        "total_tokens": 1218
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2531.3,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1324,
+        "completion_tokens": 156,
+        "total_tokens": 1480
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 25,
+    "sample_id": "DC037",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0475,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.047,
+    "rag_prediction": 0,
+    "rag_probability": 0.047,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Phocaeicola dorei and Bacterial Lipopolysaccharide Biosynthesis in Neurodegenerative Inflammatory Cascades",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2945.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1072,
+        "completion_tokens": 138,
+        "total_tokens": 1210
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3261.0,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1341,
+        "completion_tokens": 143,
+        "total_tokens": 1484
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 26,
+    "sample_id": "FB363",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0952,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.095,
+    "rag_prediction": 0,
+    "rag_probability": 0.095,
+    "retrieved_sources": [
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2938.8,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1070,
+        "completion_tokens": 140,
+        "total_tokens": 1210
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2794.7,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1335,
+        "completion_tokens": 161,
+        "total_tokens": 1496
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 27,
+    "sample_id": "FB076",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.2024,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.8,
+    "rag_prediction": 1,
+    "rag_probability": 0.798,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 7059.6,
+      "classification_elapsed_ms": 4079.6,
+      "summarization_tokens": {
+        "prompt_tokens": 544,
+        "completion_tokens": 635,
+        "total_tokens": 1179
+      },
+      "classification_tokens": {
+        "prompt_tokens": 753,
+        "completion_tokens": 153,
+        "total_tokens": 906
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 8975.5,
+      "classification_elapsed_ms": 4275.2,
+      "summarization_tokens": {
+        "prompt_tokens": 859,
+        "completion_tokens": 640,
+        "total_tokens": 1499
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1004,
+        "completion_tokens": 159,
+        "total_tokens": 1163
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 28,
+    "sample_id": "FB087",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.9735,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.973,
+    "rag_prediction": 1,
+    "rag_probability": 0.973,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Machine Learning Identification of Gut Microbiome Biomarkers in Longitudinal Cohorts of Dementia",
+      "Cloacibacillus and Mucolytic Dysbiosis in Severe Clinical Frailty and Neurodegenerative Progression"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3763.2,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1098,
+        "completion_tokens": 149,
+        "total_tokens": 1247
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3559.6,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1368,
+        "completion_tokens": 155,
+        "total_tokens": 1523
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 29,
+    "sample_id": "DC059",
+    "ground_truth": 0,
+    "ground_truth_label": "Control",
+    "xgboost_prediction": 0,
+    "xgboost_probability": 0.0423,
+    "no_rag_prediction": 0,
+    "no_rag_probability": 0.042,
+    "rag_prediction": 0,
+    "rag_probability": 0.042,
+    "retrieved_sources": [
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Cholinesterase Inhibitors, Enteric Nervous System Signaling, and Gut Microbiome Dynamics in Dementia",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 4404.7,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1072,
+        "completion_tokens": 157,
+        "total_tokens": 1229
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 4070.3,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1317,
+        "completion_tokens": 144,
+        "total_tokens": 1461
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  },
+  {
+    "index": 30,
+    "sample_id": "FB336",
+    "ground_truth": 1,
+    "ground_truth_label": "Alzheimer's",
+    "xgboost_prediction": 1,
+    "xgboost_probability": 0.7488,
+    "no_rag_prediction": 1,
+    "no_rag_probability": 0.749,
+    "rag_prediction": 1,
+    "rag_probability": 0.749,
+    "retrieved_sources": [
+      "Host Frailty, Malnutrition, and Microbiome Alpha Diversity Collapse in Long-Term Care Resident Cohorts",
+      "Proton Pump Inhibitors, Microbiome Alpha Diversity, and Cognitive Function in Older Adults",
+      "Gut Microbiota Composition and Its Association with Alzheimer's Disease Pathology"
+    ],
+    "prediction_changed": false,
+    "telemetry_norag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 3130.2,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1051,
+        "completion_tokens": 138,
+        "total_tokens": 1189
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    },
+    "telemetry_rag": {
+      "summarization_elapsed_ms": 0.0,
+      "classification_elapsed_ms": 2521.2,
+      "summarization_tokens": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0
+      },
+      "classification_tokens": {
+        "prompt_tokens": 1295,
+        "completion_tokens": 154,
+        "total_tokens": 1449
+      },
+      "provider": "openrouter",
+      "classification_model": "openai/gpt-4o-mini",
+      "summarization_model": "openai/gpt-4o"
+    }
+  }
+]
