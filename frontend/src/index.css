@@ -334,22 +334,125 @@ html, body {
 }
 
 @media print {
-  body {
-    background: #ffffff !important;
-    color: #000000 !important;
+  @page {
+    size: A4 portrait;
+    margin: 12mm 14mm 14mm 14mm;
   }
-  header, aside, button, .no-print {
+
+  /* Reset all viewport lockouts so the browser can print multi-page documents */
+  html,
+  body,
+  #root,
+  #root > div,
+  .flex.h-screen,
+  .overflow-hidden,
+  .flex-col,
+  main,
+  #main-content {
+    height: auto !important;
+    min-height: 100% !important;
+    max-height: none !important;
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    position: static !important;
+    display: block !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide interactive shell elements */
+  header,
+  aside,
+  nav,
+  button,
+  .no-print,
+  .print\:hidden {
     display: none !important;
   }
-  main {
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-  .card, .card-raised, .card-floating {
-    border: 1px solid #d1d5db !important;
+
+  /* Main report container allows page breaks */
+  .card,
+  .card-raised,
+  .card-floating,
+  .patient-dossier-report {
+    border: none !important;
     box-shadow: none !important;
     background: #ffffff !important;
-    page-break-inside: avoid;
-    color: #000000 !important;
+    color: #0f172a !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+  }
+
+  /* Keep each individual section together across page breaks */
+  section,
+  .print-avoid-break,
+  .print\:break-inside-avoid,
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Professional print typography and contrast */
+  h1, h2, h3, h4, p, span, td, th, div {
+    color: #0f172a !important;
+    text-shadow: none !important;
+  }
+
+  .text-surface-50,
+  .text-surface-100,
+  .text-surface-200,
+  .text-surface-300 {
+    color: #0f172a !important;
+  }
+
+  .text-surface-400,
+  .text-surface-500 {
+    color: #475569 !important;
+  }
+
+  /* Clean light backgrounds for information cards and tables */
+  .bg-surface-800\/40,
+  .bg-surface-800\/60,
+  .bg-surface-800\/80,
+  .bg-surface-800\/20,
+  .bg-surface-850,
+  .bg-surface-900 {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+  }
+
+  /* Ensure tables render completely with full width and clear borders */
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-collapse: collapse !important;
+    page-break-inside: auto;
+  }
+
+  th {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+    border-bottom: 2px solid #94a3b8 !important;
+  }
+
+  td {
+    border-bottom: 1px solid #e2e8f0 !important;
+  }
+
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  /* Force print background colors */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 }
+

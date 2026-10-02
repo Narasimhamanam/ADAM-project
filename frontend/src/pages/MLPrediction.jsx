@@ -334,51 +334,58 @@ export default function MLPrediction() {
               </div>
 
               <div className="space-y-2.5 max-h-[340px] overflow-y-auto pr-1">
-                {prediction.feature_contributions?.map((c, i) => {
-                  const increasesRisk = c.impact === 'increases_risk'
-                  const barWidth = Math.min(100, Math.abs(c.shap_value) * 120)
+                {prediction.feature_contributions && prediction.feature_contributions.length > 0 ? (
+                  prediction.feature_contributions.map((c, i) => {
+                    const increasesRisk = c.impact === 'increases_risk'
+                    const barWidth = Math.min(100, Math.abs(c.shap_value) * 120)
 
-                  return (
-                    <div
-                      key={i}
-                      className="p-2.5 rounded-lg bg-surface-800/60 border border-surface-700/40 flex items-center justify-between text-xs gap-3 hover:border-surface-600 transition-colors"
-                    >
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center justify-between mb-1">
-                          <span className="font-medium text-surface-100 truncate">{c.feature}</span>
-                          <span
-                            className={`font-data font-bold ${
-                              increasesRisk ? 'text-danger-500 dark:text-danger-400' : 'text-accent-600 dark:text-accent-400'
-                            }`}
-                          >
-                            {increasesRisk ? '+' : ''}
-                            {c.shap_value.toFixed(4)}
-                          </span>
-                        </div>
-
-                        {/* Visual contribution bar with diverging styling */}
-                        <div className="w-full bg-surface-700/50 h-1.5 rounded-full overflow-hidden flex">
-                          <div
-                            className={`h-full rounded-full transition-all ${
-                              increasesRisk ? 'bg-danger-500' : 'bg-accent-500'
-                            }`}
-                            style={{ width: `${Math.max(6, barWidth)}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded font-bold font-mono shrink-0 ${
-                          increasesRisk
-                            ? 'bg-danger-500/15 text-danger-500 dark:text-danger-400 border border-danger-500/25'
-                            : 'bg-accent-500/15 text-accent-600 dark:text-accent-400 border border-accent-500/25'
-                        }`}
+                    return (
+                      <div
+                        key={i}
+                        className="p-2.5 rounded-lg bg-surface-800/60 border border-surface-700/40 flex items-center justify-between text-xs gap-3 hover:border-surface-600 transition-colors"
                       >
-                        {increasesRisk ? 'Increases AD Risk' : 'Protective / Decreases'}
-                      </span>
-                    </div>
-                  )
-                })}
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-medium text-surface-100 truncate">{c.feature}</span>
+                            <span
+                              className={`font-data font-bold ${
+                                increasesRisk ? 'text-danger-500 dark:text-danger-400' : 'text-accent-600 dark:text-accent-400'
+                              }`}
+                            >
+                              {increasesRisk ? '+' : ''}
+                              {c.shap_value.toFixed(4)}
+                            </span>
+                          </div>
+
+                          {/* Visual contribution bar with diverging styling */}
+                          <div className="w-full bg-surface-700/50 h-1.5 rounded-full overflow-hidden flex">
+                            <div
+                              className={`h-full rounded-full transition-all ${
+                                increasesRisk ? 'bg-danger-500' : 'bg-accent-500'
+                              }`}
+                              style={{ width: `${Math.max(6, barWidth)}%` }}
+                            />
+                          </div>
+                        </div>
+
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded font-bold font-mono shrink-0 ${
+                            increasesRisk
+                              ? 'bg-danger-500/15 text-danger-500 dark:text-danger-400 border border-danger-500/25'
+                              : 'bg-accent-500/15 text-accent-600 dark:text-accent-400 border border-accent-500/25'
+                          }`}
+                        >
+                          {increasesRisk ? 'Increases AD Risk' : 'Protective / Decreases'}
+                        </span>
+                      </div>
+                    )
+                  })
+                ) : (
+                  <div className="py-12 text-center text-surface-400 text-xs">
+                    <p className="font-medium">No individual feature contributions available for this model.</p>
+                    <p className="text-[11px] text-surface-500 mt-1">Re-evaluate the model or select a different patient sample.</p>
+                  </div>
+                )}
               </div>
             </div>
           </div>

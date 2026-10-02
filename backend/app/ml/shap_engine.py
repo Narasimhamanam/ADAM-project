@@ -158,8 +158,36 @@ def explain_single_sample(
         elif HAS_SHAP and hasattr(clf, "estimators_"):
             explainer = shap.TreeExplainer(clf)
             sv = explainer.shap_values(sample_transformed)
-            shap_vec = sv[1][0] if isinstance(sv, list) and len(sv) == 2 else sv[0]
-            base_val = float(explainer.expected_value[1]) if isinstance(explainer.expected_value, (list, np.ndarray)) else float(explainer.expected_value)
+            # Binary classification in TreeExplainer:
+            # - If sv is list of [class_0, class_1], take class 1: sv[1][0]
+            # - If sv is 3D ndarray (1, n_features, n_classes), take class 1: sv[0, :, 1]
+            # - If sv is 2D ndarray (1, n_features), take sv[0]
+            if isinstance(sv, list) and len(sv) >= 2:
+                shap_vec = sv[1][0]
+            elif isinstance(sv, np.ndarray) and sv.ndim == 3 and sv.shape[-1] >= 2:
+                shap_vec = sv[0, :, 1]
+            elif isinstance(sv, np.ndarray) and sv.ndim == 2:
+                shap_vec = sv[0]
+            else:
+                shap_vec = np.array(sv).squeeze()
+                if shap_vec.ndim == 2 and shap_vec.shape[-1] >= 2:
+                    shap_vec = shap_vec[:, 1]
+
+            if hasattr(explainer, "expected_value"):
+                ev = explainer.expected_value
+                if isinstance(ev, (list, np.ndarray)) and len(ev) >= 2:
+                    base_val = float(ev[1])
+                elif isinstance(ev, (list, np.ndarray)) and len(ev) > 0:
+                    base_val = float(ev[0])
+                else:
+                    base_val = float(ev)
+            else:
+                base_val = 0.5
+        elif hasattr(clf, "feature_importances_"):
+            # Robust Tree/Ensemble feature importance attribution fallback
+            center = sample_transformed[0] - np.mean(bg_transformed, axis=0)
+            shap_vec = center * clf.feature_importances_
+            base_val = 0.5
         elif hasattr(clf, "coef_"):
             center = sample_transformed[0] - np.mean(bg_transformed, axis=0)
             shap_vec = center * clf.coef_[0]
@@ -168,6 +196,7 @@ def explain_single_sample(
             shap_vec = np.zeros(len(feature_names))
             base_val = 0.5
 
+        shap_vec = np.asarray(shap_vec, dtype=np.float64).ravel()
         abs_sorted = np.argsort(np.abs(shap_vec))[::-1]
 
         contributions = []
@@ -194,10 +223,36 @@ def explain_single_sample(
 
     except Exception as e:
         logger.error("Failed to compute single sample explanation", error=str(e))
+        try:
+            proba = float(model.predict_proba(sample_vector)[0, 1]) if hasattr(model, "predict_proba") else 0.5
+        except Exception:
+            proba = 0.5
+
+        contributions = []
+        try:
+            clf = getattr(model, "named_steps", {}).get("classifier", model)
+            if hasattr(clf, "feature_importances_"):
+                imp = clf.feature_importances_
+                center = sample_vector[0] - np.mean(X_background[:50], axis=0)
+                diff = center * imp
+                abs_sorted = np.argsort(np.abs(diff))[::-1]
+                for idx in abs_sorted[:top_k]:
+                    fname = feature_names[idx] if idx < len(feature_names) else f"feature_{idx}"
+                    val = float(sample_vector[0, idx])
+                    sval = float(diff[idx])
+                    contributions.append({
+                        "feature": fname,
+                        "feature_value": val,
+                        "shap_value": sval,
+                        "impact": "increases_risk" if sval > 0 else "decreases_risk",
+                    })
+        except Exception:
+            pass
+
         return {
             "error": str(e),
-            "prediction_probability": 0.5,
-            "prediction_binary": 0,
-            "base_value": 0.0,
-            "feature_contributions": [],
+            "prediction_probability": proba,
+            "prediction_binary": int(proba >= 0.5),
+            "base_value": 0.5,
+            "feature_contributions": contributions,
         }

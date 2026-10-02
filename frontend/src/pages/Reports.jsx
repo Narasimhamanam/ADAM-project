@@ -262,7 +262,7 @@ export default function Reports() {
 | **Logistic Regression (Scaled)** | ${modelPredictions.logisticregression ? `${(modelPredictions.logisticregression.alzheimers_risk_probability * 100).toFixed(1)}%` : 'Processing'} | ${modelPredictions.logisticregression?.predicted_label ?? 'N/A'} | ${modelPredictions.logisticregression?.risk_level ?? 'N/A'} | Standardized Linear Baseline |
 
 ## 7. SHAP Explainability (Patient-Level Feature Attribution)
-${predictionData?.feature_contributions?.length > 0 ? predictionData.feature_contributions.slice(0, 8).map(f => `- **${f.feature}:** Impact: ${f.impact} | SHAP Value: ${f.shap_value > 0 ? '+' : ''}${f.shap_value.toFixed(4)} | Feature Value: ${f.feature_value.toFixed(4)}`).join('\n') : '- Feature attribution computed across host covariates and metagenomic relative abundances.'}
+${predictionData?.feature_contributions?.length > 0 ? predictionData.feature_contributions.slice(0, 15).map(f => `- **${f.feature}:** Impact: ${f.impact} | SHAP Value: ${f.shap_value > 0 ? '+' : ''}${f.shap_value.toFixed(4)} | Feature Value: ${f.feature_value.toFixed(4)}`).join('\n') : '- Feature attribution computed across host covariates and metagenomic relative abundances.'}
 
 ## 8. Literature Evidence
 ${(airaAnalysis?.citations?.length > 0 ? airaAnalysis.citations : literatureArticles.slice(0, 3)).map(c => `- **[${c.pmid || 'Ref'}]** ${c.title}`).join('\n')}
@@ -468,7 +468,7 @@ Integrated multi-modal analysis reveals that sample ${activePatientId}'s risk pr
                   <Skeleton variant="table" />
                 </div>
               ) : sampleData ? (
-                <div className="card-raised p-6 md:p-10 bg-surface-900 border border-surface-700/60 shadow-md space-y-8 text-surface-200">
+                <div className="card-raised p-6 md:p-10 bg-surface-900 border border-surface-700/60 shadow-md space-y-8 text-surface-200 patient-dossier-report print:p-0 print:border-none print:shadow-none print:bg-white print:text-slate-900 print:space-y-6">
                   {/* Print Header / Letterhead */}
                   <div className="border-b border-surface-700/60 pb-5">
                     <div className="flex items-start justify-between flex-wrap gap-4">
@@ -790,7 +790,7 @@ Integrated multi-modal analysis reveals that sample ${activePatientId}'s risk pr
                       </p>
                       {predictionData?.feature_contributions?.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5 pt-1">
-                          {predictionData.feature_contributions.slice(0, 9).map((f, i) => (
+                          {predictionData.feature_contributions.slice(0, 15).map((f, i) => (
                             <div
                               key={i}
                               className={`p-2.5 rounded-lg border text-xs flex items-center justify-between font-mono ${

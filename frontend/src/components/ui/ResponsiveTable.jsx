@@ -11,6 +11,8 @@ export default function ResponsiveTable({
   minWidth = '640px',
   stickyHeader = false,
 }) {
+  const isTableAlready = React.isValidElement(children) && children.type === 'table'
+
   return (
     <div
       className={clsx(
@@ -22,10 +24,14 @@ export default function ResponsiveTable({
         overflowY: maxHeight ? 'auto' : undefined,
       }}
     >
-      <div style={{ minWidth }}>
-        <table className={clsx('w-full text-left text-xs border-collapse', stickyHeader && '[&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-surface-800')}>
-          {children}
-        </table>
+      <div style={{ minWidth }} className="print:min-w-full">
+        {isTableAlready ? (
+          children
+        ) : (
+          <table className={clsx('w-full text-left text-xs border-collapse', stickyHeader && '[&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-surface-800')}>
+            {children}
+          </table>
+        )}
       </div>
     </div>
   )

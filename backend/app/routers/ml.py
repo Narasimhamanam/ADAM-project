@@ -153,9 +153,12 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
         feature_names = split["feature_columns"]
 
         # Ensure model is initialized from cache, disk, or trained asynchronously
+        if model_name in _TRAINED_MODELS and len(_TRAINED_MODELS[model_name].get("feature_names", [])) != len(feature_names):
+            del _TRAINED_MODELS[model_name]
+
         if model_name not in _TRAINED_MODELS:
             saved = load_saved_model(model_name, seed=42)
-            if saved is not None and "model" in saved:
+            if saved is not None and "model" in saved and len(saved.get("feature_names", [])) == len(feature_names):
                 _TRAINED_MODELS[model_name] = {
                     "model": saved["model"],
                     "feature_names": feature_names,
