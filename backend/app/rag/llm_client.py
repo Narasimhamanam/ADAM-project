@@ -128,6 +128,7 @@ class LLMClient:
                     if res.status_code == 200:
                         data = res.json()
                         text = data["choices"][0]["message"]["content"]
+                        text = text.replace("\u2011", "-").replace("\u202f", " ")
                         return {
                             "response": text,
                             "provider": f"Groq ({self.groq_model})",
@@ -330,7 +331,9 @@ class LLMClient:
             )
 
         # ── Case 8: Patient Record & Prediction Analysis ──────────────────────
-        if intent == "data_record" or any(phrase in clean for phrase in ["analyze this patient", "analyze patient", "patient prediction", "predict risk"]):
+        if not any(k in clean for k in ["synthesize key", "biomedical evidence", "summarize literature"]) and (
+            intent == "data_record" or any(phrase in clean for phrase in ["analyze this patient", "analyze patient", "patient prediction", "predict risk"])
+        ):
             sample_match = re.search(r"\b([A-Z]{2}\d{3})\b", prompt.upper())
             sample_id = sample_match.group(1) if sample_match else "DC001"
             try:

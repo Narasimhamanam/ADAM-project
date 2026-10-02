@@ -336,7 +336,7 @@ html, body {
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm 14mm 14mm 14mm;
+    margin: 10mm 12mm 12mm 12mm;
   }
 
   /* Reset all viewport lockouts so the browser can print multi-page documents */
@@ -361,10 +361,12 @@ html, body {
     color: #0f172a !important;
     margin: 0 !important;
     padding: 0 !important;
+    font-size: 11pt !important;
   }
 
   /* Hide interactive shell elements */
   header,
+  header.no-print,
   aside,
   nav,
   button,
@@ -398,10 +400,19 @@ html, body {
     break-inside: avoid !important;
   }
 
+  .print-break-after {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+
   /* Professional print typography and contrast */
-  h1, h2, h3, h4, p, span, td, th, div {
+  h1, h2, h3, h4, th {
     color: #0f172a !important;
     text-shadow: none !important;
+  }
+
+  p, td {
+    color: #1e293b !important;
   }
 
   .text-surface-50,
@@ -416,13 +427,78 @@ html, body {
     color: #475569 !important;
   }
 
+  /* SHAP Diverging Chart Print Color & Geometry Locks */
+  .shap-track {
+    display: flex !important;
+    height: 14px !important;
+    min-height: 14px !important;
+    background-color: #f1f5f9 !important;
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .shap-bar-decreasing {
+    display: block !important;
+    height: 14px !important;
+    min-height: 14px !important;
+    background-color: #059669 !important;
+    border-radius: 3px 0 0 3px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .shap-bar-increasing {
+    display: block !important;
+    height: 14px !important;
+    min-height: 14px !important;
+    background-color: #d97706 !important;
+    border-radius: 0 3px 3px 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Model Probability Bars Print Geometry */
+  .prob-bar-track {
+    display: flex !important;
+    height: 8px !important;
+    min-height: 8px !important;
+    background-color: #e2e8f0 !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .prob-bar-fill-teal {
+    display: block !important;
+    height: 8px !important;
+    min-height: 8px !important;
+    background-color: #0f766e !important;
+    border-radius: 9999px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .prob-bar-fill-amber {
+    display: block !important;
+    height: 8px !important;
+    min-height: 8px !important;
+    background-color: #d97706 !important;
+    border-radius: 9999px !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   /* Clean light backgrounds for information cards and tables */
   .bg-surface-800\/40,
   .bg-surface-800\/60,
   .bg-surface-800\/80,
   .bg-surface-800\/20,
   .bg-surface-850,
-  .bg-surface-900 {
+  .bg-surface-850\/80,
+  .bg-surface-850\/90,
+  .bg-surface-900,
+  .bg-surface-900\/80,
+  .bg-surface-900\/90 {
     background-color: #f8fafc !important;
     border-color: #cbd5e1 !important;
   }
@@ -449,7 +525,7 @@ html, body {
     overflow: visible !important;
   }
 
-  /* Force print background colors */
+  /* Force exact print colors for charts, status badges and indicators */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;

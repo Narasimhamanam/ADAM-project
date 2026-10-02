@@ -119,7 +119,7 @@ export default function Sidebar({ isOpen, onClose }) {
       {/* Sidebar panel */}
       <aside
         className={clsx(
-          'fixed top-0 left-0 z-40 h-full w-64 bg-surface-900 border-r border-surface-700/70 shadow-sm',
+          'fixed top-0 left-0 z-40 h-full w-64 bg-surface-900 border-r border-surface-700/70 shadow-sm no-print print:hidden',
           'flex flex-col transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : '-translate-x-full',
           'lg:translate-x-0 lg:static lg:z-auto lg:h-auto lg:flex-shrink-0',

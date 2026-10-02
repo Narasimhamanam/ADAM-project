@@ -7,7 +7,7 @@ export default function Header({ onMenuToggle, backendStatus }) {
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-surface-700/70 bg-surface-900/85 backdrop-blur-md px-4 lg:px-6 transition-colors duration-200 shadow-sm">
+    <header className="sticky top-0 z-40 flex h-14 items-center justify-between border-b border-surface-700/70 bg-surface-900/85 backdrop-blur-md px-4 lg:px-6 transition-colors duration-200 shadow-sm no-print print:hidden">
       {/* Left: Logo + menu toggle */}
       <div className="flex items-center gap-3">
         <button
