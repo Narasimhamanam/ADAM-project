@@ -244,3 +244,40 @@ class RawMatchingAbundance(Base):
     species_name: Mapped[str] = mapped_column(String(255), primary_key=True)
     sample_id: Mapped[str] = mapped_column(String(100), primary_key=True)
     abundance: Mapped[float] = mapped_column(Float, nullable=False)
+
+
+class SubjectTrajectoryObservation(Base):
+    """Longitudinal AD Risk Trajectory Observation per subject and timepoint."""
+    __tablename__ = "subject_trajectory_observations"
+
+    trajectory_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+    subject_id: Mapped[str] = mapped_column(
+        String(100),
+        ForeignKey("participants.study_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    sample_id: Mapped[str] = mapped_column(
+        String(100),
+        ForeignKey("clinical_microbiome_samples.sample_id", ondelete="CASCADE"),
+        nullable=False,
+        index=True,
+    )
+    sample_date: Mapped[Optional[datetime.date]] = mapped_column(Date, nullable=True)
+    study_day: Mapped[int] = mapped_column(Integer, nullable=False)
+    baseline_probability: Mapped[float] = mapped_column(Float, nullable=False)
+    current_probability: Mapped[float] = mapped_column(Float, nullable=False)
+    probability_change: Mapped[float] = mapped_column(Float, nullable=False)
+    probability_slope: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    trajectory_direction: Mapped[str] = mapped_column(String(50), nullable=False, default="Stable")
+    model_version: Mapped[str] = mapped_column(String(100), nullable=False, default="xgboost_v1.0")
+    feature_schema_version: Mapped[str] = mapped_column(String(100), nullable=False, default="adam_v1_1044")
+    trajectory_metadata: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+

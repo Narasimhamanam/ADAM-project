@@ -22,6 +22,7 @@ import {
   Lock,
   GitMerge,
   Award,
+  Activity,
 } from 'lucide-react'
 import clsx from 'clsx'
 import { useDemoPhase } from '../../context/DemoPhaseContext'
@@ -46,11 +47,12 @@ const NAV_SECTIONS = [
     label: 'Machine Learning — Phase 3',
     phaseRequired: 3,
     items: [
-      { to: '/alzheimer', icon: Brain,       label: 'Alzheimer Analysis',  phase: 3 },
-      { to: '/ml',        icon: TrendingUp,  label: 'ML Prediction',       phase: 3 },
-      { to: '/models',    icon: BarChart3,   label: 'Model Comparison',    phase: 3 },
-      { to: '/shap',      icon: Zap,         label: 'SHAP Explainability', phase: 3 },
-      { to: '/reports',   icon: FileText,    label: 'Reports & PDF',       phase: 3 },
+      { to: '/alzheimer',  icon: Brain,       label: 'Alzheimer Analysis', phase: 3 },
+      { to: '/trajectory', icon: Activity,    label: 'Risk Trajectory',    phase: 3 },
+      { to: '/ml',         icon: TrendingUp,  label: 'ML Prediction',      phase: 3 },
+      { to: '/models',     icon: BarChart3,   label: 'Model Comparison',   phase: 3 },
+      { to: '/shap',       icon: Zap,         label: 'SHAP Explainability', phase: 3 },
+      { to: '/reports',    icon: FileText,    label: 'Reports & PDF',      phase: 3 },
     ],
   },
   {

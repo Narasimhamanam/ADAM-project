@@ -24,17 +24,12 @@ _TAXA_COLUMNS: Optional[List[str]] = None
 
 def get_taxa_columns(df: pd.DataFrame) -> List[str]:
     """Extract taxonomic relative abundance column names from dataset."""
-    global _TAXA_COLUMNS
-    if _TAXA_COLUMNS is not None:
-        return _TAXA_COLUMNS
-
     excluded = {
         "Sample ID", "study_id", "day", "Date Sample", "age", "age_cat",
         "male", "abx6mo", "hopsn", "malnutrition_indicator_sco",
         "clinical_frailty_scale", "PPI", "Alzheimers", "Dementia Other"
     }
-    _TAXA_COLUMNS = [c for c in df.columns if c not in excluded and df[c].dtype in ["float64", "int64"]]
-    return _TAXA_COLUMNS
+    return [c for c in df.columns if c not in excluded and df[c].dtype in ["float64", "int64"]]
 
 
 def get_control_centroid(df: pd.DataFrame) -> np.ndarray:

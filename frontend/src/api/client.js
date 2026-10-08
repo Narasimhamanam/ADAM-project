@@ -137,4 +137,62 @@ export const executeAdamWorkflow = (sampleId) =>
 export const fetchAvailableSamples = (limit = 100) =>
   apiClient.get(`/ml/samples?limit=${limit}`).then((r) => r.data)
 
+// ── Longitudinal Trajectory API methods ───────────────────────────────────
+
+/**
+ * Fetch all subjects with longitudinal summary metrics.
+ * @returns {Promise<{total_subjects: number, subjects_with_repeated_samples: number, subjects: Array}>}
+ */
+export const fetchTrajectorySubjects = () =>
+  apiClient.get('/trajectory/subjects').then((r) => r.data)
+
+/**
+ * Fetch complete longitudinal AD risk trajectory for a specific subject.
+ * @param {string} subjectId
+ * @param {boolean} includeShap
+ * @param {number|null} maxHorizonDay
+ * @returns {Promise<object>}
+ */
+export const fetchSubjectTrajectory = (subjectId, includeShap = true, maxHorizonDay = null) => {
+  let url = `/trajectory/subjects/${encodeURIComponent(subjectId)}?include_shap=${includeShap}`
+  if (maxHorizonDay !== null && maxHorizonDay !== undefined) {
+    url += `&max_horizon_day=${maxHorizonDay}`
+  }
+  return apiClient.get(url).then((r) => r.data)
+}
+
+/**
+ * Retrieve evidence-grounded literature (RAG) for an observation.
+ * @param {string} subjectId
+ * @param {string} sampleId
+ * @returns {Promise<object>}
+ */
+export const fetchTrajectoryLiterature = (subjectId, sampleId) =>
+  apiClient
+    .get(`/trajectory/subjects/${encodeURIComponent(subjectId)}/sample/${encodeURIComponent(sampleId)}/literature`)
+    .then((r) => r.data)
+
+/**
+ * Compare trajectories across multiple subjects side-by-side.
+ * @param {Array<string>} subjectIds
+ * @returns {Promise<{status: string, comparisons: Array, research_disclaimer: string}>}
+ */
+export const compareSubjectTrajectories = (subjectIds) =>
+  apiClient.post('/trajectory/compare', { subject_ids: subjectIds }).then((r) => r.data)
+
+/**
+ * Fetch cohort-level trajectory coverage and validation evaluation.
+ * @returns {Promise<object>}
+ */
+export const fetchTrajectoryEvaluation = () =>
+  apiClient.get('/trajectory/evaluation').then((r) => r.data)
+
+/**
+ * Fetch risk model architectural capabilities and time-to-event status.
+ * @returns {Promise<object>}
+ */
+export const fetchRiskModelCapabilities = () =>
+  apiClient.get('/trajectory/capabilities').then((r) => r.data)
+
+
 

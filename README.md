@@ -141,7 +141,12 @@ npm run dev
 | `POST` | `/api/ml/predict` | Live Alzheimer's risk prediction (XGBoost) |
 | `GET` | `/api/ml/shap/global` | Global Mean \|SHAP\| biomarker rankings |
 | `GET` | `/api/ml/shap/sample/{id}` | Sample-level local TreeSHAP attribution forces |
-| `POST` | `/api/ai/chat` | Interactive RAG research assistant chat (Groq LLM) |
+| `GET` | `/api/trajectory/subjects` | Longitudinal subjects registry (102 subjects, visit counts) |
+| `GET` | `/api/trajectory/subjects/{id}` | Longitudinal AD risk trajectory (baseline, latest, slopes, SHAP) |
+| `GET` | `/api/trajectory/subjects/{id}/sample/{smp}/literature` | Grounded PubMed RAG literature for trajectory observation |
+| `POST` | `/api/trajectory/compare` | Side-by-side longitudinal trajectory comparison |
+| `GET` | `/api/trajectory/evaluation` | Cohort-level coverage and zero subject-leakage audit |
+| `GET` | `/api/trajectory/capabilities` | Architecture capabilities and time-to-event governance status |
 | `GET` | `/api/ai/literature/search` | PubMed semantic vector search |
 | `POST` | `/api/ai/agent/execute` | 3-Tier AIRA Multi-Agent execution workflow |
 
@@ -157,6 +162,7 @@ Full interactive API docs: `http://localhost:8000/docs` (Swagger UI)
 | **Settings** | `/settings` | ✅ Complete | Phase 1 |
 | **Dataset Explorer** | `/datasets` | ✅ Complete | Phase 2 |
 | **Alzheimer Analysis** | `/alzheimer` | ✅ Complete | Phase 3 |
+| **Risk Trajectory** | `/trajectory` | ✅ Complete | Phase 3 |
 | **ML Risk Prediction** | `/ml` | ✅ Complete | Phase 3 |
 | **Model Comparison** | `/models` | ✅ Complete | Phase 3 |
 | **SHAP Explainability** | `/shap` | ✅ Complete | Phase 3 |
@@ -164,6 +170,16 @@ Full interactive API docs: `http://localhost:8000/docs` (Swagger UI)
 | **Research Assistant** | `/assistant` | ✅ Complete | Phase 4 |
 | **Literature / RAG** | `/literature` | ✅ Complete | Phase 4 |
 | **AI Agents** | `/agents` | ✅ Complete | Phase 4 |
+
+---
+
+## Longitudinal Risk Trajectory & Research Governance
+
+The platform incorporates a **Longitudinal AD-Associated Risk Trajectory** module that tracks how model-estimated AD probability evolves over observed study days (up to 311 days):
+- **Subject-Level Integrity:** Observations are strictly partitioned and grouped by `study_id` (102 subjects, 335 samples).
+- **Zero Subject Leakage:** Evaluated with subject-level splitting to strictly eliminate longitudinal data leakage.
+- **Empirical Trajectory vs Future Forecasting:** The system characterizes changes across observed research visits. It **does not fabricate future onset dates** or clinical diagnoses. The cohort contains repeated measurements but exactly zero observed Control → AD disease transitions; validated survival forecasting will be added in future work when transition cohorts become available.
+- **Detailed Documentation:** See [`docs/LONGITUDINAL_AD_RISK_TRAJECTORY.md`](./docs/LONGITUDINAL_AD_RISK_TRAJECTORY.md).
 
 ---
 

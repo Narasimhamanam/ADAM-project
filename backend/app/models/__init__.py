@@ -12,6 +12,7 @@ from app.models.dataset import (
     MicrobiomeSpecies,
     MicrobiomeAbundance,
     RawMatchingAbundance,
+    SubjectTrajectoryObservation,
 )
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     "MicrobiomeSpecies",
     "MicrobiomeAbundance",
     "RawMatchingAbundance",
+    "SubjectTrajectoryObservation",
 ]

@@ -9,6 +9,7 @@ import { DemoPhaseProvider } from './context/DemoPhaseContext'
 import Dashboard         from './pages/Dashboard'
 import DatasetExplorer   from './pages/DatasetExplorer'
 import AlzheimerAnalysis from './pages/AlzheimerAnalysis'
+import LongitudinalTrajectory from './pages/LongitudinalTrajectory'
 import MLPrediction      from './pages/MLPrediction'
 import ModelComparison   from './pages/ModelComparison'
 import ShapExplainability from './pages/ShapExplainability'
@@ -53,6 +54,7 @@ export default function App() {
 
           {/* Phase 3: ML Benchmarks & SHAP Explainability */}
           <Route path="/alzheimer"   element={<PhaseFeatureGuard path="/alzheimer"><AlzheimerAnalysis /></PhaseFeatureGuard>} />
+          <Route path="/trajectory"  element={<PhaseFeatureGuard path="/trajectory"><LongitudinalTrajectory /></PhaseFeatureGuard>} />
           <Route path="/ml"          element={<PhaseFeatureGuard path="/ml"><MLPrediction /></PhaseFeatureGuard>} />
           <Route path="/models"      element={<PhaseFeatureGuard path="/models"><ModelComparison /></PhaseFeatureGuard>} />
           <Route path="/shap"        element={<PhaseFeatureGuard path="/shap"><ShapExplainability /></PhaseFeatureGuard>} />

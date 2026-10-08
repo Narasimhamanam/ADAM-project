@@ -22,7 +22,7 @@ from fastapi.responses import JSONResponse
 from app.config import get_settings
 from app.core.logging import configure_logging, get_logger
 from app.database import init_db
-from app.routers import health, system, datasets, ml, ai
+from app.routers import health, system, datasets, ml, ai, trajectory
 
 # ---------------------------------------------------------------------------
 # Bootstrap logging before anything else
@@ -195,6 +195,8 @@ app.include_router(system.router, prefix=API_PREFIX)
 app.include_router(datasets.router, prefix=API_PREFIX)
 app.include_router(ml.router, prefix=API_PREFIX)
 app.include_router(ai.router, prefix=API_PREFIX)
+app.include_router(trajectory.router, prefix=API_PREFIX)
+app.include_router(trajectory.subjects_router, prefix=API_PREFIX)
 
 
 # ---------------------------------------------------------------------------

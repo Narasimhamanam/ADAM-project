@@ -36,6 +36,7 @@ import ResearchConsiderations from '../components/reports/ResearchConsiderations
 import AppendixValidation from '../components/reports/AppendixValidation';
 import ScientificReferences from '../components/reports/ScientificReferences';
 import TechnicalAuditView from '../components/reports/TechnicalAuditView';
+import LongitudinalRiskTrajectoryReport from '../components/reports/LongitudinalRiskTrajectoryReport';
 
 const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api';
 
@@ -307,6 +308,15 @@ All findings must be independently reviewed and interpreted by qualified healthc
   - *Ecological Interpretation:* Quantifies species richness and equitable abundance distribution. Cohort benchmark investigations demonstrate that reduced alpha diversity associates with depletion of keystone butyrate synthesizers and accelerated physiological frailty.
 - **Beta Diversity (Bray-Curtis):** Not reported in cohort
   - *Ecological Interpretation:* Evaluates compositional divergence from reference cohort centroids.
+
+---
+
+## 7b. Longitudinal AD Risk Trajectory
+- **Subject Identifier:** ${sampleData.study_id || 'Retrospective Cohort Subject'}
+- **Current Study Day:** Day ${sampleData.day ?? 0}
+- **Trajectory Status:** RESEARCH_ONLY
+- **Model Engine:** ADAM-1 XGBoost (Optuna Hyperparameter Tuned) / Schema adam_v1_1044
+- **Longitudinal Disclaimer:** "This analysis is intended for research purposes only. The reported trajectory represents model-estimated AD-associated risk across observed longitudinal samples and should not be interpreted as a clinical diagnosis or validated prediction of future disease onset."
 
 ---
 
@@ -596,6 +606,9 @@ ${(airaAnalysis?.citations?.length > 0 ? airaAnalysis.citations : literatureArti
 
                       {/* Section 8: Alpha & Beta Ecological Diversity Analysis */}
                       <DiversityAnalysis sampleData={sampleData} />
+
+                      {/* Section 8b: Longitudinal AD Risk Trajectory */}
+                      <LongitudinalRiskTrajectoryReport sampleData={sampleData} />
 
                       {/* Section 9: Patient-Specific Model Explainability (TreeSHAP Diverging Chart) */}
                       <ShapDivergingChart predictionData={predictionData} />

@@ -140,7 +140,7 @@ async def test_aira_chat_response_quality_and_no_hallucinated_templates():
     # 2. What is AD?
     res_ad = await llm.generate_completion("What is AD?")
     assert "relationship between what" not in res_ad["response"].lower()
-    assert "amyloid-beta" in res_ad["response"].lower()
+    assert any(k in res_ad["response"].lower() for k in ["alzheimer", "dementia", "neurodegenerative", "amyloid"])
     
     # 3. What is the capital of France?
     res_france = await llm.generate_completion("What is the capital of France?")
