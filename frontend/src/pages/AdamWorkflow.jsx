@@ -535,10 +535,27 @@ export default function AdamWorkflow() {
                         </span>
                         <h4 className="font-bold text-xs text-surface-100">{cp.title}</h4>
                       </div>
-                      <p className="text-xs text-surface-300 pl-7 leading-relaxed">{cp.content}</p>
+                      <p className="text-xs text-surface-300 pl-7 leading-relaxed whitespace-pre-line">{cp.content}</p>
                     </div>
                   ))}
                 </div>
+
+                {/* STAGE 6: Dedicated Plain-Text Clinical Synthesis */}
+                {(workflowData.summarization_agent?.plain_text_summary || workflowData.summarization_agent?.summary_text) && (
+                  <div className="p-4 rounded-xl bg-surface-800/80 border border-surface-700/60 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-accent-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <FileText size={14} /> Stage 6 – Complete Clinical Reasoning Synthesis
+                      </span>
+                      <span className="text-[10px] font-mono text-surface-400 px-2 py-0.5 rounded bg-surface-900 border border-surface-700">
+                        Plain Text • Structured Reasoning
+                      </span>
+                    </div>
+                    <div className="whitespace-pre-line text-xs font-sans text-surface-200 leading-relaxed max-h-80 overflow-y-auto p-3.5 rounded-lg bg-surface-900/80 border border-surface-800/80">
+                      {workflowData.summarization_agent?.plain_text_summary || workflowData.summarization_agent?.summary_text}
+                    </div>
+                  </div>
+                )}
 
                 {/* Retrieved Literature Citations */}
                 {workflowData.summarization_agent?.citations?.length > 0 && (
@@ -587,10 +604,27 @@ export default function AdamWorkflow() {
                         </span>
                         <h4 className="font-bold text-xs text-surface-100">{cp.title}</h4>
                       </div>
-                      <p className="text-xs text-surface-300 pl-7 leading-relaxed">{cp.content}</p>
+                      <p className="text-xs text-surface-300 pl-7 leading-relaxed whitespace-pre-line">{cp.content}</p>
                     </div>
                   ))}
                 </div>
+
+                {/* STAGE 7: Dedicated Plain-Text ML Decision Box */}
+                {(workflowData.classification_agent?.final_decision || workflowData.classification_agent?.plain_text_decision) && (
+                  <div className="p-4 rounded-xl bg-surface-800/80 border border-surface-700/60 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-accent-500 uppercase tracking-wider flex items-center gap-1.5">
+                        <ShieldCheck size={14} /> Stage 7 – ML Prediction Assessment
+                      </span>
+                      <span className="text-[10px] font-mono text-surface-400 px-2 py-0.5 rounded bg-surface-900 border border-surface-700">
+                        Plain Text • Final Decision
+                      </span>
+                    </div>
+                    <div className="whitespace-pre-line text-xs font-sans text-surface-200 leading-relaxed p-3.5 rounded-lg bg-surface-900/80 border border-surface-800/80">
+                      {workflowData.classification_agent?.final_decision || workflowData.classification_agent?.plain_text_decision}
+                    </div>
+                  </div>
+                )}
 
                 {workflowData.classification_agent?.adaptive_threshold_applied && (
                   <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2">
@@ -669,7 +703,7 @@ export default function AdamWorkflow() {
                 <FileText size={14} className="text-accent-500" />
                 <span>Auditable Decision Rationale</span>
               </span>
-              <p className="text-xs text-surface-200 leading-relaxed">
+              <p className="text-xs text-surface-200 leading-relaxed whitespace-pre-line font-sans">
                 {workflowData.final_result?.explanation}
               </p>
             </div>

@@ -39,6 +39,7 @@ from app.ml.performance import get_full_performance_comparison
 from app.ml.ablation import evaluate_ablation_run
 from app.ml.efficiency import profile_pipeline_efficiency
 from app.agents.adam_workflow import run_adam_pipeline
+from app.utils.plain_text_normalizer import normalize_final_text, validate_plain_text_output
 
 logger = get_logger(__name__)
 
@@ -395,6 +396,27 @@ async def execute_adam_workflow(payload: WorkflowExecuteRequest) -> Dict[str, An
     try:
         logger.info("Executing ADAM workflow", sample_id=payload.sample_id)
         result = await asyncio.to_thread(run_adam_pipeline, sample_id=payload.sample_id)
+
+        # Research API Validation: enforce clean plain text for Stage 6 and Stage 7
+        sum_agent = result.get("summarization_agent", {})
+        cls_agent = result.get("classification_agent", {})
+
+        # Stage 6: Validate & normalize final summary text
+        if "summary_text" in sum_agent and sum_agent["summary_text"]:
+            is_valid, _ = validate_plain_text_output(sum_agent["summary_text"], "Stage 6 Summary")
+            if not is_valid:
+                clean_text = normalize_final_text(sum_agent["summary_text"])
+                sum_agent["summary_text"] = clean_text
+                sum_agent["plain_text_summary"] = clean_text
+
+        # Stage 7: Validate & normalize final ML decision
+        if "final_decision" in cls_agent and cls_agent["final_decision"]:
+            is_valid, _ = validate_plain_text_output(cls_agent["final_decision"], "Stage 7 Decision")
+            if not is_valid:
+                clean_dec = normalize_final_text(cls_agent["final_decision"])
+                cls_agent["final_decision"] = clean_dec
+                cls_agent["plain_text_decision"] = clean_dec
+
         return result
     except ValueError as ve:
         raise HTTPException(

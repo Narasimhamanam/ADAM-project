@@ -23,6 +23,7 @@ from app.ml.shap_engine import explain_single_sample
 from app.ml.models import get_model_instance, load_saved_model, train_and_evaluate
 from app.rag.literature_store import search_literature
 from app.rag.adam_llm import call_summarization_agent, call_classification_agent, AdamClassificationResult
+from app.utils.plain_text_normalizer import normalize_final_text, build_plain_text_ml_decision
 
 logger = get_logger(__name__)
 
@@ -223,58 +224,68 @@ def run_adam_pipeline(
         sample_id=clean_id,
         strict_research_mode=strict_research_mode,
     )
-    summary_text = sum_res.get("summary_text", "")
+    summary_text = normalize_final_text(sum_res.get("summary_text", ""))
+    plain_text_summary = summary_text
+
+    # Standard concise plain-text synthesis for Checkpoint 10
+    concise_final_summary = (
+        f"Subject {study_id} (Sample {clean_id}) presents with {ml_risk_level.lower()} risk profile "
+        f"driven by host vulnerability (CFS {cfs:.0f}/9, Malnutrition Score {malnutrition:.0f}) and gut community structure "
+        f"(Shannon H' = {alpha['shannon_index']:.2f}, Bray-Curtis = {beta['bray_curtis_distance']:.4f}). "
+        f"Gradient-boosted decision trees (XGBoost) estimate Alzheimer's disease probability at {ml_prob * 100:.1f}%. "
+        f"Observed statistical associations confirm non-linear multi-omic correlations without asserting direct physiological causality."
+    )
 
     summarization_checkpoints = [
         {
             "step": 1,
             "title": "Patient Overview",
-            "content": f"Subject {study_id} (Sample {clean_id}), {age:.0f}-year-old {'male' if male == 1.0 else 'female'}, sampled at study day {day}. Longitudinal visit baseline established.",
+            "content": normalize_final_text(f"Subject {study_id} (Sample {clean_id}), {age:.0f}-year-old {'male' if male == 1.0 else 'female'}, sampled at study day {day}. Longitudinal visit baseline established."),
         },
         {
             "step": 2,
             "title": "Clinical Marker Assessment",
-            "content": f"Rockwood Clinical Frailty Scale (CFS) is {cfs:.0f}/9 ({'severely frail' if cfs >= 7 else 'mild-moderate frailty' if cfs >= 4 else 'robust'}). Malnutrition Indicator Score: {malnutrition:.0f}. PPI exposure: {'Yes' if ppi == 1.0 else 'No'}.",
+            "content": normalize_final_text(f"Rockwood Clinical Frailty Scale (CFS) is {cfs:.0f}/9 ({'severely frail' if cfs >= 7 else 'mild-moderate frailty' if cfs >= 4 else 'robust'}). Malnutrition Indicator Score: {malnutrition:.0f}. PPI exposure: {'Yes' if ppi == 1.0 else 'No'}."),
         },
         {
             "step": 3,
             "title": "Microbiome Profile",
-            "content": f"{div_profile['species_present_count']} bacterial species detected. Top abundant taxon is {top_abundant_taxa[0]['species'] if top_abundant_taxa else 'N/A'} at {top_abundant_taxa[0]['percentage'] if top_abundant_taxa else 0:.3f}% relative abundance.",
+            "content": normalize_final_text(f"{div_profile['species_present_count']} bacterial species detected. Top abundant taxon is {top_abundant_taxa[0]['species'] if top_abundant_taxa else 'N/A'} at {top_abundant_taxa[0]['percentage'] if top_abundant_taxa else 0:.3f}% relative abundance."),
         },
         {
             "step": 4,
             "title": "Diversity Assessment",
-            "content": f"Alpha diversity shows Shannon index H' = {alpha['shannon_index']:.2f}, Simpson index D = {alpha['simpson_index']:.2f}, and Berger-Parker dominance d = {alpha['berger_parker_dominance']:.2f}. Indicates {'reduced ecological evenness' if alpha['shannon_index'] < 3.0 else 'moderate-to-high community diversity'}.",
+            "content": normalize_final_text(f"Alpha diversity shows Shannon index H' = {alpha['shannon_index']:.2f}, Simpson index D = {alpha['simpson_index']:.2f}, and Berger-Parker dominance d = {alpha['berger_parker_dominance']:.2f}. Indicates {'reduced ecological evenness' if alpha['shannon_index'] < 3.0 else 'moderate-to-high community diversity'}."),
         },
         {
             "step": 5,
             "title": "Microbiome–Clinical Relationships",
-            "content": f"Host physiological frailty (CFS {cfs:.0f}) coupled with colonic dysbiosis suggests compromised mucosal barrier resilience and susceptibility to systemic inflammatory translocations.",
+            "content": normalize_final_text(f"Host physiological frailty (CFS {cfs:.0f}) coupled with colonic dysbiosis suggests compromised mucosal barrier resilience and susceptibility to systemic inflammatory translocations."),
         },
         {
             "step": 6,
             "title": "Correlation/Association Assessment",
-            "content": f"Observed statistical correlation between {'elevated pro-inflammatory taxa' if positive_drivers else 'taxonomic shifts'} and host frailty indicators. Confirms correlational alignment without implying direct physiological causality.",
+            "content": normalize_final_text(f"Observed statistical correlation between {'elevated pro-inflammatory taxa' if positive_drivers else 'taxonomic shifts'} and host frailty indicators. Confirms correlational alignment without implying direct physiological causality."),
         },
         {
             "step": 7,
             "title": "ML Prediction Assessment",
-            "content": f"Gradient-boosted decision trees (XGBoost) estimate Alzheimer's disease probability at {ml_prob * 100:.1f}% ({ml_risk_level}). Evaluated across 1,044 multi-omic features.",
+            "content": normalize_final_text(f"Gradient-boosted decision trees (XGBoost) estimate Alzheimer's disease probability at {ml_prob * 100:.1f}% ({ml_risk_level}). Evaluated across 1,044 multi-omic features."),
         },
         {
             "step": 8,
             "title": "Literature Context",
-            "content": f"Retrieved PubMed evidence ({citations[0]['pmid'] if citations else 'PMC8472911'}): Alterations in gut microbiota composition correlate with neuroinflammatory priming via circulating bacterial metabolites and LPS translocation.",
+            "content": normalize_final_text(f"Retrieved PubMed evidence ({citations[0]['pmid'] if citations else 'PMC8472911'}): Alterations in gut microbiota composition correlate with neuroinflammatory priming via circulating bacterial metabolites and LPS translocation."),
         },
         {
             "step": 9,
             "title": "Integrated Evidence",
-            "content": f"Multi-modal synthesis demonstrates coherence between the host frailty profile, Shannon entropy ({alpha['shannon_index']:.2f}), and top model feature attributions.",
+            "content": normalize_final_text(f"Multi-modal synthesis demonstrates coherence between the host frailty profile, Shannon entropy ({alpha['shannon_index']:.2f}), and top model feature attributions."),
         },
         {
             "step": 10,
             "title": "Final Summary",
-            "content": summary_text if summary_text else f"Standardized analytical summary: Patient {study_id} presents with {ml_risk_level.lower()} risk profile driven by the combination of host vulnerability and gut community structure.",
+            "content": normalize_final_text(concise_final_summary),
         },
     ]
 
@@ -296,66 +307,81 @@ def run_adam_pipeline(
         adam_binary_label = 1 if cls_result.prediction == "AD" else 0
         adam_classification = "Alzheimer's Disease (Positive)" if adam_binary_label == 1 else "Cognitive Normal (Control)"
         adam_confidence = float(cls_result.confidence_score)
-    reasoning_rule = cls_result.decision_basis
+    clean_reasoning_rule = normalize_final_text(cls_result.decision_basis)
     adaptive_adjustment_applied = bool(abs(cls_result.probability - ml_prob) > 0.01) if cls_result.probability >= 0 else False
+
+    pred_decision_label = "Alzheimer's Disease" if adam_binary_label == 1 else "Control"
+    plain_text_ml_decision = build_plain_text_ml_decision(
+        prediction_decision=pred_decision_label,
+        probability_ad=ml_prob,
+        risk_level=ml_risk_level,
+        model_name="XGBoost",
+        qualifier="The model output represents an estimated probability based on the available dataset and should not be interpreted as a clinical diagnosis.",
+    )
+
+    plain_cls_final_step = (
+        f"Classification rendered by {cls_result.llm_model} ({cls_result.llm_provider}): "
+        f"{adam_classification} with {adam_confidence * 100:.1f}% confidence. "
+        f"Rationale: {clean_reasoning_rule}"
+    )
 
     classification_checkpoints = [
         {
             "step": 1,
             "title": "Historical Context",
-            "content": f"Retrospective cohort reference comparison across 102 nursing home subjects. Subject belongs to longitudinal cluster {study_id}.",
+            "content": normalize_final_text(f"Retrospective cohort reference comparison across 102 nursing home subjects. Subject belongs to longitudinal cluster {study_id}."),
         },
         {
             "step": 2,
             "title": "Diversity Evidence",
-            "content": f"Bray-Curtis dissimilarity to healthy control centroid is {beta['bray_curtis_distance']:.4f} (Jaccard: {beta['jaccard_distance']:.4f}, Canberra: {beta['canberra_distance']:.1f}). Reflects {'substantial divergence' if beta['bray_curtis_distance'] > 0.75 else 'moderate similarity'} from baseline control community.",
+            "content": normalize_final_text(f"Bray-Curtis dissimilarity to healthy control centroid is {beta['bray_curtis_distance']:.4f} (Jaccard: {beta['jaccard_distance']:.4f}, Canberra: {beta['canberra_distance']:.1f}). Reflects {'substantial divergence' if beta['bray_curtis_distance'] > 0.75 else 'moderate similarity'} from baseline control community."),
         },
         {
             "step": 3,
             "title": "Prediction Evidence",
-            "content": f"Base XGBoost risk probability of {ml_prob * 100:.1f}% indicates {'positive' if ml_prob >= 0.5 else 'negative'} baseline prediction direction.",
+            "content": normalize_final_text(f"Base XGBoost risk probability of {ml_prob * 100:.1f}% indicates {'positive' if ml_prob >= 0.5 else 'negative'} baseline prediction direction."),
         },
         {
             "step": 4,
             "title": "Confidence Assessment",
-            "content": f"Classification certainty calculated at {adam_confidence * 100:.1f}%. Model agent: {cls_result.llm_provider.upper()} ({cls_result.llm_model}).",
+            "content": normalize_final_text(f"Classification certainty calculated at {adam_confidence * 100:.1f}%. Model agent: {cls_result.llm_provider.upper()} ({cls_result.llm_model})."),
         },
         {
             "step": 5,
             "title": "Edge-Case Check",
-            "content": f"Multi-modal synthesis: {'Adaptive threshold/LLM reasoning modulated borderline risk: ' + reasoning_rule if adaptive_adjustment_applied else 'Clear consensus observed across modalities; standard boundary applied.'}",
+            "content": normalize_final_text(f"Multi-modal synthesis: {'Adaptive threshold/LLM reasoning modulated borderline risk: ' + clean_reasoning_rule if adaptive_adjustment_applied else 'Clear consensus observed across modalities; standard boundary applied.'}"),
         },
         {
             "step": 6,
             "title": "SHAP Evidence",
-            "content": f"Primary risk drivers: {', '.join([c['feature'] for c in positive_drivers[:3]]) if positive_drivers else 'Minimal positive attribution'}. Primary protective drivers: {', '.join([c['feature'] for c in protective_drivers[:2]]) if protective_drivers else 'None detected'}.",
+            "content": normalize_final_text(f"Primary risk drivers: {', '.join([c['feature'] for c in positive_drivers[:3]]) if positive_drivers else 'Minimal positive attribution'}. Primary protective drivers: {', '.join([c['feature'] for c in protective_drivers[:2]]) if protective_drivers else 'None detected'}."),
         },
         {
             "step": 7,
             "title": "Clinical Evidence",
-            "content": f"Clinical Frailty Scale of {cfs:.0f} and malnutrition score of {malnutrition:.0f} provide clinical corroboration of host vulnerability.",
+            "content": normalize_final_text(f"Clinical Frailty Scale of {cfs:.0f} and malnutrition score of {malnutrition:.0f} provide clinical corroboration of host vulnerability."),
         },
         {
             "step": 8,
             "title": "Microbiome Evidence",
-            "content": f"Taxonomic representation across 940 species indicates {div_profile['species_present_count']} detectable taxa with prominent {top_abundant_taxa[0]['species'] if top_abundant_taxa else 'commensals'}.",
+            "content": normalize_final_text(f"Taxonomic representation across 940 species indicates {div_profile['species_present_count']} detectable taxa with prominent {top_abundant_taxa[0]['species'] if top_abundant_taxa else 'commensals'}."),
         },
         {
             "step": 9,
             "title": "Conflicting Evidence Check",
-            "content": f"{'Potential counterbalancing protective taxa identified' if protective_drivers and positive_drivers else 'Concordant risk signals observed across clinical and microbial modalities.'}",
+            "content": normalize_final_text(f"{'Potential counterbalancing protective taxa identified' if protective_drivers and positive_drivers else 'Concordant risk signals observed across clinical and microbial modalities.'}"),
         },
         {
             "step": 10,
             "title": "Final Decision",
-            "content": f"Classification rendered by {cls_result.llm_model} ({cls_result.llm_provider}): **{adam_classification}** with **{adam_confidence * 100:.1f}%** confidence. Rationale: {reasoning_rule}",
+            "content": normalize_final_text(plain_cls_final_step),
         },
     ]
 
     # 8. Final ADAM Result Card & Rationale
     final_explanation = (
-        f"The ADAM framework rendered a final classification of **{adam_classification}** "
-        f"for Sample **{clean_id}** with **{adam_confidence * 100:.1f}%** diagnostic confidence. "
+        f"The ADAM framework rendered a final classification of {adam_classification} "
+        f"for Sample {clean_id} with {adam_confidence * 100:.1f}% diagnostic confidence. "
         f"This decision was formulated by the {cls_result.llm_provider.upper()} Classification Agent ({cls_result.llm_model}), "
         f"synthesizing quantitative gradient boosting probability ({ml_prob * 100:.1f}%), "
         f"TreeSHAP feature attributions, and ecological diversity metrics (Shannon H' = {alpha['shannon_index']:.2f}, "
@@ -364,6 +390,7 @@ def run_adam_pipeline(
         f"{', '.join([c['feature'] for c in positive_drivers[:3]]) if positive_drivers else 'general clinical covariates'}. "
         f"Observed associations reflect non-linear biological and clinical correlations and do not assert direct clinical causation."
     )
+    clean_final_explanation = normalize_final_text(final_explanation)
 
     return {
         "sample_id": clean_id,
@@ -404,7 +431,10 @@ def run_adam_pipeline(
         },
         "summarization_agent": {
             "workflow_name": "ADAM-1 Enhanced Reasoning Workflow",
-            "summary_text": summary_text,
+            "summary_text": plain_text_summary,
+            "plain_text_summary": plain_text_summary,
+            "final_decision": concise_final_summary,
+            "final_summary": concise_final_summary,
             "llm_provider": sum_res.get("llm_provider"),
             "llm_model": sum_res.get("llm_model"),
             "is_fallback": sum_res.get("is_fallback", False),
@@ -423,7 +453,7 @@ def run_adam_pipeline(
             "probability": cls_result.probability,
             "confidence": cls_result.confidence,
             "confidence_score": cls_result.confidence_score,
-            "decision_basis": cls_result.decision_basis,
+            "decision_basis": clean_reasoning_rule,
             "key_factors": cls_result.key_factors,
             "agrees_with_xgboost": cls_result.agrees_with_xgboost,
             "llm_provider": cls_result.llm_provider,
@@ -437,7 +467,17 @@ def run_adam_pipeline(
             "token_usage": cls_result.token_usage,
             "checkpoints": classification_checkpoints,
             "adaptive_threshold_applied": adaptive_adjustment_applied,
-            "reasoning_rule": reasoning_rule,
+            "reasoning_rule": clean_reasoning_rule,
+            "final_decision": plain_text_ml_decision,
+            "plain_text_decision": plain_text_ml_decision,
+            "structured_decision": {
+                "stage": 7,
+                "prediction_decision": pred_decision_label,
+                "probability_ad": ml_prob,
+                "risk_level": ml_risk_level,
+                "model": "XGBoost",
+                "plain_text_summary": plain_text_ml_decision,
+            },
         },
         "final_result": {
             "adam_prediction": adam_classification,
@@ -481,7 +521,8 @@ def run_adam_pipeline(
                 "canberra_distance": beta["canberra_distance"],
             },
             "citations": citations,
-            "explanation": final_explanation,
+            "explanation": clean_final_explanation,
+            "plain_text_explanation": clean_final_explanation,
             "telemetry": {
                 "summarization_elapsed_ms": sum_res.get("elapsed_ms", 0.0),
                 "classification_elapsed_ms": cls_result.elapsed_ms,

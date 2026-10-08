@@ -36,6 +36,7 @@ from app.core.logging import get_logger
 from app.rag.openrouter_client import get_openrouter_client, OpenRouterClient
 from app.rag.gemini_client import get_gemini_client, GeminiClient, GeminiCallResult
 from app.rag.groq_client import get_groq_client, GroqClient, GroqCallResult
+from app.utils.plain_text_normalizer import normalize_final_text, build_plain_text_ml_decision
 
 logger = get_logger(__name__)
 
@@ -125,6 +126,20 @@ class AdamClassificationResult:
     success: bool = True                 # True if live agent execution succeeded
     error: Optional[str] = None          # Error message if execution failed
     prompt_hash: Optional[str] = None    # SHA-256 hash of exact input prompt
+    plain_text_decision: Optional[str] = None
+
+    def __post_init__(self):
+        if self.decision_basis:
+            self.decision_basis = normalize_final_text(self.decision_basis)
+        if not self.plain_text_decision and self.prediction != "FAILED":
+            pred_dec = "Alzheimer's Disease" if self.prediction == "AD" else "Control"
+            risk_level = "High Risk" if self.probability >= 0.5 else "Low Risk"
+            self.plain_text_decision = build_plain_text_ml_decision(
+                prediction_decision=pred_dec,
+                probability_ad=self.probability,
+                risk_level=risk_level,
+                model_name="XGBoost",
+            )
 
 
 # ---------------------------------------------------------------------------
@@ -163,12 +178,34 @@ def _persist_agent_cache() -> None:
 
 def get_cached_agent_result(cache_key: str) -> Optional[Dict[str, Any]]:
     cache = _get_agent_cache()
-    return cache.get(cache_key)
+    res = cache.get(cache_key)
+    if res and isinstance(res, dict):
+        res_copy = dict(res)
+        if "summary_text" in res_copy and res_copy["summary_text"]:
+            res_copy["summary_text"] = normalize_final_text(res_copy["summary_text"])
+            res_copy["plain_text_summary"] = res_copy["summary_text"]
+        if "decision_basis" in res_copy and res_copy["decision_basis"]:
+            res_copy["decision_basis"] = normalize_final_text(res_copy["decision_basis"])
+        if "reasoning" in res_copy and res_copy["reasoning"]:
+            res_copy["reasoning"] = normalize_final_text(res_copy["reasoning"])
+        return res_copy
+    return res
 
 
 def set_cached_agent_result(cache_key: str, data: Dict[str, Any]) -> None:
     cache = _get_agent_cache()
-    cache[cache_key] = data
+    if isinstance(data, dict):
+        data_copy = dict(data)
+        if "summary_text" in data_copy and data_copy["summary_text"]:
+            data_copy["summary_text"] = normalize_final_text(data_copy["summary_text"])
+            data_copy["plain_text_summary"] = data_copy["summary_text"]
+        if "decision_basis" in data_copy and data_copy["decision_basis"]:
+            data_copy["decision_basis"] = normalize_final_text(data_copy["decision_basis"])
+        if "reasoning" in data_copy and data_copy["reasoning"]:
+            data_copy["reasoning"] = normalize_final_text(data_copy["reasoning"])
+        cache[cache_key] = data_copy
+    else:
+        cache[cache_key] = data
     _persist_agent_cache()
 
 
@@ -407,8 +444,10 @@ Retrieved Scientific Literature Evidence (RAG):
         )
 
         if groq_res.is_success and groq_res.content:
+            clean_summary = normalize_final_text(groq_res.content)
             result = {
-                "summary_text": groq_res.content,
+                "summary_text": clean_summary,
+                "plain_text_summary": clean_summary,
                 "workflow_name": f"ADAM-1 Groq Summarization Agent ({groq_res.model})",
                 "llm_provider": "GroqCloud",
                 "llm_model": groq_res.model,
@@ -491,8 +530,10 @@ Retrieved Scientific Literature Evidence (RAG):
         )
 
         if gemini_res.is_success and gemini_res.content:
+            clean_summary = normalize_final_text(gemini_res.content)
             result = {
-                "summary_text": gemini_res.content,
+                "summary_text": clean_summary,
+                "plain_text_summary": clean_summary,
                 "workflow_name": f"ADAM-1 Gemini Summarization Agent ({gemini_res.model})",
                 "llm_provider": "Google Gemini API",
                 "llm_model": gemini_res.model,
@@ -572,8 +613,10 @@ Retrieved Scientific Literature Evidence (RAG):
         )
 
         if comp_res.is_success and comp_res.content:
+            clean_summary = normalize_final_text(comp_res.content)
             result = {
-                "summary_text": comp_res.content,
+                "summary_text": clean_summary,
+                "plain_text_summary": clean_summary,
                 "workflow_name": f"ADAM-1 Paper Summarization Agent ({comp_res.model})",
                 "llm_provider": "openrouter",
                 "llm_model": comp_res.model,
@@ -647,8 +690,10 @@ Retrieved Scientific Literature Evidence (RAG):
     if not strict_research_mode:
         hist_rec = get_paper_historical_record(clean_id)
         if hist_rec and hist_rec.get("formatted_summary"):
+            clean_summary = normalize_final_text(hist_rec["formatted_summary"])
             result = {
-                "summary_text": hist_rec["formatted_summary"],
+                "summary_text": clean_summary,
+                "plain_text_summary": clean_summary,
                 "workflow_name": "ADAM-1 Paper Published Summarization Agent (GPT-4o)",
                 "llm_provider": "paper_historical",
                 "llm_model": "openai/gpt-4o",
@@ -688,8 +733,10 @@ Retrieved Scientific Literature Evidence (RAG):
         f"Biomarker attribution reveals prominent contributions from "
         f"{', '.join([c.get('feature', '') for c in pos_drivers[:3]]) if pos_drivers else 'clinical covariates'}."
     )
+    clean_summary = normalize_final_text(summary_text)
     result = {
-        "summary_text": summary_text,
+        "summary_text": clean_summary,
+        "plain_text_summary": clean_summary,
         "workflow_name": "ADAM-1 Enhanced Summarization Agent (Analytical Fallback)",
         "llm_provider": "fallback_consensus",
         "llm_model": "analytical_template",
