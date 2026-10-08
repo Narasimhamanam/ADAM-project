@@ -12,6 +12,8 @@ import {
   Layers,
   ArrowRight,
   Filter,
+  ShieldAlert,
+  Info,
 } from 'lucide-react'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ErrorAlert from '../components/ui/ErrorAlert'
@@ -22,26 +24,31 @@ const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}
 export default function AlzheimerAnalysis() {
   const [samples, setSamples] = useState([])
   const [selectedSampleId, setSelectedSampleId] = useState('')
-  const [sampleDetail, setSampleDetail] = useState(null)
-  const [prediction, setPrediction] = useState(null)
+  const [predictionData, setPredictionData] = useState(null)
   const [selectedModel, setSelectedModel] = useState('xgboost')
   const [searchQuery, setSearchQuery] = useState('')
   const [diagnosisFilter, setDiagnosisFilter] = useState('all')
   const [loading, setLoading] = useState(true)
   const [analyzing, setAnalyzing] = useState(false)
   const [error, setError] = useState(null)
+  const [showDiagnostics, setShowDiagnostics] = useState(false)
 
   // Load sample cohort list
   async function loadCohort() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch(`${API_BASE}/samples?page=1&page_size=335`)
-      if (!res.ok) throw new Error('Failed to load patient samples')
+      let res = await fetch(`${API_BASE}/samples?page=1&page_size=335`)
+      if (!res.ok) {
+        // Fallback to ML samples endpoint
+        res = await fetch(`${API_BASE}/ml/samples?limit=335`)
+      }
+      if (!res.ok) throw new Error('Failed to load patient samples from cohort database')
       const data = await res.json()
-      setSamples(data.samples || [])
-      if (data.samples && data.samples.length > 0) {
-        setSelectedSampleId(data.samples[0].sample_id)
+      const sampleList = data.samples || (Array.isArray(data) ? data : [])
+      setSamples(sampleList)
+      if (sampleList.length > 0 && !selectedSampleId) {
+        setSelectedSampleId(sampleList[0].sample_id)
       }
     } catch (err) {
       setError(err.message)
@@ -54,45 +61,48 @@ export default function AlzheimerAnalysis() {
     loadCohort()
   }, [])
 
-  // Run comprehensive analysis for selected patient record
-  async function analyzeRecord(sampleId, modelName) {
-    if (!sampleId) return
-    setAnalyzing(true)
-    setError(null)
-    try {
-      const [detailRes, predRes] = await Promise.all([
-        fetch(`${API_BASE}/samples/${sampleId}`),
-        fetch(`${API_BASE}/ml/predict`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ model_name: modelName, sample_id: sampleId }),
-        }),
-      ])
-
-      if (!detailRes.ok || !predRes.ok) {
-        throw new Error('Failed to analyze selected patient record')
-      }
-
-      const detailData = await detailRes.json()
-      const predData = await predRes.json()
-
-      setSampleDetail(detailData)
-      setPrediction(predData)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setAnalyzing(false)
-    }
-  }
-
+  // Single Source of Truth: Fetch record-specific prediction and ground truth whenever sample or model changes
   useEffect(() => {
-    if (selectedSampleId) {
-      analyzeRecord(selectedSampleId, selectedModel)
+    let ignore = false
+
+    async function fetchRecordPrediction() {
+      if (!selectedSampleId) return
+      setAnalyzing(true)
+      setError(null)
+
+      try {
+        const res = await fetch(
+          `${API_BASE}/samples/${selectedSampleId}/prediction?model=${selectedModel}`
+        )
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({}))
+          throw new Error(errBody.detail || `Prediction failed for sample ${selectedSampleId}`)
+        }
+        const data = await res.json()
+        if (!ignore) {
+          setPredictionData(data)
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError(err.message)
+          setPredictionData(null)
+        }
+      } finally {
+        if (!ignore) {
+          setAnalyzing(false)
+        }
+      }
+    }
+
+    fetchRecordPrediction()
+
+    return () => {
+      ignore = true
     }
   }, [selectedSampleId, selectedModel])
 
   const filteredSamples = samples.filter((s) => {
-    const isAD = s.alzheimers === 1 || s.alzheimers_diagnosis === 1
+    const isAD = s.alzheimers === 1 || s.alzheimers === 1.0 || s.alzheimers_diagnosis === 1
     const matchesDiagnosis =
       diagnosisFilter === 'all' ||
       (diagnosisFilter === 'ad' && isAD) ||
@@ -105,21 +115,17 @@ export default function AlzheimerAnalysis() {
     return matchesDiagnosis && matchesSearch
   })
 
-  const selectedSample = samples.find((s) => s.sample_id === selectedSampleId)
-  const actualLabel = selectedSample ? (selectedSample.alzheimers ?? selectedSample.alzheimers_diagnosis) : null
-  const predictedLabel = prediction ? prediction.alzheimers_prediction : null
-  const isMatch = actualLabel !== null && predictedLabel !== null && actualLabel === predictedLabel
-
-  const riskPercent = prediction ? (prediction.alzheimers_risk_probability * 100).toFixed(1) : '0.0'
-
-  const confusionType =
-    actualLabel === 1 && predictedLabel === 1
-      ? 'True Positive (Correct Detection)'
-      : actualLabel === 0 && predictedLabel === 0
-      ? 'True Negative (Correct Control)'
-      : actualLabel === 1 && predictedLabel === 0
-      ? 'False Negative (Under-predicted)'
-      : 'False Positive (Over-predicted)'
+  // Derived atomic variables from the single-source-of-truth predictionData
+  const actualLabel = predictionData?.ground_truth?.label ?? null
+  const actualDiagnosis = predictionData?.ground_truth?.diagnosis ?? 'Unavailable'
+  const predictedLabel = predictionData?.prediction?.label ?? null
+  const predictedDisplay = predictionData?.prediction?.display_label ?? 'Unavailable'
+  const riskPercent = predictionData?.prediction?.risk_percent?.toFixed(1) ?? '0.0'
+  const isMatch = predictionData?.evaluation?.correct ?? false
+  const statusDetail = predictionData?.evaluation?.status_detail ?? 'Evaluating...'
+  const evaluationStatus = predictionData?.evaluation?.status ?? 'Unknown'
+  const patient = predictionData?.patient
+  const explainability = predictionData?.explainability
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -136,17 +142,89 @@ export default function AlzheimerAnalysis() {
             Multi-omic profiling comparing Alzheimer's patients vs. cognitively normal control participants.
           </p>
         </div>
-        <button
-          onClick={loadCohort}
-          disabled={loading}
-          className="btn-ghost text-xs border border-surface-600/60 flex items-center gap-1.5"
-        >
-          <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-          Refresh Cohort
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowDiagnostics((prev) => !prev)}
+            className="btn-ghost text-xs border border-surface-600/60 flex items-center gap-1.5"
+          >
+            <Info size={14} className="text-accent-500" />
+            {showDiagnostics ? 'Hide Diagnostics' : 'Data Integrity Panel'}
+          </button>
+          <button
+            onClick={loadCohort}
+            disabled={loading}
+            className="btn-ghost text-xs border border-surface-600/60 flex items-center gap-1.5"
+          >
+            <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+            Refresh Cohort
+          </button>
+        </div>
       </div>
 
-      {error && <ErrorAlert message={error} onRetry={() => analyzeRecord(selectedSampleId, selectedModel)} />}
+      {/* ── Diagnostics / Data Integrity Panel (Section 22) ── */}
+      {showDiagnostics && predictionData && (
+        <div className="p-4 rounded-xl bg-surface-900 border border-accent-500/30 text-xs space-y-2">
+          <div className="flex items-center justify-between border-b border-surface-700/60 pb-2">
+            <span className="font-bold text-accent-400 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
+              <ShieldAlert size={14} /> Research Data Integrity Diagnostic Bar
+            </span>
+            <span className="text-[10px] font-mono text-surface-400">Strict Real Data Binding</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 font-mono text-[11px]">
+            <div className="p-2 rounded bg-surface-800/80">
+              <span className="text-surface-400 block text-[9px] uppercase">Sample ID</span>
+              <span className="text-accent-300 font-bold">{predictionData.sample_id}</span>
+            </div>
+            <div className="p-2 rounded bg-surface-800/80">
+              <span className="text-surface-400 block text-[9px] uppercase">Subject ID</span>
+              <span className="text-surface-100">{predictionData.subject_id}</span>
+            </div>
+            <div className="p-2 rounded bg-surface-800/80">
+              <span className="text-surface-400 block text-[9px] uppercase">Model</span>
+              <span className="text-surface-100 font-bold">{predictionData.prediction.model}</span>
+            </div>
+            <div className="p-2 rounded bg-surface-800/80">
+              <span className="text-surface-400 block text-[9px] uppercase">P(AD) Raw</span>
+              <span className="text-accent-300 font-bold">{predictionData.prediction.probability_ad.toFixed(4)}</span>
+            </div>
+            <div className="p-2 rounded bg-surface-800/80">
+              <span className="text-surface-400 block text-[9px] uppercase">Ground Truth</span>
+              <span className={predictionData.ground_truth.label === 1 ? 'text-danger-400 font-bold' : 'text-success-400 font-bold'}>
+                {predictionData.ground_truth.label} ({predictionData.ground_truth.display_label})
+              </span>
+            </div>
+            <div className="p-2 rounded bg-surface-800/80">
+              <span className="text-surface-400 block text-[9px] uppercase">Evaluation</span>
+              <span className={isMatch ? 'text-success-400 font-bold' : 'text-warning-400 font-bold'}>
+                {predictionData.evaluation.status}
+              </span>
+            </div>
+            <div className="p-2 rounded bg-surface-800/80">
+              <span className="text-surface-400 block text-[9px] uppercase">Features</span>
+              <span className="text-surface-100">{predictionData.features?.evaluated_features_count ?? 1044}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {error && (
+        <ErrorAlert
+          message={error}
+          onRetry={() => {
+            if (selectedSampleId) {
+              setAnalyzing(true)
+              fetch(`${API_BASE}/samples/${selectedSampleId}/prediction?model=${selectedModel}`)
+                .then((r) => r.json())
+                .then((d) => {
+                  setPredictionData(d)
+                  setError(null)
+                })
+                .catch((e) => setError(e.message))
+                .finally(() => setAnalyzing(false))
+            }
+          }}
+        />
+      )}
 
       {/* ── 2-Column Layout: Patient Selector + Detailed Actual vs Predicted Analysis ── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -204,7 +282,7 @@ export default function AlzheimerAnalysis() {
           ) : (
             <div className="overflow-y-auto flex-1 space-y-1.5 pr-1 divide-y divide-surface-800/40">
               {filteredSamples.map((s) => {
-                const isAD = s.alzheimers === 1 || s.alzheimers_diagnosis === 1
+                const isAD = s.alzheimers === 1 || s.alzheimers === 1.0 || s.alzheimers_diagnosis === 1
                 const isSelected = s.sample_id === selectedSampleId
                 return (
                   <button
@@ -248,17 +326,21 @@ export default function AlzheimerAnalysis() {
 
               {/* Model Switcher */}
               <div className="flex items-center gap-1 bg-surface-800/80 p-1 rounded-lg border border-surface-700/60">
-                {['xgboost', 'randomforest', 'logisticregression'].map((m) => (
+                {[
+                  { id: 'xgboost', label: 'XGBoost' },
+                  { id: 'randomforest', label: 'Random Forest' },
+                  { id: 'logisticregression', label: 'Logistic Reg' },
+                ].map((m) => (
                   <button
-                    key={m}
-                    onClick={() => setSelectedModel(m)}
+                    key={m.id}
+                    onClick={() => setSelectedModel(m.id)}
                     className={`px-2.5 py-1 rounded text-[11px] font-semibold uppercase transition-all ${
-                      selectedModel === m
+                      selectedModel === m.id
                         ? 'bg-accent-500 text-white shadow-sm'
                         : 'text-surface-400 hover:text-surface-50'
                     }`}
                   >
-                    {m === 'xgboost' ? 'XGBoost' : m === 'randomforest' ? 'Random Forest' : 'Logistic Reg'}
+                    {m.label}
                   </button>
                 ))}
               </div>
@@ -278,7 +360,7 @@ export default function AlzheimerAnalysis() {
                   <div className="h-16 bg-surface-800/40 rounded-lg" />
                 </div>
               </div>
-            ) : sampleDetail && prediction ? (
+            ) : predictionData ? (
               <div className="space-y-5">
                 {/* Visual Comparative Matrix Banner */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -305,12 +387,14 @@ export default function AlzheimerAnalysis() {
                         <p className="text-base font-extrabold text-surface-50">
                           {actualLabel === 1 ? 'Alzheimer’s Disease (Positive)' : 'Cognitive Normal (Control)'}
                         </p>
-                        <p className="text-xs text-surface-400 font-mono">Diagnosis Flag: {actualLabel}</p>
+                        <p className="text-xs text-surface-400 font-mono">
+                          Diagnosis Flag: {actualLabel} ({actualDiagnosis})
+                        </p>
                       </div>
                     </div>
 
                     <div className="text-[11px] text-surface-400 pt-2 border-t border-surface-800 font-mono">
-                      Sample ID: <code className="text-accent-500 dark:text-accent-400 font-bold">{sampleDetail.sample_id}</code> (Subject: {sampleDetail.study_id})
+                      Sample ID: <code className="text-accent-500 dark:text-accent-400 font-bold">{predictionData.sample_id}</code> (Subject: {predictionData.subject_id})
                     </div>
                   </div>
 
@@ -320,7 +404,9 @@ export default function AlzheimerAnalysis() {
                       <p className="text-[11px] font-bold text-surface-400 uppercase tracking-wider">
                         Model Predicted Outcome
                       </p>
-                      <p className="text-xs text-surface-400 mt-0.5">Inference by {prediction.model_name.toUpperCase()}</p>
+                      <p className="text-xs text-surface-400 mt-0.5">
+                        Inference by {predictionData.prediction.model.toUpperCase()}
+                      </p>
                     </div>
 
                     <div className="my-3 flex items-center gap-3">
@@ -336,13 +422,15 @@ export default function AlzheimerAnalysis() {
                       <div>
                         <div className="flex items-center gap-2">
                           <p className="text-base font-extrabold text-surface-50">
-                            {predictedLabel === 1 ? 'Predicted Positive' : 'Predicted Negative (Control)'}
+                            {predictedDisplay}
                           </p>
                           <span className="text-xs font-data font-bold text-accent-500 dark:text-accent-400 bg-accent-500/15 px-2 py-0.5 rounded border border-accent-500/30">
                             {riskPercent}% Risk
                           </span>
                         </div>
-                        <p className="text-xs text-surface-400 font-mono">Classification: {prediction.risk_level}</p>
+                        <p className="text-xs text-surface-400 font-mono">
+                          Classification: {predictionData.prediction.classification}
+                        </p>
                       </div>
                     </div>
 
@@ -350,10 +438,14 @@ export default function AlzheimerAnalysis() {
                       Status:{' '}
                       <span
                         className={`font-semibold ${
-                          isMatch ? 'text-success-500 dark:text-success-400' : 'text-warning-500'
+                          isMatch
+                            ? 'text-success-500 dark:text-success-400'
+                            : evaluationStatus === 'False Negative' || evaluationStatus === 'False Positive'
+                            ? 'text-warning-500 dark:text-warning-400'
+                            : 'text-surface-300'
                         }`}
                       >
-                        {confusionType}
+                        {statusDetail}
                       </span>
                     </div>
                   </div>
@@ -369,7 +461,12 @@ export default function AlzheimerAnalysis() {
                 >
                   {isMatch ? <CheckCircle2 size={16} className="shrink-0" /> : <AlertCircle size={16} className="shrink-0" />}
                   <span>
-                    <strong>Model Verdict:</strong> {isMatch ? 'Model prediction exactly matches clinical ground truth.' : 'Model predicted different probability threshold than cohort ground truth label.'}
+                    <strong>Model Verdict:</strong>{' '}
+                    {isMatch
+                      ? 'Model prediction exactly matches clinical ground truth.'
+                      : evaluationStatus === 'False Negative'
+                      ? 'False Negative: Model under-predicted Alzheimer’s risk (< 50%) for clinical AD positive subject.'
+                      : 'False Positive: Model over-predicted Alzheimer’s risk (≥ 50%) for cognitively normal control participant.'}
                   </span>
                 </div>
 
@@ -377,30 +474,38 @@ export default function AlzheimerAnalysis() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
                   <div className="p-3 rounded-lg bg-surface-900/60 border border-surface-700/40 text-center">
                     <p className="text-[10px] text-surface-400 uppercase font-semibold">Age</p>
-                    <p className="font-data text-sm font-bold text-surface-50 mt-0.5">{sampleDetail.age ?? '—'}</p>
+                    <p className="font-data text-sm font-bold text-surface-50 mt-0.5">{patient?.age ?? '—'}</p>
                   </div>
                   <div className="p-3 rounded-lg bg-surface-900/60 border border-surface-700/40 text-center">
                     <p className="text-[10px] text-surface-400 uppercase font-semibold">Frailty Scale</p>
-                    <p className="font-data text-sm font-bold text-surface-50 mt-0.5">{sampleDetail.clinical_frailty_scale ?? '—'}</p>
+                    <p className="font-data text-sm font-bold text-surface-50 mt-0.5">{patient?.frailty_scale ?? '—'}</p>
                   </div>
                   <div className="p-3 rounded-lg bg-surface-900/60 border border-surface-700/40 text-center">
                     <p className="text-[10px] text-surface-400 uppercase font-semibold">Malnutrition Score</p>
-                    <p className="font-data text-sm font-bold text-surface-50 mt-0.5">{sampleDetail.malnutrition_indicator_sco ?? '—'}</p>
+                    <p className="font-data text-sm font-bold text-surface-50 mt-0.5">{patient?.malnutrition_score ?? '—'}</p>
                   </div>
                   <div className="p-3 rounded-lg bg-surface-900/60 border border-surface-700/40 text-center">
                     <p className="text-[10px] text-surface-400 uppercase font-semibold">PPI Medication</p>
-                    <p className="font-mono text-sm font-bold text-surface-50 mt-0.5">{sampleDetail.ppi === 1 ? 'Yes' : 'No'}</p>
+                    <p className="font-mono text-sm font-bold text-surface-50 mt-0.5">
+                      {patient?.ppi_medication ? 'Yes' : 'No'}
+                    </p>
                   </div>
                 </div>
 
                 {/* Top Driving Biomarkers for This Specific Record */}
                 <div>
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-surface-400 mb-2.5 flex items-center gap-1.5">
-                    <Dna size={14} className="text-accent-500" />
-                    Top Microbiome &amp; Clinical Biomarkers Influencing This Patient
-                  </h3>
+                  <div className="flex items-center justify-between mb-2.5">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-surface-400 flex items-center gap-1.5">
+                      <Dna size={14} className="text-accent-500" />
+                      Top Microbiome &amp; Clinical Biomarkers Influencing This Patient
+                    </h3>
+                    <span className="text-[10px] font-mono text-surface-500">
+                      Method: {explainability?.method ?? 'TreeSHAP'}
+                    </span>
+                  </div>
+
                   <div className="space-y-1.5 max-h-[220px] overflow-y-auto pr-1">
-                    {prediction.feature_contributions?.slice(0, 8).map((c, i) => {
+                    {explainability?.shap_features?.slice(0, 8).map((c, i) => {
                       const increases = c.impact === 'increases_risk'
                       return (
                         <div

@@ -34,7 +34,9 @@ from app.schemas.ml import (
     ShapFeatureRank,
     WorkflowExecuteRequest,
     PerformanceComparisonResponse,
+    SamplePredictionResponse,
 )
+from app.ml.predict_service import get_sample_prediction_details
 from app.ml.performance import get_full_performance_comparison
 from app.ml.ablation import evaluate_ablation_run
 from app.ml.efficiency import profile_pipeline_efficiency
@@ -255,6 +257,7 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
             sample_id=sample_id,
             alzheimers_risk_probability=proba,
             predicted_label=label,
+            alzheimers_prediction=label,
             risk_level=risk_level,
             confidence=confidence,
             feature_contributions=contributions,
@@ -268,6 +271,19 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Prediction failed: {str(e)}",
         )
+
+
+@router.get(
+    "/samples/{sample_id}/prediction",
+    response_model=SamplePredictionResponse,
+    summary="Get dynamic model prediction, ground truth, and patient explainability",
+    description="Returns genuine ground truth, dynamic inference by model, confusion status, and sample-specific SHAP explanation.",
+)
+async def get_ml_sample_prediction(
+    sample_id: str,
+    model: str = Query("xgboost", description="Model name: xgboost | randomforest | logisticregression"),
+) -> SamplePredictionResponse:
+    return await get_sample_prediction_details(sample_id=sample_id, model_name=model)
 
 
 @router.get(

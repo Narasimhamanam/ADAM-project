@@ -35,10 +35,13 @@ export default function MLPrediction() {
   const loadSamples = useCallback(async () => {
     setCohortLoading(true)
     try {
-      const res = await fetch(`${API_BASE}/samples?page=1&page_size=335`)
+      let res = await fetch(`${API_BASE}/samples?page=1&page_size=335`)
+      if (!res.ok) {
+        res = await fetch(`${API_BASE}/ml/samples?limit=335`)
+      }
       if (res.ok) {
         const data = await res.json()
-        const sampleList = data.samples || []
+        const sampleList = data.samples || (Array.isArray(data) ? data : [])
         setSamples(sampleList)
         if (sampleList.length > 0 && !selectedSampleId) {
           setSelectedSampleId(sampleList[0].sample_id)

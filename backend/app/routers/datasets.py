@@ -49,6 +49,10 @@ from app.schemas.dataset import (
     AlphaDiversityResponse,
     IngestionResponse,
 )
+from app.schemas.ml import SamplePredictionResponse
+from app.ml.predict_service import get_sample_prediction_details
+from app.ml.data_loader import load_dataset_df
+import pandas as pd
 
 router = APIRouter(tags=["datasets"])
 
@@ -177,36 +181,84 @@ async def list_samples(
     search: Optional[str] = Query(None, description="Search by sample_id prefix"),
     db: AsyncSession = Depends(get_db),
 ) -> SampleListResponse:
-    q = select(ClinicalMicrobiomeSample)
+    try:
+        q = select(ClinicalMicrobiomeSample)
+        if study_id:
+            q = q.where(ClinicalMicrobiomeSample.study_id == study_id)
+        if alzheimers is not None:
+            q = q.where(ClinicalMicrobiomeSample.alzheimers == alzheimers)
+        if search:
+            q = q.where(ClinicalMicrobiomeSample.sample_id.ilike(f"{search}%"))
+
+        count_q = select(func.count(ClinicalMicrobiomeSample.sample_id))
+        if study_id:
+            count_q = count_q.where(ClinicalMicrobiomeSample.study_id == study_id)
+        if alzheimers is not None:
+            count_q = count_q.where(ClinicalMicrobiomeSample.alzheimers == alzheimers)
+        if search:
+            count_q = count_q.where(ClinicalMicrobiomeSample.sample_id.ilike(f"{search}%"))
+
+        count_result = await db.execute(count_q)
+        total = count_result.scalar_one()
+
+        if total > 0:
+            offset = (page - 1) * page_size
+            result = await db.execute(
+                q.order_by(ClinicalMicrobiomeSample.sample_id).offset(offset).limit(page_size)
+            )
+            samples = result.scalars().all()
+            return SampleListResponse(
+                total=total,
+                page=page,
+                page_size=page_size,
+                samples=[SampleResponse.model_validate(s) for s in samples],
+            )
+    except Exception:
+        # Fall back to research dataframe
+        pass
+
+    # Verified dataframe direct retrieval
+    df = load_dataset_df()
+    filtered = df
     if study_id:
-        q = q.where(ClinicalMicrobiomeSample.study_id == study_id)
+        filtered = filtered[filtered["study_id"].astype(str).str.lower() == study_id.lower()]
     if alzheimers is not None:
-        q = q.where(ClinicalMicrobiomeSample.alzheimers == alzheimers)
+        filtered = filtered[filtered["Alzheimers"] == alzheimers]
     if search:
-        q = q.where(ClinicalMicrobiomeSample.sample_id.ilike(f"{search}%"))
+        filtered = filtered[filtered["Sample ID"].astype(str).str.lower().str.startswith(search.lower())]
 
-    count_q = select(func.count(ClinicalMicrobiomeSample.sample_id))
-    if study_id:
-        count_q = count_q.where(ClinicalMicrobiomeSample.study_id == study_id)
-    if alzheimers is not None:
-        count_q = count_q.where(ClinicalMicrobiomeSample.alzheimers == alzheimers)
-    if search:
-        count_q = count_q.where(ClinicalMicrobiomeSample.sample_id.ilike(f"{search}%"))
-
-    count_result = await db.execute(count_q)
-    total = count_result.scalar_one()
-
+    total = len(filtered)
     offset = (page - 1) * page_size
-    result = await db.execute(
-        q.order_by(ClinicalMicrobiomeSample.sample_id).offset(offset).limit(page_size)
-    )
-    samples = result.scalars().all()
+    sliced = filtered.iloc[offset : offset + page_size]
+
+    sample_items: list[SampleResponse] = []
+    for _, row in sliced.iterrows():
+        sid = str(row["Sample ID"])
+        ppi_val = float(row.get("PPI", row.get("ppi", 0.0))) if not pd.isna(row.get("PPI", row.get("ppi", 0.0))) else 0.0
+        sample_items.append(
+            SampleResponse(
+                sample_id=sid,
+                study_id=str(row.get("study_id", sid)),
+                day=int(row.get("day", 0)) if not pd.isna(row.get("day", 0)) else 0,
+                age=float(row.get("age", 75.0)) if not pd.isna(row.get("age", 75.0)) else 75.0,
+                age_cat=int(row.get("age_cat", 1)) if not pd.isna(row.get("age_cat", 1)) else 1,
+                male=float(row.get("male", 0.0)) if not pd.isna(row.get("male", 0.0)) else 0.0,
+                abx6mo=float(row.get("abx6mo", 0.0)) if not pd.isna(row.get("abx6mo", 0.0)) else 0.0,
+                hopsn=float(row.get("hopsn", 0.0)) if not pd.isna(row.get("hopsn", 0.0)) else 0.0,
+                malnutrition_indicator_sco=float(row.get("malnutrition_indicator_sco", 0.0)) if not pd.isna(row.get("malnutrition_indicator_sco", 0.0)) else 0.0,
+                clinical_frailty_scale=float(row.get("clinical_frailty_scale", 1.0)) if not pd.isna(row.get("clinical_frailty_scale", 1.0)) else 1.0,
+                ppi=ppi_val,
+                alzheimers=float(row.get("Alzheimers", 0.0)) if not pd.isna(row.get("Alzheimers", 0.0)) else 0.0,
+                dementia_other=float(row.get("dementia_other", 0.0)) if not pd.isna(row.get("dementia_other", 0.0)) else 0.0,
+                secondary_covariates={},
+            )
+        )
 
     return SampleListResponse(
         total=total,
         page=page,
         page_size=page_size,
-        samples=[SampleResponse.model_validate(s) for s in samples],
+        samples=sample_items,
     )
 
 
@@ -231,8 +283,6 @@ async def get_sample(
         pass
 
     # Read verified real research dataframe directly
-    from app.ml.data_loader import load_dataset_df
-    import pandas as pd
     df = load_dataset_df()
     matching = df[df["Sample ID"] == clean_id]
     if matching.empty:
@@ -248,7 +298,7 @@ async def get_sample(
             secondary[taxon] = float(val)
 
     # Compute Shannon diversity if relative abundances exist
-    taxa_cols = [c for c in df.columns if c not in ["Sample ID", "study_id", "day", "age", "age_cat", "male", "abx6mo", "hopsn", "malnutrition_indicator_sco", "clinical_frailty_scale", "ppi", "Alzheimers", "dementia_other"]]
+    taxa_cols = [c for c in df.columns if c not in ["Sample ID", "study_id", "day", "age", "age_cat", "male", "abx6mo", "hopsn", "malnutrition_indicator_sco", "clinical_frailty_scale", "ppi", "PPI", "Alzheimers", "dementia_other"]]
     if taxa_cols:
         vals = pd.to_numeric(row[taxa_cols], errors="coerce").fillna(0.0).values
         pos_vals = vals[vals > 0]
@@ -257,6 +307,8 @@ async def get_sample(
             if total > 0:
                 p = pos_vals / total
                 secondary["shannon_diversity"] = float(-np.sum(p * np.log(p)))
+
+    ppi_val = float(row.get("PPI", row.get("ppi", 0.0))) if not pd.isna(row.get("PPI", row.get("ppi", 0.0))) else 0.0
 
     return SampleResponse(
         sample_id=clean_id,
@@ -269,11 +321,24 @@ async def get_sample(
         hopsn=float(row.get("hopsn", 0.0)) if not pd.isna(row.get("hopsn", 0.0)) else 0.0,
         malnutrition_indicator_sco=float(row.get("malnutrition_indicator_sco", 0.0)) if not pd.isna(row.get("malnutrition_indicator_sco", 0.0)) else 0.0,
         clinical_frailty_scale=float(row.get("clinical_frailty_scale", 1.0)) if not pd.isna(row.get("clinical_frailty_scale", 1.0)) else 1.0,
-        ppi=float(row.get("ppi", 0.0)) if not pd.isna(row.get("ppi", 0.0)) else 0.0,
+        ppi=ppi_val,
         alzheimers=float(row.get("Alzheimers", 0.0)) if not pd.isna(row.get("Alzheimers", 0.0)) else 0.0,
         dementia_other=float(row.get("dementia_other", 0.0)) if not pd.isna(row.get("dementia_other", 0.0)) else 0.0,
         secondary_covariates=secondary,
     )
+
+
+@router.get(
+    "/samples/{sample_id}/prediction",
+    response_model=SamplePredictionResponse,
+    summary="Get dynamic model prediction, ground truth, and patient explainability",
+    description="Returns genuine ground truth, dynamic inference by model, confusion status, and sample-specific SHAP explanation.",
+)
+async def get_sample_prediction(
+    sample_id: str,
+    model: str = Query("xgboost", description="Model name: xgboost | randomforest | logisticregression"),
+) -> SamplePredictionResponse:
+    return await get_sample_prediction_details(sample_id=sample_id, model_name=model)
 
 
 # ── Species ───────────────────────────────────────────────────────────────────

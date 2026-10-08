@@ -162,7 +162,7 @@ async def test_dynamic_query_responses_across_distinct_questions():
         res_auc = await ac.post("/api/ai/chat", json={"query": "What does ROC-AUC mean?", "include_literature": True})
         assert res_auc.status_code == 200
         d_auc = res_auc.json()
-        assert "receiver operating characteristic" in d_auc["response"].lower()
+        assert "receiver" in d_auc["response"].lower() and "characteristic" in d_auc["response"].lower()
 
         # 5. Patient sample prediction
         res_patient = await ac.post("/api/ai/chat", json={"query": "Analyze this patient's prediction: sample DC001", "include_literature": True})

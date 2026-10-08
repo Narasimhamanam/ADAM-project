@@ -150,14 +150,17 @@ def explain_single_sample(
                 bg_transformed = scaler.transform(bg_transformed)
             clf = model.named_steps.get("classifier", model)
 
+        method = "Feature Importance Attribution"
         if hasattr(clf, "get_booster"):
             # Native XGBoost TreeSHAP
             contribs = clf.get_booster().predict(xgb.DMatrix(sample_transformed), pred_contribs=True)
             shap_vec = contribs[0, :-1]
             base_val = float(contribs[0, -1])
+            method = "TreeSHAP (XGBoost Native)"
         elif HAS_SHAP and hasattr(clf, "estimators_"):
             explainer = shap.TreeExplainer(clf)
             sv = explainer.shap_values(sample_transformed)
+            method = "TreeSHAP (Random Forest)"
             # Binary classification in TreeExplainer:
             # - If sv is list of [class_0, class_1], take class 1: sv[1][0]
             # - If sv is 3D ndarray (1, n_features, n_classes), take class 1: sv[0, :, 1]
@@ -183,18 +186,22 @@ def explain_single_sample(
                     base_val = float(ev)
             else:
                 base_val = 0.5
+        elif hasattr(clf, "coef_"):
+            # Linear model feature attribution: centered scaled value * coefficient
+            center = sample_transformed[0] - np.mean(bg_transformed, axis=0)
+            shap_vec = center * clf.coef_[0]
+            base_val = float(clf.intercept_[0]) if hasattr(clf, "intercept_") else 0.0
+            method = "Linear Log-Odds Attribution (Logistic Regression)"
         elif hasattr(clf, "feature_importances_"):
             # Robust Tree/Ensemble feature importance attribution fallback
             center = sample_transformed[0] - np.mean(bg_transformed, axis=0)
             shap_vec = center * clf.feature_importances_
             base_val = 0.5
-        elif hasattr(clf, "coef_"):
-            center = sample_transformed[0] - np.mean(bg_transformed, axis=0)
-            shap_vec = center * clf.coef_[0]
-            base_val = float(clf.intercept_[0]) if hasattr(clf, "intercept_") else 0.0
+            method = "Feature Importance Attribution"
         else:
             shap_vec = np.zeros(len(feature_names))
             base_val = 0.5
+            method = "Baseline Feature Importance"
 
         shap_vec = np.asarray(shap_vec, dtype=np.float64).ravel()
         abs_sorted = np.argsort(np.abs(shap_vec))[::-1]
@@ -212,19 +219,41 @@ def explain_single_sample(
                 "impact": "increases_risk" if shap_val > 0 else "decreases_risk",
             })
 
-        proba = float(raw_model.predict_proba(sample_vector)[0, 1]) if hasattr(raw_model, "predict_proba") else 0.5
+        # Strict P(Alzheimer's Disease) probability extraction inspecting classes_
+        proba = 0.5
+        if hasattr(raw_model, "predict_proba"):
+            probs = raw_model.predict_proba(sample_vector)[0]
+            classes = getattr(raw_model, "classes_", getattr(clf, "classes_", None))
+            if classes is not None and 1 in list(classes):
+                ad_idx = list(classes).index(1)
+                proba = float(probs[ad_idx])
+            elif len(probs) >= 2:
+                proba = float(probs[1])
+            else:
+                proba = float(probs[0])
 
         return {
             "prediction_probability": proba,
             "prediction_binary": int(proba >= 0.5),
             "base_value": base_val,
+            "method": method,
             "feature_contributions": contributions,
         }
 
     except Exception as e:
         logger.error("Failed to compute single sample explanation", error=str(e))
+        proba = 0.5
         try:
-            proba = float(model.predict_proba(sample_vector)[0, 1]) if hasattr(model, "predict_proba") else 0.5
+            if hasattr(model, "predict_proba"):
+                probs = model.predict_proba(sample_vector)[0]
+                classes = getattr(model, "classes_", None)
+                if classes is not None and 1 in list(classes):
+                    ad_idx = list(classes).index(1)
+                    proba = float(probs[ad_idx])
+                elif len(probs) >= 2:
+                    proba = float(probs[1])
+                else:
+                    proba = float(probs[0])
         except Exception:
             proba = 0.5
 

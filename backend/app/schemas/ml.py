@@ -91,8 +91,73 @@ class PredictResponse(BaseModel):
     sample_id: Optional[str] = None
     alzheimers_risk_probability: float
     predicted_label: int
+    alzheimers_prediction: Optional[int] = None
     risk_level: str
     confidence: float = 0.0
+    feature_contributions: List[FeatureContribution]
+
+    def __init__(self, **data: Any):
+        if "alzheimers_prediction" not in data and "predicted_label" in data:
+            data["alzheimers_prediction"] = data["predicted_label"]
+        super().__init__(**data)
+
+
+class GroundTruthDetail(BaseModel):
+    label: int
+    diagnosis: str
+    display_label: str
+
+
+class PatientMetadata(BaseModel):
+    age: Optional[float] = None
+    gender: Optional[str] = None
+    day: Optional[int] = None
+    frailty_scale: Optional[float] = None
+    malnutrition_score: Optional[float] = None
+    ppi_medication: bool = False
+    abx6mo: Optional[bool] = None
+
+
+class PredictionDetail(BaseModel):
+    model: str
+    model_name: str
+    label: int
+    display_label: str
+    probability_ad: float
+    risk_percent: float
+    classification: str
+    confidence: float
+
+
+class EvaluationDetail(BaseModel):
+    status: str            # "True Positive", "True Negative", "False Positive", "False Negative"
+    correct: bool
+    status_detail: str     # "True Positive (Correct Detection)", etc.
+
+
+class ExplanationDetail(BaseModel):
+    method: str
+    base_value: float
+    shap_features: List[FeatureContribution]
+
+
+class SamplePredictionResponse(BaseModel):
+    sample_id: str
+    subject_id: str
+    ground_truth: GroundTruthDetail
+    patient: PatientMetadata
+    prediction: PredictionDetail
+    evaluation: EvaluationDetail
+    features: Dict[str, Any]
+    explainability: ExplanationDetail
+
+    # Backwards-compatibility fields for PredictResponse consumers
+    model_name: str
+    alzheimers_risk_probability: float
+    predicted_label: int
+    alzheimers_prediction: int
+    risk_level: str
+    confidence: float
     feature_contributions: List[FeatureContribution]
 
 
