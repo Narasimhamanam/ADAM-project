@@ -34,8 +34,9 @@ Thumbs.db
 # Chroma
 chroma_db/
 
-# Logs
+# Logs & Playwright
 *.log
+.playwright-mcp/
 
 # Secrets
 secrets/
