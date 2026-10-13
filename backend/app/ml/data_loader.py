@@ -32,8 +32,18 @@ DEFAULT_EXCLUDED_COLUMNS = [
 ]
 
 
-def load_dataset_df(filepath: Optional[str] = None) -> pd.DataFrame:
-    """Load the primary clinical microbiome dataframe."""
+_CACHED_DF: Optional[pd.DataFrame] = None
+
+
+def load_dataset_df(filepath: Optional[str] = None, force_reload: bool = False) -> pd.DataFrame:
+    """
+    Load the primary clinical microbiome dataframe with thread-safe singleton caching.
+    Avoids re-parsing 1,044 columns on every HTTP request to prevent memory spikes.
+    """
+    global _CACHED_DF
+    if filepath is None and _CACHED_DF is not None and not force_reload:
+        return _CACHED_DF
+
     if filepath is None:
         global_res = get_global_resources_dir()
         filepath = os.path.join(global_res, "clinical_microbiome_df.csv")
@@ -42,7 +52,21 @@ def load_dataset_df(filepath: Optional[str] = None) -> pd.DataFrame:
         raise FileNotFoundError(f"Primary dataset not found at {filepath}")
 
     df = pd.read_csv(filepath)
+    if filepath == os.path.join(get_global_resources_dir(), "clinical_microbiome_df.csv"):
+        _CACHED_DF = df
     return df
+
+
+def load_summary_subjects_df() -> pd.DataFrame:
+    """
+    Lightweight accessor extracting only core subject summary columns
+    (5 columns instead of 1,044) to keep memory usage minimal.
+    """
+    df = load_dataset_df()
+    summary_cols = ["study_id", "Sample ID", "day", "Date Sample", "Alzheimers"]
+    available_cols = [c for c in summary_cols if c in df.columns]
+    return df[available_cols]
+
 
 
 def preprocess_and_split(

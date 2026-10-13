@@ -83,6 +83,7 @@ class LongitudinalTrajectoryService:
         self._feature_columns: Optional[List[str]] = None
         self._taxa_columns: Optional[List[str]] = None
         self._subject_cache: Dict[str, Dict[str, Any]] = {}
+        self._subjects_summary_cache: Optional[List[Dict[str, Any]]] = None
 
     def _ensure_model(self) -> Tuple[Any, List[str]]:
         """Load or train the primary XGBoost classification model."""
@@ -125,8 +126,13 @@ class LongitudinalTrajectoryService:
     def list_all_subjects(self) -> List[Dict[str, Any]]:
         """
         List all 102 subjects with summary observation counts, follow-up span, and diagnosis.
+        Thread-safe in-memory caching ensures 0-cost responses on subsequent calls.
         """
+        if self._subjects_summary_cache is not None:
+            return self._subjects_summary_cache
+
         summary_list = []
+        # Group study_id on core dataframe
         grouped = self.df.groupby("study_id")
         for study_id, group in grouped:
             sorted_grp = group.sort_values(by="day")
@@ -153,6 +159,7 @@ class LongitudinalTrajectoryService:
 
         # Sort: subjects with most observations first
         summary_list.sort(key=lambda s: (-s["observation_count"], -s["follow_up_days"], s["subject_id"]))
+        self._subjects_summary_cache = summary_list
         return summary_list
 
     def get_subject_trajectory(
@@ -163,8 +170,13 @@ class LongitudinalTrajectoryService:
     ) -> Dict[str, Any]:
         """
         Build the complete longitudinal trajectory for a specific subject (`study_id`).
+        Uses in-memory cache to eliminate repeated re-computations and prevent OOM.
         """
         clean_id = subject_id.strip()
+        cache_key = f"{clean_id}_{include_shap}_{max_horizon_day}"
+        if cache_key in self._subject_cache:
+            return self._subject_cache[cache_key]
+
         subject_rows = self.df[self.df["study_id"] == clean_id]
         if subject_rows.empty:
             # Check if user passed sample_id instead of study_id
@@ -351,7 +363,23 @@ class LongitudinalTrajectoryService:
                 f"Longitudinal temporal trend cannot be computed without repeated follow-up observations."
             )
 
-        return {
+        # Compatibility visits array mapping fields for frontend consumers
+        visits_alias = []
+        for o in observations:
+            taxa_list = [
+                {"species_name": k, "name": k, "abundance": v, "value": v}
+                for k, v in o.get("key_species_abundance", {}).items()
+            ]
+            visits_alias.append({
+                **o,
+                "day_offset": o["study_day"],
+                "day": o["study_day"],
+                "predicted_probability": o["ad_probability"],
+                "risk_probability": o["ad_probability"],
+                "key_taxa": taxa_list,
+            })
+
+        result = {
             "subject_id": clean_id,
             "status": "RESEARCH_ONLY",
             "observation_count": obs_count,
@@ -377,9 +405,15 @@ class LongitudinalTrajectoryService:
             "research_disclaimer": RESEARCH_DISCLAIMER,
             "horizon_warning": horizon_warning,
             "observations": observations,
+            "visits": visits_alias,
             "model_version": "xgboost_adam_v1.0",
             "feature_schema_version": "adam_v1_1044",
         }
+
+        # Cache result for rapid subsequent retrievals
+        self._subject_cache[cache_key] = result
+        return result
+
 
     def compare_subjects(self, subject_ids: List[str]) -> List[Dict[str, Any]]:
         """

@@ -19,6 +19,8 @@ import Layout from './components/layout/Layout';
 import { DemoPhaseProvider } from './context/DemoPhaseContext';
 import { fetchHealth } from './api/client';
 
+import ErrorBoundary from './components/ui/ErrorBoundary';
+
 // The 5 Core Redesigned Pages
 import Overview from './pages/Overview';
 import Analyze from './pages/Analyze';
@@ -56,7 +58,9 @@ export default function App() {
   return (
     <DemoPhaseProvider>
       <Layout backendStatus={backendStatus}>
-        <Routes>
+        <ErrorBoundary>
+          <Routes>
+
           {/* Default Route */}
           <Route path="/" element={<Navigate to="/overview" replace />} />
 
@@ -100,7 +104,9 @@ export default function App() {
           {/* Catch-All Fallback */}
           <Route path="*" element={<Navigate to="/overview" replace />} />
         </Routes>
+        </ErrorBoundary>
       </Layout>
     </DemoPhaseProvider>
   );
 }
+

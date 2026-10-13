@@ -8,8 +8,10 @@ and extensible risk model status.
 from __future__ import annotations
 
 import hashlib
+import time
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException, Query, status
+
 
 from app.core.logging import get_logger
 from app.ml.longitudinal import (
@@ -37,20 +39,71 @@ router = APIRouter(prefix="/trajectory", tags=["longitudinal-trajectory"])
     "/subjects",
     response_model=SubjectListResponse,
     summary="List all subjects with longitudinal summary metadata",
-    description="Returns all 102 subjects grouped by real subject ID (study_id), with observation counts and follow-up span.",
+    description="Returns all 102 subjects grouped by real subject ID (study_id), with observation counts, filtering, and optional pagination.",
 )
-async def list_subjects() -> SubjectListResponse:
+async def list_subjects(
+    page: Optional[int] = Query(None, ge=1, description="Page number (1-indexed)"),
+    page_size: Optional[int] = Query(None, ge=1, le=200, description="Items per page"),
+    diagnosis: Optional[str] = Query(None, description="Filter: 'ad', 'control', or 'all'"),
+    search: Optional[str] = Query(None, description="Search study_id prefix or substring"),
+    is_longitudinal: Optional[bool] = Query(None, description="Filter subjects with repeated samples (>=2 visits)"),
+) -> SubjectListResponse:
+    t_start = time.time()
     try:
         svc = get_trajectory_service()
-        subjects = svc.list_all_subjects()
-        repeated = sum(1 for s in subjects if s["observation_count"] > 1)
+        all_subjects = svc.list_all_subjects()
+
+        # Apply filtering
+        filtered = all_subjects
+        if search:
+            clean_search = search.strip().lower()
+            filtered = [s for s in filtered if clean_search in s["subject_id"].lower()]
+
+        if diagnosis and diagnosis.lower() != "all":
+            d_clean = diagnosis.lower()
+            if d_clean == "ad":
+                filtered = [s for s in filtered if s["diagnosis_label"] == 1]
+            elif d_clean == "control":
+                filtered = [s for s in filtered if s["diagnosis_label"] == 0]
+
+        if is_longitudinal is not None:
+            filtered = [s for s in filtered if s["is_longitudinal"] is is_longitudinal]
+
+        total_count = len(filtered)
+        repeated_count = sum(1 for s in filtered if s["observation_count"] > 1)
+
+        # Pagination
+        p_num = None
+        p_size = None
+        tot_pages = None
+        if page is not None:
+            p_num = page
+            p_size = page_size or 20
+            tot_pages = (total_count + p_size - 1) // p_size if total_count > 0 else 1
+            offset = (p_num - 1) * p_size
+            items = filtered[offset : offset + p_size]
+        else:
+            items = filtered
+
+        elapsed_ms = round((time.time() - t_start) * 1000, 2)
+        logger.info(
+            "Listed trajectory subjects",
+            total=total_count,
+            returned=len(items),
+            page=p_num,
+            elapsed_ms=elapsed_ms,
+        )
+
         return SubjectListResponse(
-            total_subjects=len(subjects),
-            subjects_with_repeated_samples=repeated,
-            subjects=subjects,
+            total_subjects=total_count,
+            subjects_with_repeated_samples=repeated_count,
+            page=p_num,
+            page_size=p_size,
+            total_pages=tot_pages,
+            subjects=items,
         )
     except Exception as e:
-        logger.error("Failed to list trajectory subjects", error=str(e))
+        logger.error("Failed to list trajectory subjects", error=str(e), exc_info=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -65,6 +118,8 @@ async def get_subject_trajectory(
     include_shap: bool = Query(True, description="Compute local SHAP explanations per observation"),
     max_horizon_day: Optional[int] = Query(None, description="Optional time horizon filter (day)"),
 ) -> SubjectTrajectoryResponse:
+
+    t_start = time.time()
     svc = get_trajectory_service()
     try:
         traj = svc.get_subject_trajectory(
@@ -72,7 +127,16 @@ async def get_subject_trajectory(
             include_shap=include_shap,
             max_horizon_day=max_horizon_day,
         )
+        elapsed_ms = round((time.time() - t_start) * 1000, 2)
+        logger.info(
+            "Computed subject trajectory",
+            subject_id=subject_id,
+            observations=traj.get("observation_count", 0),
+            include_shap=include_shap,
+            elapsed_ms=elapsed_ms,
+        )
         return SubjectTrajectoryResponse(**traj)
+
     except ValueError as ve:
         raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:

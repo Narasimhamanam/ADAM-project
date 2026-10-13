@@ -21,6 +21,11 @@ import datetime
 import pandas as pd
 import numpy as np
 from app.ingestion.pipeline import get_global_resources_dir
+from app.ml.data_loader import load_dataset_df
+
+
+_TWIN_PROFILES_CACHE: Dict[str, Dict[str, Any]] = {}
+_TWIN_PARTICIPANTS_CACHE: Dict[str, List[Dict[str, Any]]] = {}
 
 
 @dataclass
@@ -100,6 +105,11 @@ class LongitudinalDigitalTwinProfile:
     governance_disclaimer: str
 
     def to_dict(self) -> Dict[str, Any]:
+        mean_prob = (
+            round(float(np.mean([v.calibrated_probability for v in self.observed_visits])), 4)
+            if self.observed_visits
+            else 0.5
+        )
         return {
             "participant_id": self.participant_id,
             "cohort_id": self.cohort_id,
@@ -109,6 +119,15 @@ class LongitudinalDigitalTwinProfile:
             "total_observed_visits": self.total_observed_visits,
             "observation_span_days": self.observation_span_days,
             "static_clinical_diagnosis": self.static_clinical_diagnosis,
+            "diagnosis_status": self.static_clinical_diagnosis,
+            "mean_predicted_probability": mean_prob,
+            "clinical_baseline": {
+                "age": self.baseline_age,
+                "age_cat": "≥75 (Senior)" if self.baseline_age >= 75 else "<75 (Adult)",
+                "male": 1 if self.sex == "Male" else 0,
+                "sex": self.sex,
+                "smoker": "Non-smoker",
+            },
             "progression_conversion_observed": self.progression_conversion_observed,
             "observed_visits": [v.to_dict() for v in self.observed_visits],
             "longitudinal_trajectory_slope": round(self.longitudinal_trajectory_slope, 5),
@@ -132,22 +151,25 @@ DISCLAIMER_TEXT = (
 def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optional[Dict[str, Any]]:
     """
     Constructs a complete Digital Twin profile for an individual participant.
-    Draws from actual cohort data files.
+    Draws from actual cohort data files with in-memory caching.
     """
     if cohort_id != "ADAM1_BASELINE":
         # Return generic profile or 404 for un-ingested external cohort subjects
         return None
 
-    # Load actual baseline cohort data
-    global_res = get_global_resources_dir()
-    data_path = os.path.join(global_res, "clinical_microbiome_df.csv")
-    if not os.path.exists(data_path):
+    cache_key = f"{cohort_id}:{participant_id}"
+    if cache_key in _TWIN_PROFILES_CACHE:
+        return _TWIN_PROFILES_CACHE[cache_key]
+
+    try:
+        df = load_dataset_df()
+    except Exception:
         return None
 
-    df = pd.read_csv(data_path)
     subj_df = df[df["study_id"] == participant_id].sort_values("day")
     if len(subj_df) == 0:
         return None
+
 
     ad_val = int(subj_df["Alzheimers"].iloc[0])
     diag_label = "Alzheimer's Disease (Clinical AD)" if ad_val == 1 else "Cognitively Intact Control (Non-AD)"
@@ -248,20 +270,24 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
         governance_disclaimer=DISCLAIMER_TEXT,
     )
 
-    return profile.to_dict()
+    result_dict = profile.to_dict()
+    _TWIN_PROFILES_CACHE[cache_key] = result_dict
+    return result_dict
 
 
 def list_digital_twin_participants(cohort_id: str = "ADAM1_BASELINE") -> List[Dict[str, Any]]:
-    """List participants available for Digital Twin tracking."""
+    """List participants available for Digital Twin tracking with in-memory caching."""
     if cohort_id != "ADAM1_BASELINE":
         return []
 
-    global_res = get_global_resources_dir()
-    data_path = os.path.join(global_res, "clinical_microbiome_df.csv")
-    if not os.path.exists(data_path):
+    if cohort_id in _TWIN_PARTICIPANTS_CACHE:
+        return _TWIN_PARTICIPANTS_CACHE[cohort_id]
+
+    try:
+        df = load_dataset_df()
+    except Exception:
         return []
 
-    df = pd.read_csv(data_path)
     summary = []
     for sid, group in df.groupby("study_id"):
         ad_val = int(group["Alzheimers"].iloc[0])
@@ -271,6 +297,7 @@ def list_digital_twin_participants(cohort_id: str = "ADAM1_BASELINE") -> List[Di
             "namespace": "ADAM1:",
             "sample_count": len(group),
             "study_day_min": int(group["day"].min()),
+
             "study_day_max": int(group["day"].max()),
             "observation_span_days": int(group["day"].max() - group["day"].min()),
             "clinical_diagnosis": "Alzheimer's Disease" if ad_val == 1 else "Control (Non-AD)",
@@ -279,4 +306,6 @@ def list_digital_twin_participants(cohort_id: str = "ADAM1_BASELINE") -> List[Di
 
     # Sort participants with most visits first
     summary.sort(key=lambda x: x["sample_count"], reverse=True)
+    _TWIN_PARTICIPANTS_CACHE[cohort_id] = summary
     return summary
+

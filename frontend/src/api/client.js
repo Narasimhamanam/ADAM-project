@@ -140,26 +140,39 @@ export const fetchAvailableSamples = (limit = 100) =>
 // ── Longitudinal Trajectory API methods ───────────────────────────────────
 
 /**
- * Fetch all subjects with longitudinal summary metrics.
+ * Fetch all subjects with longitudinal summary metrics and optional filtering/pagination.
+ * @param {object} params - Optional {page, page_size, diagnosis, search, is_longitudinal}
  * @returns {Promise<{total_subjects: number, subjects_with_repeated_samples: number, subjects: Array}>}
  */
-export const fetchTrajectorySubjects = () =>
-  apiClient.get('/trajectory/subjects').then((r) => r.data)
+export const fetchTrajectorySubjects = (params = {}) => {
+  const query = new URLSearchParams()
+  if (params.page) query.append('page', params.page)
+  if (params.page_size) query.append('page_size', params.page_size)
+  if (params.diagnosis && params.diagnosis !== 'all') query.append('diagnosis', params.diagnosis)
+  if (params.search) query.append('search', params.search)
+  if (params.is_longitudinal !== undefined && params.is_longitudinal !== null) {
+    query.append('is_longitudinal', params.is_longitudinal)
+  }
+  const qs = query.toString()
+  return apiClient.get(qs ? `/trajectory/subjects?${qs}` : '/trajectory/subjects').then((r) => r.data)
+}
 
 /**
  * Fetch complete longitudinal AD risk trajectory for a specific subject.
+ * Default includeShap=false ensures lightweight browsing without triggering expensive TreeSHAP.
  * @param {string} subjectId
  * @param {boolean} includeShap
  * @param {number|null} maxHorizonDay
  * @returns {Promise<object>}
  */
-export const fetchSubjectTrajectory = (subjectId, includeShap = true, maxHorizonDay = null) => {
+export const fetchSubjectTrajectory = (subjectId, includeShap = false, maxHorizonDay = null) => {
   let url = `/trajectory/subjects/${encodeURIComponent(subjectId)}?include_shap=${includeShap}`
   if (maxHorizonDay !== null && maxHorizonDay !== undefined) {
     url += `&max_horizon_day=${maxHorizonDay}`
   }
   return apiClient.get(url).then((r) => r.data)
 }
+
 
 /**
  * Retrieve evidence-grounded literature (RAG) for an observation.

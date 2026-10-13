@@ -46,6 +46,7 @@ class SubjectTrajectoryResponse(BaseModel):
     research_disclaimer: str
     horizon_warning: Optional[str] = None
     observations: List[ObservationPointResponse]
+    visits: Optional[List[Dict[str, Any]]] = None
     model_version: str
     feature_schema_version: str
 
@@ -67,6 +68,9 @@ class SubjectSummaryItem(BaseModel):
 class SubjectListResponse(BaseModel):
     total_subjects: int
     subjects_with_repeated_samples: int
+    page: Optional[int] = None
+    page_size: Optional[int] = None
+    total_pages: Optional[int] = None
     subjects: List[SubjectSummaryItem]
 
 
