@@ -1,0 +1,907 @@
+{
+  "manifest_id": "BENCH_001_PREDICTIONS_MANIFEST_V1",
+  "dataset_sha256": "bfba6fae29845d728f4d02931665bf9ade9f56f0f557a449247f60e4caecf894",
+  "balanced_test_predictions_count": 30,
+  "all_held_out_test_predictions_count": 73,
+  "balanced_test_predictions": [
+    {
+      "sample_id": "DC060",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0353,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB227",
+      "study_id": "CH1-129",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.6794,
+      "predicted_label": 1,
+      "correct": false
+    },
+    {
+      "sample_id": "DC058",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2304,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB118",
+      "study_id": "CH1-108",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2063,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB302",
+      "study_id": "CH1-145",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.7185,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB079",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9056,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB367",
+      "study_id": "CH1-177",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2399,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB094",
+      "study_id": "CH1-108",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2372,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB177",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9244,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB109",
+      "study_id": "CH1-096",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8039,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB087",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8887,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB448",
+      "study_id": "CH1-177",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.1199,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB161",
+      "study_id": "CH1-096",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.47,
+      "predicted_label": 0,
+      "correct": false
+    },
+    {
+      "sample_id": "FB037",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.7942,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB121",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8513,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB018",
+      "study_id": "CH1-060",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.6677,
+      "predicted_label": 1,
+      "correct": false
+    },
+    {
+      "sample_id": "FB225",
+      "study_id": "CH1-134",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9178,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "DC099",
+      "study_id": "CH1-037",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.1355,
+      "predicted_label": 0,
+      "correct": false
+    },
+    {
+      "sample_id": "DC062",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0273,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB386",
+      "study_id": "CH1-205",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.6558,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "DC088",
+      "study_id": "CH1-020",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0528,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "DC057",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0316,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB188",
+      "study_id": "CH3-010",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2065,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB354",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0575,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB438",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2181,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB004",
+      "study_id": "CH1-037",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.1011,
+      "predicted_label": 0,
+      "correct": false
+    },
+    {
+      "sample_id": "FB031",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8451,
+      "predicted_label": 1,
+      "correct": true
+    },
+    {
+      "sample_id": "FB076",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.2972,
+      "predicted_label": 0,
+      "correct": false
+    },
+    {
+      "sample_id": "FB058",
+      "study_id": "CH1-085",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2081,
+      "predicted_label": 0,
+      "correct": true
+    },
+    {
+      "sample_id": "FB151",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9106,
+      "predicted_label": 1,
+      "correct": true
+    }
+  ],
+  "all_held_out_test_predictions": [
+    {
+      "sample_id": "DC054",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0227,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC055",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.042,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC056",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0135,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC057",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0316,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "DC058",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2304,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "DC059",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.036,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC060",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0353,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "DC061",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0472,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC062",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0273,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "DC063",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0267,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC064",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0875,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB003",
+      "study_id": "CH1-011",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.3573,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC088",
+      "study_id": "CH1-020",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0528,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "DC089",
+      "study_id": "CH1-020",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0511,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC090",
+      "study_id": "CH1-020",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2293,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC091",
+      "study_id": "CH1-020",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0338,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB014",
+      "study_id": "CH1-032",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0842,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "DC099",
+      "study_id": "CH1-037",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.1355,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB004",
+      "study_id": "CH1-037",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.1011,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB031",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8451,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB037",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.7942,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB076",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.2972,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB079",
+      "study_id": "CH1-046",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9056,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB039",
+      "study_id": "CH1-052",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.5615,
+      "predicted_label": 1,
+      "correct": false,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB063",
+      "study_id": "CH1-052",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0791,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB018",
+      "study_id": "CH1-060",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.6677,
+      "predicted_label": 1,
+      "correct": false,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB072",
+      "study_id": "CH1-060",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.607,
+      "predicted_label": 1,
+      "correct": false,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB077",
+      "study_id": "CH1-060",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.8216,
+      "predicted_label": 1,
+      "correct": false,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB082",
+      "study_id": "CH1-060",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.3388,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB043",
+      "study_id": "CH1-065",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.0519,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB048",
+      "study_id": "CH1-073",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.3904,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB058",
+      "study_id": "CH1-085",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2081,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB057",
+      "study_id": "CH1-096",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.2437,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB109",
+      "study_id": "CH1-096",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8039,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB161",
+      "study_id": "CH1-096",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.47,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB158",
+      "study_id": "CH1-096",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.4823,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB094",
+      "study_id": "CH1-108",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2372,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB118",
+      "study_id": "CH1-108",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2063,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB087",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8887,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB121",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.8513,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB151",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9106,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB178",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9106,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB177",
+      "study_id": "CH1-110",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9244,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB227",
+      "study_id": "CH1-129",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.6794,
+      "predicted_label": 1,
+      "correct": false,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB225",
+      "study_id": "CH1-134",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9178,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB247",
+      "study_id": "CH1-134",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.6241,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB242",
+      "study_id": "CH1-134",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9246,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB275",
+      "study_id": "CH1-134",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.9068,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB192",
+      "study_id": "CH1-145",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.307,
+      "predicted_label": 0,
+      "correct": false,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB213",
+      "study_id": "CH1-145",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.7438,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB266",
+      "study_id": "CH1-145",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.7046,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB302",
+      "study_id": "CH1-145",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.7185,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB240",
+      "study_id": "CH1-152",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.3952,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB282",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0929,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB313",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2045,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB321",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.3814,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB319",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0355,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB354",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0575,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB402",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.1795,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB404",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.0342,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB438",
+      "study_id": "CH1-172",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2181,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB348",
+      "study_id": "CH1-177",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2877,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB351",
+      "study_id": "CH1-177",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.1655,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB448",
+      "study_id": "CH1-177",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.1199,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB367",
+      "study_id": "CH1-177",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2399,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB386",
+      "study_id": "CH1-205",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.6558,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB382",
+      "study_id": "CH1-205",
+      "ground_truth_label": 1,
+      "predicted_probability": 0.5732,
+      "predicted_label": 1,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB186",
+      "study_id": "CH3-010",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2065,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB187",
+      "study_id": "CH3-010",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2065,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB188",
+      "study_id": "CH3-010",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2065,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": true
+    },
+    {
+      "sample_id": "FB185",
+      "study_id": "CH3-010",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2065,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB200",
+      "study_id": "CH3-010",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2065,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    },
+    {
+      "sample_id": "FB204",
+      "study_id": "CH3-010",
+      "ground_truth_label": 0,
+      "predicted_probability": 0.2003,
+      "predicted_label": 0,
+      "correct": true,
+      "evaluated_in_balanced_set": false
+    }
+  ]
+}

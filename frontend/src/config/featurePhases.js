@@ -13,7 +13,7 @@
  * ============================================================================
  */
 
-export const ACTIVE_DEMO_PHASE = 4;
+export const ACTIVE_DEMO_PHASE = 5;
 
 export const PHASES = {
   1: {
@@ -48,12 +48,97 @@ export const PHASES = {
     summary: 'PubMed semantic RAG vector store, live Groq LLM integration (groq/compound-mini), AIRA Research Assistant, and 3-tier Multi-Agent orchestration (Computation, Summarization, and Classification agents).',
     color: '#EC4899',
   },
+  5: {
+    number: 5,
+    name: 'Cross-Cohort AI, Multimodal Brain Imaging & Research Digital Twin',
+    badge: 'Phase 5',
+    status: 'COMPLETE & VERIFIED',
+    summary: 'Independent dataset benchmark registry, cross-cohort validation with bootstrap CIs, volumetric structural MRI and PET neuroimaging explorer, strict ID crosswalk gates, and longitudinal personalized AD digital twins.',
+    color: '#06B6D4',
+  },
 };
 
 /**
  * Feature mapping: Every route is assigned to its exact phase.
  */
 export const FEATURE_CONFIG = {
+  '/overview': {
+    id: 'overview',
+    name: 'Overview Dashboard',
+    path: '/overview',
+    phase: 1,
+    plannedPhaseName: 'Phase 1 – Full-Stack Foundation & System Health',
+    description: 'Executive research command center displaying verified clinical sample counts, live pipeline status, and primary research actions.',
+    capabilities: [
+      'Live backend health and database telemetry',
+      'Verified cohort counts (335 clinical samples, 102 subjects)',
+      'Direct navigation to Analyze, Patient Explorer, and Research Validation',
+      'Three-tier research governance status summary',
+    ],
+    enabled: true,
+  },
+  '/analyze': {
+    id: 'analyze',
+    name: 'Analyze — Model & Workflow Studio',
+    path: '/analyze',
+    phase: 1,
+    plannedPhaseName: 'Core Research Workflow',
+    description: 'Unified analysis workspace combining cohort sample selection, multi-algorithmic inference (XGBoost, ADAM Workflow, Random Forest, Logistic Regression), 5-stage progress tracking, and local TreeSHAP explanations.',
+    capabilities: [
+      'Authentic cohort sample selection (e.g. FB100, DC001)',
+      'Multi-model inference with real hyperparameter-tuned weights',
+      '5-stage workflow tracking (Computation -> Evidence -> Summarization -> Classification -> Result)',
+      'Local TreeSHAP waterfall and diverging bar attributions',
+      'Traceable PubMed citations and research disclaimers',
+    ],
+    enabled: true,
+  },
+  '/patients': {
+    id: 'patients',
+    name: 'Patient Explorer & Longitudinal Timeline',
+    path: '/patients',
+    phase: 1,
+    plannedPhaseName: 'Subject & Cohort Exploration',
+    description: 'Consolidated participant explorer across 102 subjects and 335 samples, featuring longitudinal visit timelines, host biomarkers, and zero-transition research governance notices.',
+    capabilities: [
+      'Participant list with real cohort filters and search',
+      'Longitudinal timeline with study-relative days and calibrated risk',
+      'Microbiome taxon abundance and alpha diversity tracking',
+      'Independent neuroimaging lookup without fabricated linkage',
+    ],
+    enabled: true,
+  },
+  '/research': {
+    id: 'research',
+    name: 'Research & Validation Portal',
+    path: '/research',
+    phase: 1,
+    plannedPhaseName: 'Scientific Evidence & Infrastructure',
+    description: 'Centralized research infrastructure consolidating Datasets registry, Benchmarks ledger, Neuroimaging resources, and Data Linkage & Integrity audits.',
+    capabilities: [
+      'Searchable dataset registry distinguishing local from cataloged cohorts',
+      'Reproducible benchmark ledger separating local, exploratory, external, and literature results',
+      'Independent neuroimaging resources (OASIS-1, OASIS-3, ADNI, GARD)',
+      'Participant ID crosswalk integrity catalog and GARD REQUEST_NOT_SENT gate',
+    ],
+    enabled: true,
+  },
+  '/reports': {
+    id: 'reports',
+    name: 'Reports & Scientific Evidence',
+    path: '/reports',
+    phase: 1,
+    plannedPhaseName: 'Clinical & Scientific Dissemination',
+    description: 'Comprehensive research dossier generator, peer-reviewed PubMed RAG evidence explorer, and publication-ready plain-text summaries.',
+    capabilities: [
+      'Multi-modal clinical research dossier generator with Print & Markdown export',
+      'Semantic literature search over peer-reviewed PubMed publications',
+      'Publication-grade plain-text narrative without raw markdown syntax artifacts',
+      'Full scientific limitations and provenance disclaimers',
+    ],
+    enabled: true,
+  },
+
   '/dashboard': {
     id: 'dashboard',
     name: 'System Dashboard & Telemetry',
@@ -270,7 +355,68 @@ export const FEATURE_CONFIG = {
     ],
     enabled: true,
   },
+  '/cross-cohort': {
+    id: 'cross-cohort',
+    name: 'Cross-Cohort & Benchmark Engine',
+    path: '/cross-cohort',
+    phase: 5,
+    plannedPhaseName: 'Phase 5 – Cross-Cohort AI, Multimodal Brain Imaging & Digital Twin',
+    description: 'Reproducible benchmark registry across independent European, Asian, and preclinical cohorts with subject-level bootstrap 95% confidence intervals and distribution shift quantification.',
+    capabilities: [
+      'Multi-cohort discovery registry with verified access statuses and DUAs',
+      'Subject-level stratified cross-cohort evaluation without test leakage',
+      'Taxonomic feature harmonization between 16S genus and shotgun species',
+      'Distribution shift quantification via Jensen-Shannon Divergence (JSD)',
+    ],
+    enabled: true,
+  },
+  '/neuroimaging': {
+    id: 'neuroimaging',
+    name: 'Neuroimaging & Multimodal Explorer',
+    path: '/neuroimaging',
+    phase: 5,
+    plannedPhaseName: 'Phase 5 – Cross-Cohort AI, Multimodal Brain Imaging & Digital Twin',
+    description: 'Volumetric brain MRI and PET imaging biomarker explorer covering OASIS-1, OASIS-3, and ADNI with NIfTI/DICOM acquisition parameter validation and independent modality benchmarks.',
+    capabilities: [
+      'Structural T1w MRI FreeSurfer morphometry (hippocampus, entorhinal, ventricles)',
+      'Molecular PET SUVR biomarkers (Florbetapir Amyloid, Flortaucipir Tau, FDG)',
+      'Volumetric scan header validation (matrix dimensions, voxel spacing, TR/TE)',
+      'Independent modality ablation comparisons (Microbiome vs MRI vs PET)',
+    ],
+    enabled: true,
+  },
+  '/multimodal-gate': {
+    id: 'multimodal-gate',
+    name: 'ID Matching & Linkage Gate',
+    path: '/multimodal-gate',
+    phase: 5,
+    plannedPhaseName: 'Phase 5 – Cross-Cohort AI, Multimodal Brain Imaging & Digital Twin',
+    description: 'Strict patient identity verification engine and multimodal linkage gate preventing unauthorized patient merges between external neuroimaging cohorts and baseline microbiome records.',
+    capabilities: [
+      'Audit matrix across 10 candidate cohorts with namespace isolation',
+      'Multimodal Linkage Gate simulator blocking unauthorized cross-cohort merges',
+      'GARD Research Center linked-data feasibility checklist (9 criteria)',
+      'Formal data-request inquiry email generator and request tracking state machine',
+    ],
+    enabled: true,
+  },
+  '/digital-twin': {
+    id: 'digital-twin',
+    name: 'Research Digital Twin',
+    path: '/digital-twin',
+    phase: 5,
+    plannedPhaseName: 'Phase 5 – Cross-Cohort AI, Multimodal Brain Imaging & Digital Twin',
+    description: 'De-identified longitudinal research profile tracking observed clinical, microbial, and model risk trajectories over time under static diagnostic ground truth with uncertainty intervals.',
+    capabilities: [
+      'Observed-history chronological visit timeline across all 102 cohort subjects',
+      'Multi-omic microbial dysbiosis index and clinical frailty tracking',
+      'Calibrated risk estimates with 95% bootstrap prediction intervals',
+      'Strict research governance banner prohibiting unvalidated future conversion claims',
+    ],
+    enabled: true,
+  },
 };
+
 
 /**
  * Dynamic calculation of a phase's progress status based on ACTIVE_DEMO_PHASE.
@@ -313,6 +459,14 @@ export function getPhaseStatus(phaseNumber, activeDemoPhase = ACTIVE_DEMO_PHASE)
  */
 export function getPlatformStatus(activeDemoPhase = ACTIVE_DEMO_PHASE) {
   const current = PHASES[activeDemoPhase] || PHASES[1];
+  if (activeDemoPhase >= 5) {
+    return {
+      title: 'Phase 5 Complete & Verified',
+      subtitle: 'Cross-Cohort AI, Neuroimaging & Digital Twin Active',
+      color: '#06B6D4',
+      activePhase: 5,
+    };
+  }
   if (activeDemoPhase === 4) {
     return {
       title: 'Phase 4 Complete',

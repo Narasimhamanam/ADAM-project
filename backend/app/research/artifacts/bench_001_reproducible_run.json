@@ -1,0 +1,507 @@
+{
+  "run_id": "BENCH_001_ADAM1_INTERNAL_XGB",
+  "experiment_name": "ADAM-1 Baseline Internal Subject-Stratified Validation",
+  "status": "REPRODUCED_AND_VERIFIED",
+  "timestamp": "2026-10-13T10:35:00Z",
+  "model_type": "xgboost (XGBClassifier v2.1.3) \u2014 Combined Multimodal Baseline",
+  "hyperparameters": {
+    "n_estimators": 100,
+    "max_depth": 3,
+    "learning_rate": 0.05,
+    "eval_metric": "logloss",
+    "random_state": 42
+  },
+  "dataset": {
+    "name": "clinical_microbiome_df.csv",
+    "path": "backend/data/global_resources/clinical_microbiome_df.csv",
+    "sha256": "bfba6fae29845d728f4d02931665bf9ade9f56f0f557a449247f60e4caecf894",
+    "total_rows": 335,
+    "total_columns": 1050,
+    "total_features_used": 1044,
+    "dropped_columns": [
+      "Sample ID",
+      "study_id",
+      "Alzheimers",
+      "Date Sample",
+      "age",
+      "Dementia Other"
+    ]
+  },
+  "split_protocol": {
+    "method": "Subject-Level Stratified Train/Test Split on study_id",
+    "random_state": 42,
+    "test_size": 0.2,
+    "total_subjects": 102,
+    "train_subjects_count": 81,
+    "test_subjects_count": 21,
+    "train_samples_count": 262,
+    "primary_held_out_test_samples_count": 73,
+    "supplementary_balanced_test_samples_count": 30,
+    "held_out_test_unbalanced_remainder_count": 43,
+    "total_samples_accounted": 335,
+    "patient_leakage_detected": false,
+    "remainder_status_disclosure": "The 43 unbalanced remainder samples belong to the same 21 held-out test participants and do NOT constitute an independent validation cohort."
+  },
+  "uncertainty_estimation_method": "Cluster-Bootstrap at the SUBJECT (patient) level with 1,000 resamples. Participants rather than individual visits were resampled with replacement to account for repeated-visit correlation.",
+  "manifest_references": {
+    "predictor_matrix_manifest": "backend/app/research/artifacts/bench_001_predictor_matrix_manifest.json",
+    "subject_split_manifest": "backend/app/research/artifacts/bench_001_subject_split_manifest.json",
+    "sample_accounting_manifest": "backend/app/research/artifacts/bench_001_sample_accounting_manifest.json",
+    "predictions_manifest": "backend/app/research/artifacts/bench_001_predictions.json"
+  },
+  "verification_statement": "Empirically executed and independently verified from authentic local raw CSV records with complete 335-sample accounting and cluster-bootstrap uncertainty.",
+  "modality_breakdown": {
+    "model_classification": "Combined Multimodal (Microbiome Relative Abundance + Clinical/Demographic Covariates)",
+    "microbiome_derived_features": 940,
+    "clinical_covariates": 99,
+    "demographic_variables": 3,
+    "visit_variables": 1,
+    "other_metadata": 1,
+    "total_predictor_features": 1044,
+    "target_leaking_fields_excluded": [
+      "Sample ID",
+      "study_id",
+      "Alzheimers",
+      "Date Sample",
+      "age",
+      "Dementia Other"
+    ],
+    "pure_microbiome_comparison": {
+      "features_count": 940,
+      "full_73_accuracy": 0.726,
+      "full_73_roc_auc": 0.7619
+    }
+  },
+  "primary_evaluation_full_held_out_test": {
+    "sample_count": 73,
+    "subjects_represented": 21,
+    "samples_per_subject": {
+      "CH1-011": 12,
+      "CH1-020": 4,
+      "CH1-032": 1,
+      "CH1-037": 2,
+      "CH1-046": 4,
+      "CH1-052": 2,
+      "CH1-060": 4,
+      "CH1-065": 1,
+      "CH1-073": 1,
+      "CH1-085": 1,
+      "CH1-096": 4,
+      "CH1-108": 2,
+      "CH1-110": 5,
+      "CH1-129": 1,
+      "CH1-134": 4,
+      "CH1-145": 4,
+      "CH1-152": 1,
+      "CH1-172": 8,
+      "CH1-177": 4,
+      "CH1-205": 2,
+      "CH3-010": 6
+    },
+    "accuracy": 0.8219,
+    "balanced_accuracy": 0.793,
+    "sensitivity": 0.6923,
+    "specificity": 0.8936,
+    "precision": 0.7826,
+    "f1_score": 0.7347,
+    "roc_auc": 0.8813,
+    "pr_auc": 0.8522,
+    "brier_score": 0.1265,
+    "confusion_matrix": [
+      [
+        42,
+        5
+      ],
+      [
+        8,
+        18
+      ]
+    ],
+    "cluster_bootstrap_95_ci": {
+      "algorithm": "Participant-level cluster-bootstrap with replacement (21 subjects resampled with all visits)",
+      "seed": 42,
+      "iterations": 1000,
+      "single_class_treatment": "Discard/skip resample lacking either class (0 skipped)",
+      "accuracy": [
+        0.6667,
+        0.9351
+      ],
+      "balanced_accuracy": [
+        0.6093,
+        0.9174
+      ],
+      "sensitivity": [
+        0.3998,
+        0.913
+      ],
+      "specificity": [
+        0.6922,
+        1.0
+      ],
+      "precision": [
+        0.4373,
+        1.0
+      ],
+      "f1_score": [
+        0.4286,
+        0.8937
+      ],
+      "roc_auc": [
+        0.6948,
+        0.9733
+      ],
+      "pr_auc": [
+        0.5707,
+        0.9694
+      ],
+      "brier_score": [
+        0.0686,
+        0.2178
+      ]
+    }
+  },
+  "supplementary_evaluation_balanced_test_subsample": {
+    "sample_count": 30,
+    "subjects_represented": 16,
+    "disclosure": "Subset of the same 21 held-out test subjects sampled with seed 42 (15 AD + 15 Control)",
+    "accuracy": 0.8,
+    "balanced_accuracy": 0.8,
+    "sensitivity": 0.7333,
+    "specificity": 0.8667,
+    "precision": 0.8462,
+    "f1_score": 0.7857,
+    "roc_auc": 0.8889,
+    "pr_auc": 0.8612,
+    "brier_score": 0.1323,
+    "confusion_matrix": [
+      [
+        13,
+        2
+      ],
+      [
+        4,
+        11
+      ]
+    ],
+    "cluster_bootstrap_95_ci": {
+      "accuracy": [
+        0.6152,
+        0.9412
+      ],
+      "sensitivity": [
+        0.3888,
+        1.0
+      ],
+      "specificity": [
+        0.6,
+        1.0
+      ],
+      "roc_auc": [
+        0.625,
+        1.0
+      ]
+    }
+  },
+  "frozen_model_declaration": "The XGBoost classifier was fitted strictly on the 262 training samples. Preprocessing (median imputation, feature column extraction) was fitted on training data only. The model remained completely frozen during evaluation on all 73 held-out test samples and the 30-sample subset. No hyperparameter tuning, feature selection, or probability threshold adjustment was informed by test performance.",
+  "participant_level_evaluation": {
+    "participant_count": 21,
+    "control_participants": 13,
+    "ad_participants": 8,
+    "aggregation_rule": "Averaging predicted probabilities across visits for each participant, threshold = 0.5",
+    "endpoint_distinction": "Evaluates equally weighted patient-level classification rather than visit-weighted sample-level accuracy.",
+    "correctly_classified_controls": 11,
+    "correctly_classified_ad": 5,
+    "total_correctly_classified": 16,
+    "confusion_matrix": [
+      [
+        11,
+        2
+      ],
+      [
+        3,
+        5
+      ]
+    ],
+    "accuracy": 0.7619,
+    "balanced_accuracy": 0.7356,
+    "sensitivity": 0.625,
+    "specificity": 0.8462,
+    "precision": 0.7143,
+    "f1_score": 0.6667,
+    "roc_auc": 0.7404,
+    "pr_auc": 0.772,
+    "brier_score": 0.1811,
+    "participant_bootstrap_95_ci": {
+      "algorithm": "Participant-level bootstrap with replacement (21 subjects resampled, 1,000 iterations, seed 42)",
+      "accuracy": [
+        0.5714,
+        0.9524
+      ],
+      "balanced_accuracy": [
+        0.5332,
+        0.9287
+      ],
+      "sensitivity": [
+        0.25,
+        1.0
+      ],
+      "specificity": [
+        0.6364,
+        1.0
+      ],
+      "f1_score": [
+        0.2857,
+        0.9091
+      ],
+      "roc_auc": [
+        0.4272,
+        0.9907
+      ]
+    }
+  },
+  "cluster_bootstrap_methodology": {
+    "resampling_unit": "Participant (study_id)",
+    "iterations": 1000,
+    "random_seed": 42,
+    "aggregation_rule": "When a participant is drawn, all associated sample visits are included.",
+    "weighting_explanation": "Because participants contribute 1 to 12 visits, participants with more visits are proportionally more represented. The sample-level cluster bootstrap estimates a sample-weighted endpoint, whereas the participant-level bootstrap estimates an equally weighted participant endpoint.",
+    "handling_class_degenerate_samples": "Replicates containing only one unique class are discarded/skipped (0 skipped in test evaluation).",
+    "interval_computation": "Empirical 2.5th and 97.5th percentiles of valid resampled metrics."
+  },
+  "retrospective_exploratory_ablations": {
+    "status": "RETROSPECTIVE_EXPLORATORY",
+    "disclosure": "These feature group comparisons and the clinical-only model were conducted retrospectively on the existing held-out 73-sample test set after the primary combined-model and microbiome-only results were obtained. They were not pre-specified prior to viewing held-out results and do NOT constitute confirmatory evidence of modality superiority. For confirmatory model selection, grouped nested cross-validation or an untouched external cohort must be used.",
+    "confirmatory_protocol_proposal": "5-fold outer GroupKFold cross-validation grouped strictly on study_id with 4-fold inner GroupKFold for hyperparameter tuning and feature selection, or evaluation on an untouched independent external cohort.",
+    "models": [
+      {
+        "name": "Microbiome-only",
+        "features_count": 940,
+        "sample_level_metrics": {
+          "accuracy": 0.726,
+          "balanced_accuracy": 0.7099,
+          "sensitivity": 0.6538,
+          "specificity": 0.766,
+          "roc_auc": 0.7619,
+          "confusion_matrix": [
+            [
+              36,
+              11
+            ],
+            [
+              9,
+              17
+            ]
+          ]
+        },
+        "participant_level_metrics": {
+          "accuracy": 0.7143,
+          "balanced_accuracy": 0.6971,
+          "sensitivity": 0.625,
+          "specificity": 0.7692,
+          "roc_auc": 0.6635,
+          "confusion_matrix": [
+            [
+              10,
+              3
+            ],
+            [
+              3,
+              5
+            ]
+          ]
+        }
+      },
+      {
+        "name": "Clinical/Demographic-only",
+        "features_count": 104,
+        "sample_level_metrics": {
+          "accuracy": 0.6438,
+          "balanced_accuracy": 0.5687,
+          "sensitivity": 0.3077,
+          "specificity": 0.8298,
+          "roc_auc": 0.7823,
+          "confusion_matrix": [
+            [
+              39,
+              8
+            ],
+            [
+              18,
+              8
+            ]
+          ]
+        },
+        "participant_level_metrics": {
+          "accuracy": 0.5714,
+          "balanced_accuracy": 0.5337,
+          "sensitivity": 0.375,
+          "specificity": 0.6923,
+          "roc_auc": 0.5962,
+          "confusion_matrix": [
+            [
+              9,
+              4
+            ],
+            [
+              5,
+              3
+            ]
+          ]
+        }
+      },
+      {
+        "name": "Combined (PRIMARY)",
+        "features_count": 1044,
+        "sample_level_metrics": {
+          "accuracy": 0.8219,
+          "balanced_accuracy": 0.793,
+          "sensitivity": 0.6923,
+          "specificity": 0.8936,
+          "roc_auc": 0.8813,
+          "confusion_matrix": [
+            [
+              42,
+              5
+            ],
+            [
+              8,
+              18
+            ]
+          ]
+        },
+        "participant_level_metrics": {
+          "accuracy": 0.7619,
+          "balanced_accuracy": 0.7356,
+          "sensitivity": 0.625,
+          "specificity": 0.8462,
+          "roc_auc": 0.7404,
+          "confusion_matrix": [
+            [
+              11,
+              2
+            ],
+            [
+              3,
+              5
+            ]
+          ]
+        }
+      },
+      {
+        "name": "Ablation: Combined excluding visit day",
+        "features_count": 1043,
+        "tree_split_usage": "Feature day was not selected in any tree split of the Combined model (weight=0, gain=0).",
+        "probability_difference_vs_combined_max_abs": 0.0,
+        "tree_architecture_identical": true,
+        "sample_level_metrics": {
+          "accuracy": 0.8219,
+          "roc_auc": 0.8813
+        },
+        "participant_level_metrics": {
+          "accuracy": 0.7619,
+          "roc_auc": 0.7404
+        }
+      },
+      {
+        "name": "Ablation: Combined excluding nursing facility code (hopsn)",
+        "features_count": 1043,
+        "tree_split_usage": "Feature hopsn was not selected in any tree split of the Combined model (weight=0, gain=0).",
+        "probability_difference_vs_combined_max_abs": 0.0,
+        "tree_architecture_identical": true,
+        "sample_level_metrics": {
+          "accuracy": 0.8219,
+          "roc_auc": 0.8813
+        },
+        "participant_level_metrics": {
+          "accuracy": 0.7619,
+          "roc_auc": 0.7404
+        }
+      }
+    ]
+  },
+  "follow_up_duration_provenance": {
+    "status": "UNRESOLVED_FOR_SOURCE_LEVEL_PROVENANCE",
+    "historical_audit_correction": "The historical audit reported a maximum follow-up of 451 days citing participant CH1-030. Audit inspection reveals CH1-030 does not exist anywhere in the cohort.",
+    "empirical_csv_maximum": {
+      "max_day_offset": 311,
+      "participant_id": "CH1-173",
+      "sample_id": "FB323",
+      "baseline_sample_date": "2018-05-29",
+      "terminal_sample_date": "2019-04-05",
+      "calendar_day_difference": 311
+    },
+    "additional_long_intervals": [
+      {
+        "study_id": "CH1-172",
+        "sample_id": "FB438",
+        "day": 286,
+        "date": "2019-03-28",
+        "baseline": "2018-06-15"
+      },
+      {
+        "study_id": "CH1-149",
+        "sample_id": "FB424",
+        "day": 276,
+        "date": "2019-03-01",
+        "baseline": "2018-05-29"
+      },
+      {
+        "study_id": "CH1-093",
+        "sample_id": "FB194",
+        "day": 240,
+        "date": "2018-02-09",
+        "baseline": "2017-06-14"
+      },
+      {
+        "study_id": "CH1-179",
+        "sample_id": "FB444",
+        "day": 239,
+        "date": "2019-05-09",
+        "baseline": "2018-09-12"
+      },
+      {
+        "study_id": "CH1-088",
+        "sample_id": "FB199",
+        "day": 238,
+        "date": "2018-02-06",
+        "baseline": "2017-06-13"
+      },
+      {
+        "study_id": "CH1-005",
+        "sample_id": "FB002",
+        "day": 220,
+        "date": "2017-02-20",
+        "baseline": "2016-07-15"
+      }
+    ],
+    "twelve_sample_participants": [
+      {
+        "study_id": "CH1-011",
+        "samples_count": 12,
+        "day_range": [
+          0,
+          155
+        ],
+        "date_range": [
+          "2016-07-13",
+          "2016-12-15"
+        ],
+        "day_span": 155
+      },
+      {
+        "study_id": "CH1-017",
+        "samples_count": 12,
+        "day_range": [
+          0,
+          90
+        ],
+        "date_range": [
+          "2016-07-28",
+          "2016-10-26"
+        ],
+        "day_span": 90
+      }
+    ],
+    "source_divergence_summary": "NCBI BioProject PRJNA529586 and Haran et al. (mBio 2019) describe 108 participants followed longitudinally for up to 5 months (~150-155 days), which aligns with CH1-011 (155 days). However, participants enrolled during later study waves (2018-2019) have recorded collection dates extending to 311 days (~10 months). The exact protocol amendment or provenance behind the extension past 5 months remains unresolved at the source data level."
+  }
+}

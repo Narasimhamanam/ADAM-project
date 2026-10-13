@@ -175,7 +175,8 @@ def normalize_final_text(text: Optional[str]) -> str:
     out = re.sub(r"(?m)^[ \t]*#{1,6}[ \t]*", "", out)
 
     # 8. Remove bold markers (**text**)
-    out = re.sub(r"\*\*([^*]+)\*\*", r"\1", out)
+    out = re.sub(r"\*\*([^*\n]+)\*\*", r"\1", out)
+    out = out.replace("**", "")
 
     # 9. Remove italic markers (*text* or _text_) without affecting internal characters
     # Only standalone *word* or *several words*

@@ -1,75 +1,106 @@
 /**
- * App.jsx — Root application with routing, phase control guards, and health state
+ * App.jsx — Root Application with Streamlined 5-Destination Routing & Legacy Redirects
+ * ===================================================================================
+ * Navigation Destinations:
+ *   1. /overview  — Overview Dashboard (Executive research command center)
+ *   2. /analyze   — Analyze (Multi-model studio, workflow stepper, SHAP attributions)
+ *   3. /patients  — Patient Explorer (102 cohort subjects, longitudinal timeline)
+ *   4. /research  — Research & Validation (Datasets, benchmarks, imaging, crosswalks)
+ *   5. /reports   — Reports & Evidence (Clinical dossiers, PubMed RAG, plain text)
+ *   +  /settings  — Platform Settings & Environment Configuration
+ *
+ * All legacy routes (/dashboard, /datasets, /ml, /trajectory, etc.) are cleanly
+ * redirected to their consolidated destinations for seamless backwards compatibility.
+ * ===================================================================================
  */
-import React, { useState, useEffect } from 'react'
-import { Routes, Route, Navigate } from 'react-router-dom'
-import Layout from './components/layout/Layout'
-import PhaseFeatureGuard from './components/layout/PhaseFeatureGuard'
-import { DemoPhaseProvider } from './context/DemoPhaseContext'
-import Dashboard         from './pages/Dashboard'
-import DatasetExplorer   from './pages/DatasetExplorer'
-import AlzheimerAnalysis from './pages/AlzheimerAnalysis'
-import LongitudinalTrajectory from './pages/LongitudinalTrajectory'
-import MLPrediction      from './pages/MLPrediction'
-import ModelComparison   from './pages/ModelComparison'
-import ShapExplainability from './pages/ShapExplainability'
-import ResearchAssistant from './pages/ResearchAssistant'
-import LiteratureRAG     from './pages/LiteratureRAG'
-import AIAgents          from './pages/AIAgents'
-import Reports           from './pages/Reports'
-import Settings          from './pages/Settings'
-import AdamWorkflow      from './pages/AdamWorkflow'
-import AdamPerformance   from './pages/AdamPerformance'
-import { fetchHealth }   from './api/client'
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Layout from './components/layout/Layout';
+import { DemoPhaseProvider } from './context/DemoPhaseContext';
+import { fetchHealth } from './api/client';
+
+// The 5 Core Redesigned Pages
+import Overview from './pages/Overview';
+import Analyze from './pages/Analyze';
+import PatientExplorer from './pages/PatientExplorer';
+import ResearchValidation from './pages/ResearchValidation';
+import ReportsEvidence from './pages/ReportsEvidence';
+import Settings from './pages/Settings';
 
 export default function App() {
-  const [backendStatus, setBackendStatus] = useState('loading')
+  const [backendStatus, setBackendStatus] = useState('loading');
 
   useEffect(() => {
+    let isMounted = true;
     const check = async () => {
       try {
-        const h = await fetchHealth()
-        setBackendStatus(h.status === 'healthy' ? 'connected' : 'degraded')
+        const h = await fetchHealth();
+        if (isMounted) {
+          setBackendStatus(h.status === 'healthy' ? 'connected' : 'degraded');
+        }
       } catch {
-        setBackendStatus('disconnected')
+        if (isMounted) {
+          setBackendStatus('disconnected');
+        }
       }
-    }
-    check()
-    const interval = setInterval(check, 30_000)
-    return () => clearInterval(interval)
-  }, [])
+    };
+
+    check();
+    const interval = setInterval(check, 30_000);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <DemoPhaseProvider>
       <Layout backendStatus={backendStatus}>
         <Routes>
-          <Route path="/"            element={<Navigate to="/dashboard" replace />} />
-          
-          {/* Phase 1: Foundation & Platform */}
-          <Route path="/dashboard"   element={<PhaseFeatureGuard path="/dashboard"><Dashboard /></PhaseFeatureGuard>} />
-          <Route path="/settings"    element={<PhaseFeatureGuard path="/settings"><Settings /></PhaseFeatureGuard>} />
+          {/* Default Route */}
+          <Route path="/" element={<Navigate to="/overview" replace />} />
 
-          {/* Phase 2: Ingestion & Dataset Explorer */}
-          <Route path="/datasets"    element={<PhaseFeatureGuard path="/datasets"><DatasetExplorer /></PhaseFeatureGuard>} />
+          {/* ── 5 PRIMARY REDESIGNED DESTINATIONS ── */}
+          <Route path="/overview" element={<Overview />} />
+          <Route path="/analyze" element={<Analyze />} />
+          <Route path="/patients" element={<PatientExplorer />} />
+          <Route path="/research" element={<ResearchValidation />} />
+          <Route path="/reports" element={<ReportsEvidence />} />
 
-          {/* Phase 3: ML Benchmarks & SHAP Explainability */}
-          <Route path="/alzheimer"   element={<PhaseFeatureGuard path="/alzheimer"><AlzheimerAnalysis /></PhaseFeatureGuard>} />
-          <Route path="/trajectory"  element={<PhaseFeatureGuard path="/trajectory"><LongitudinalTrajectory /></PhaseFeatureGuard>} />
-          <Route path="/ml"          element={<PhaseFeatureGuard path="/ml"><MLPrediction /></PhaseFeatureGuard>} />
-          <Route path="/models"      element={<PhaseFeatureGuard path="/models"><ModelComparison /></PhaseFeatureGuard>} />
-          <Route path="/shap"        element={<PhaseFeatureGuard path="/shap"><ShapExplainability /></PhaseFeatureGuard>} />
-          <Route path="/reports"     element={<PhaseFeatureGuard path="/reports"><Reports /></PhaseFeatureGuard>} />
+          {/* Platform Settings */}
+          <Route path="/settings" element={<Settings />} />
 
-          {/* Phase 4: AI & Literature Multi-Agent */}
-          <Route path="/assistant"   element={<PhaseFeatureGuard path="/assistant"><ResearchAssistant /></PhaseFeatureGuard>} />
-          <Route path="/literature"  element={<PhaseFeatureGuard path="/literature"><LiteratureRAG /></PhaseFeatureGuard>} />
-          <Route path="/agents"      element={<PhaseFeatureGuard path="/agents"><AIAgents /></PhaseFeatureGuard>} />
-          <Route path="/workflow"    element={<PhaseFeatureGuard path="/workflow"><AdamWorkflow /></PhaseFeatureGuard>} />
-          <Route path="/performance" element={<PhaseFeatureGuard path="/performance"><AdamPerformance /></PhaseFeatureGuard>} />
+          {/* ── BACKWARDS-COMPATIBILITY ROUTE REDIRECTS ── */}
+          {/* Overview Aliases */}
+          <Route path="/dashboard" element={<Navigate to="/overview" replace />} />
 
-          <Route path="*"            element={<Navigate to="/dashboard" replace />} />
+          {/* Analyze Aliases */}
+          <Route path="/ml" element={<Navigate to="/analyze" replace />} />
+          <Route path="/models" element={<Navigate to="/analyze" replace />} />
+          <Route path="/shap" element={<Navigate to="/analyze" replace />} />
+          <Route path="/workflow" element={<Navigate to="/analyze" replace />} />
+          <Route path="/assistant" element={<Navigate to="/analyze" replace />} />
+          <Route path="/agents" element={<Navigate to="/analyze" replace />} />
+
+          {/* Patient Explorer Aliases */}
+          <Route path="/alzheimer" element={<Navigate to="/patients" replace />} />
+          <Route path="/trajectory" element={<Navigate to="/patients" replace />} />
+          <Route path="/digital-twin" element={<Navigate to="/patients" replace />} />
+
+          {/* Research & Validation Aliases */}
+          <Route path="/datasets" element={<Navigate to="/research" replace />} />
+          <Route path="/cross-cohort" element={<Navigate to="/research" replace />} />
+          <Route path="/performance" element={<Navigate to="/research" replace />} />
+          <Route path="/neuroimaging" element={<Navigate to="/research" replace />} />
+          <Route path="/multimodal-gate" element={<Navigate to="/research" replace />} />
+
+          {/* Reports & Evidence Aliases */}
+          <Route path="/literature" element={<Navigate to="/reports" replace />} />
+
+          {/* Catch-All Fallback */}
+          <Route path="*" element={<Navigate to="/overview" replace />} />
         </Routes>
       </Layout>
     </DemoPhaseProvider>
-  )
+  );
 }

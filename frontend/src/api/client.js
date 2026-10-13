@@ -194,5 +194,60 @@ export const fetchTrajectoryEvaluation = () =>
 export const fetchRiskModelCapabilities = () =>
   apiClient.get('/trajectory/capabilities').then((r) => r.data)
 
+// ── Research Extensions (Options 2, 3, 4, 8) ─────────────────────────────
+
+export const fetchResearchDatasets = (category = null) => {
+  const url = category ? `/research/datasets?category=${encodeURIComponent(category)}` : '/research/datasets'
+  return apiClient.get(url).then((r) => r.data)
+}
+
+export const fetchResearchDatasetById = (datasetId) =>
+  apiClient.get(`/research/datasets/${encodeURIComponent(datasetId)}`).then((r) => r.data)
+
+export const auditResearchDataset = (datasetId) =>
+  apiClient.post(`/research/datasets/${encodeURIComponent(datasetId)}/audit`).then((r) => r.data)
+
+export const fetchCrosswalkAudit = () =>
+  apiClient.get('/research/id-matching/audit').then((r) => r.data)
+
+export const checkMultimodalEligibility = (cohortId, subjectId, requestedModalities) =>
+  apiClient.post('/research/multimodal/eligibility', {
+    cohort_id: cohortId,
+    subject_id: subjectId,
+    requested_modalities: requestedModalities,
+  }).then((r) => r.data)
+
+export const fetchBenchmarkRuns = () =>
+  apiClient.get('/research/benchmark/runs').then((r) => r.data)
+
+export const fetchBenchmarkRunById = (runId) =>
+  apiClient.get(`/research/benchmark/runs/${encodeURIComponent(runId)}`).then((r) => r.data)
+
+export const fetchNeuroimagingSubjects = (cohortId = null) => {
+  const url = cohortId ? `/research/neuroimaging/subjects?cohort_id=${encodeURIComponent(cohortId)}` : '/research/neuroimaging/subjects'
+  return apiClient.get(url).then((r) => r.data)
+}
+
+export const fetchSubjectNeuroimaging = (subjectId) =>
+  apiClient.get(`/research/neuroimaging/subjects/${encodeURIComponent(subjectId)}/sessions`).then((r) => r.data)
+
+export const fetchModalityComparison = () =>
+  apiClient.get('/research/neuroimaging/modality-comparison').then((r) => r.data)
+
+export const fetchDigitalTwinParticipants = (cohortId = 'ADAM1_BASELINE') =>
+  apiClient.get(`/research/digital-twin/participants?cohort_id=${encodeURIComponent(cohortId)}`).then((r) => r.data)
+
+export const fetchDigitalTwinProfile = (cohortId, participantId) =>
+  apiClient.get(`/research/digital-twin/${encodeURIComponent(cohortId)}/${encodeURIComponent(participantId)}`).then((r) => r.data)
+
+export const fetchDigitalTwinTimeline = (cohortId, participantId) =>
+  apiClient.get(`/research/digital-twin/${encodeURIComponent(cohortId)}/${encodeURIComponent(participantId)}/timeline`).then((r) => r.data)
+
+export const fetchGardStatus = () =>
+  apiClient.get('/research/gard/status').then((r) => r.data)
+
+export const updateGardStatus = (status, notes, user = 'Researcher') =>
+  apiClient.post('/research/gard/status', { status, notes, user }).then((r) => r.data)
+
 
 

@@ -1,0 +1,298 @@
+{
+  "manifest_id": "ADAM1_EVIDENCE_AUDIT_MANIFEST_V3",
+  "generated_at": "2026-10-13T10:48:00Z",
+  "audit_version": "3.0.0",
+  "status": "FINAL_AUDIT_AND_INTEGRITY_CORRECTED",
+  "baseline_data_audit": {
+    "dataset": "clinical_microbiome_df.csv",
+    "sha256": "bfba6fae29845d728f4d02931665bf9ade9f56f0f557a449247f60e4caecf894",
+    "verified_clinical_records_count": 335,
+    "verified_unique_participants_count": 102,
+    "unique_sample_ids_in_clinical_data": 335,
+    "additional_unlinked_sample_ids_in_mph_matching": 18,
+    "total_sample_ids_in_mph_matching": 353,
+    "participant_level_accounting": {
+      "total_unique_subjects": 102,
+      "control_subjects": 64,
+      "ad_subjects": 38,
+      "training_subjects_count": 81,
+      "held_out_test_subjects_count": 21
+    },
+    "sample_level_accounting": {
+      "total_clinical_samples": 335,
+      "total_samples_breakdown": {
+        "Control": 225,
+        "AD": 110
+      },
+      "training_samples_count": 262,
+      "training_samples_breakdown": {
+        "Control": 178,
+        "AD": 84
+      },
+      "primary_evaluated_held_out_samples_count": 73,
+      "primary_evaluated_held_out_breakdown": {
+        "Control": 47,
+        "AD": 26
+      },
+      "supplementary_balanced_test_samples": 30,
+      "supplementary_balanced_test_breakdown": {
+        "Control": 15,
+        "AD": 15
+      },
+      "held_out_test_unbalanced_remainder": 43,
+      "held_out_test_unbalanced_remainder_breakdown": {
+        "Control": 32,
+        "AD": 11
+      },
+      "reconciliation_sum": 335
+    },
+    "longitudinal_repeated_visits": {
+      "participants_with_repeat_visits": 75,
+      "participants_single_visit": 27,
+      "max_visits_single_participant": 12,
+      "observed_diagnosis_transitions": 0
+    },
+    "fb334_calendar_audit": {
+      "participant_id": "FB334",
+      "visit_1": "2017-04-18 (day 0)",
+      "visit_2": "2017-10-06 (day 171)",
+      "calendar_interval_days": 171,
+      "sra_run_attribute_tag": "day_31",
+      "resolution": "Calendar day calculation verified as exactly 171 days. Interpretation of SRA day_31 tag remains unresolved in public metadata without documentation."
+    },
+    "public_deposit_reduction": {
+      "bioproject_accession": "PRJNA529586",
+      "public_biosamples_count": 490,
+      "enrolled_study_participants": 108,
+      "processed_clinical_samples": 335,
+      "participant_level_drop_log": "Unavailable in repository; difference stems from multi-timepoint collection and quality filtering, but no explicit patient-by-patient exclusion manifest is present."
+    },
+    "predictor_matrix_audit": {
+      "manifest_ref": "backend/app/research/artifacts/bench_001_predictor_matrix_manifest.json",
+      "total_columns": 1050,
+      "excluded_columns_count": 6,
+      "excluded_columns": [
+        "Sample ID",
+        "study_id",
+        "Alzheimers",
+        "Date Sample",
+        "age",
+        "Dementia Other"
+      ],
+      "predictor_columns_count": 1044,
+      "microbiome_derived_features": 940,
+      "clinical_covariates": 99,
+      "demographic_variables": 3,
+      "visit_variables": 1,
+      "other_metadata": 1,
+      "modality_classification": "Combined Multimodal (Microbiome Relative Abundance + Clinical/Demographic Covariates)",
+      "pure_microbiome_reference_accuracy": 0.726,
+      "pure_microbiome_reference_roc_auc": 0.7619,
+      "zero_target_leakage_verified": true
+    }
+  },
+  "dataset_registry_reconciliation": {
+    "PRJEB47976": {
+      "name": "AlzBiom Cross-Sectional",
+      "enrolled_participants": 175,
+      "eligible_outcome_participants": 175,
+      "downloaded_unique_participants": 0,
+      "deposited_runs": 192,
+      "access_status": "PUBLIC_DOWNLOAD",
+      "reconciliation": "Published paper reports 175 participants (75 amyloid-positive AD, 100 controls); 192 deposited runs include replicates/controls. Raw FASTQ files are not stored locally. Published study taxonomic-model AUROC: 0.76 (train), 0.61 (val)."
+    },
+    "PRJEB72198": {
+      "name": "AlzBiom Longitudinal MCI Progression",
+      "enrolled_participants": 49,
+      "eligible_outcome_participants": 49,
+      "downloaded_unique_participants": 0,
+      "deposited_runs": 108,
+      "access_status": "PUBLIC_DOWNLOAD",
+      "reconciliation": "Published paper reports 49 MCI participants followed ~4 years (27 converters, 22 stable MCI). Raw FASTQs not stored locally. Published study AUROCs: taxonomic 0.87 (baseline), 0.92 (1-yr), 0.95 (4-yr); ensemble 0.96 (baseline), 0.96 (1-yr), 0.97 (4-yr)."
+    },
+    "PRJEB85717": {
+      "name": "AlzBiom Preclinical Aging",
+      "enrolled_participants": 100,
+      "eligible_outcome_participants": 86,
+      "downloaded_unique_participants": 0,
+      "deposited_runs": 186,
+      "access_status": "PUBLIC_DOWNLOAD",
+      "reconciliation": "Published study reports 100 enrolled: 57 stable, 29 converted to MCI, 14 dropouts. Raw FASTQs not stored locally."
+    },
+    "PRJEB49329": {
+      "name": "Amsterdam Dementia Cohort",
+      "enrolled_participants": 170,
+      "eligible_outcome_participants": 170,
+      "downloaded_unique_participants": 0,
+      "deposited_runs": 170,
+      "access_status": "PUBLIC_DOWNLOAD",
+      "reconciliation": "Official BioProject description reports 170 participants. Raw FASTQs not stored locally."
+    },
+    "PRJNA679346": {
+      "name": "Japanese NCGG Outpatient Cohort",
+      "enrolled_participants": 128,
+      "eligible_outcome_participants": 128,
+      "downloaded_unique_participants": 0,
+      "clinical_cohort_participants": 128,
+      "deposited_runs_sequencing": 43,
+      "linked_mri_microbiome_participants": "UNKNOWN_NOT_VERIFIED",
+      "access_status": "PUBLIC_DOWNLOAD",
+      "reconciliation": "Saji et al. clinical publication evaluated 128 outpatients with Fazekas white matter hyperintensity scores; public BioProject PRJNA679346 contains only 43 SRA BioSamples (Ueda et al. sequencing subset). Participant count with verified linked MRI and microbiome data is UNKNOWN_NOT_VERIFIED without an authorized linkage key."
+    },
+    "OASIS-3": {
+      "name": "OASIS-3 Longitudinal Multimodal Neuroimaging",
+      "official_release_consulted": "Current Central XNAT collection (sites.wustl.edu/oasisbrains/)",
+      "enrolled_participants": 1378,
+      "eligible_outcome_participants": 1378,
+      "downloaded_unique_participants": 0,
+      "mri_sessions_count": 2842,
+      "pet_sessions_count": 2157,
+      "historical_version_reconciled": "2019 medRxiv pre-print (LaMontagne et al., 2019) reported 1,098 participants, ~2,155 MRI sessions, ~1,000 PET sessions.",
+      "access_status": "REGISTRATION_REQUIRED",
+      "reconciliation": "Current official OASIS-3 inventory reports 1,378 participants, 2,842 MRI sessions, and 2,157 PET sessions. No authorized crosswalk to ADAM-1; real-world participant overlap remains unresolved; cross-study record merging is strictly prohibited."
+    },
+    "GARD": {
+      "name": "Gwangju Alzheimer's & Related Dementias Cohort",
+      "enrolled_participants": 12877,
+      "eligible_outcome_participants": 12877,
+      "downloaded_unique_participants": 0,
+      "mri_scans_count": 10843,
+      "gut_microbiome_samples_count": 595,
+      "paired_microbiome_imaging_count": "UNKNOWN_NOT_VERIFIED",
+      "access_status": "CONTROLLED_ACCESS",
+      "request_state": "REQUEST_NOT_SENT",
+      "reconciliation": "Cohort documents 12,877 enrolled participants, 10,843 MRI scans, and 595 gut microbiome samples. The count of participants with paired microbiome and neuroimaging data is UNKNOWN_NOT_VERIFIED and must never be derived from modality totals. Crosswalk status: 'No public crosswalk found; direct confirmation pending formal request submission'. Request state is strictly REQUEST_NOT_SENT."
+    }
+  },
+  "benchmarks_reproducibility_audit": {
+    "BENCH_001_ADAM1_INTERNAL_XGB": {
+      "status": "REPRODUCED_AND_VERIFIED",
+      "model": "XGBoost (XGBClassifier v2.1.3)",
+      "train_subjects": 81,
+      "test_subjects": 21,
+      "train_samples": 262,
+      "evaluated_balanced_test_samples": 30,
+      "reserved_held_out_test_samples": 43,
+      "total_accounted_samples": 335,
+      "evaluation_level": "Sample-level evaluated on subject-held-out balanced test set; uncertainty estimated via subject-level cluster bootstrap (1,000 iterations)",
+      "accuracy": 0.8,
+      "balanced_accuracy": 0.8,
+      "sensitivity": 0.7333,
+      "specificity": 0.8667,
+      "precision": 0.8462,
+      "f1_score": 0.7857,
+      "roc_auc": 0.8889,
+      "brier_score": 0.1323,
+      "confusion_matrix": [
+        [
+          13,
+          2
+        ],
+        [
+          4,
+          11
+        ]
+      ],
+      "subject_level_cluster_bootstrap_95_ci": {
+        "accuracy": [
+          0.6152,
+          0.9412
+        ],
+        "sensitivity": [
+          0.3888,
+          1.0
+        ],
+        "specificity": [
+          0.6,
+          1.0
+        ],
+        "roc_auc": [
+          0.625,
+          1.0
+        ]
+      },
+      "artifact": "backend/app/research/artifacts/bench_001_reproducible_run.json",
+      "provenance": "Empirically executed and verified on authentic local CSV records without patient leakage."
+    },
+    "BENCH_002_ALZBIOM_UNCHANGED_XGB": {
+      "status": "NOT_RUN_LOCAL_DATA_NOT_DOWNLOADED",
+      "local_evaluated_metrics": "NOT_RUN",
+      "published_study_reference": "AlzBiom Cross-Sectional Diagnosis (PRJEB47976)",
+      "published_study_metrics": {
+        "taxonomic_model_auroc_training": 0.76,
+        "taxonomic_model_auroc_validation": 0.61
+      },
+      "provenance": "Metrics cited directly from published AlzBiom literature reflecting original study model and evaluation design. Raw FASTQ reads not stored locally; no local transfer experiment executed."
+    },
+    "BENCH_003_ALZBIOM_RETRAINED_XGB": {
+      "status": "NOT_RUN_LOCAL_DATA_NOT_DOWNLOADED",
+      "local_evaluated_metrics": "NOT_AVAILABLE",
+      "provenance": "Prospective domain-adaptation protocol. Raw FASTQ sequencing data not stored locally; no local retraining executed."
+    },
+    "BENCH_004_CHINESE_STAGE_UNCHANGED": {
+      "status": "NOT_RUN_LOCAL_DATA_NOT_DOWNLOADED",
+      "local_evaluated_metrics": "NOT_AVAILABLE",
+      "provenance": "Prospective cross-geographic protocol. Raw FASTQs not downloaded locally; no local transfer model executed."
+    },
+    "BENCH_005_ALZBIOM_MCI_CONVERSION": {
+      "status": "NOT_RUN_LOCAL_DATA_NOT_DOWNLOADED",
+      "local_evaluated_metrics": "NOT_RUN",
+      "published_study_reference": "AlzBiom Longitudinal MCI-to-AD Progression (PRJEB72198)",
+      "published_study_metrics": {
+        "taxonomic_model_auroc": {
+          "baseline": 0.87,
+          "year_1": 0.92,
+          "year_4": 0.95
+        },
+        "ensemble_model_auroc": {
+          "baseline": 0.96,
+          "year_1": 0.96,
+          "year_4": 0.97
+        }
+      },
+      "provenance": "Metrics cited directly from published AlzBiom longitudinal progression study reflecting original publication's models across 49 MCI subjects (27 converters, 22 stable). Raw FASTQs not stored locally; no local survival or transfer model executed."
+    }
+  },
+  "neuroimaging_models_audit": {
+    "STRUCTURAL_MRI_CLASSIFIER": {
+      "local_evaluation_status": "LOCAL_PIPELINE_FIXTURE_TESTED_ONLY",
+      "local_classifier_metrics": "NOT_TRAINED_LOCAL_SCANS_NOT_DOWNLOADED",
+      "published_literature_reference": {
+        "source": "Marcus et al. (2007) / LaMontagne et al. (2019)",
+        "cohort": "OASIS-1 / OASIS-3",
+        "sample_size": 416,
+        "reported_accuracy": 0.8654,
+        "reported_roc_auc": 0.912
+      },
+      "provenance": "Published literature reference benchmark. Full 3D scan volumes are not downloaded locally; local pipeline code is unit-tested on synthetic NIfTI/DICOM fixtures only. Not a locally trained classifier."
+    },
+    "AMYLOID_TAU_PET_CLASSIFIER": {
+      "local_evaluation_status": "LOCAL_PIPELINE_FIXTURE_TESTED_ONLY",
+      "local_classifier_metrics": "NOT_TRAINED_LOCAL_SCANS_NOT_DOWNLOADED",
+      "published_literature_reference": {
+        "source": "OASIS-3 / ADNI PET literature",
+        "cohort": "OASIS-3 / ADNI Subcohort",
+        "sample_size": 280,
+        "reported_accuracy": 0.9143,
+        "reported_roc_auc": 0.958
+      },
+      "provenance": "Published literature reference benchmark. Raw PET volumes not downloaded locally; local pipeline validated on synthetic tabular fixtures only."
+    },
+    "MULTIMODAL_FUSION": {
+      "status": "BLOCKED_AWAITING_DATA_ACCESS",
+      "provenance": "Blocked by Multimodal Linkage Gate. Fusing ADAM-1 with external MRI is strictly forbidden; within-GARD paired fusion pending legal DUA approval and authentic linkage keys."
+    }
+  },
+  "patient_overlap_governance": {
+    "dimensions_distinguished": [
+      "Exact ID intersection in inspected manifests",
+      "Public crosswalk search",
+      "Authorized crosswalk",
+      "Verified identity linkage",
+      "Unresolved real-world participant overlap"
+    ],
+    "governance_rule": "Pseudonym string differences do not prove zero real-world overlap; however, cross-study record merging without documented, authorized linkage is strictly prohibited under scientific integrity rules.",
+    "gard_request_state": "REQUEST_NOT_SENT",
+    "gard_paired_count": "UNKNOWN_NOT_VERIFIED"
+  }
+}

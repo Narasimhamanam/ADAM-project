@@ -1,186 +1,189 @@
 /**
- * Sidebar — navigation grouped by phase
- * Phase visibility is controlled only by ACTIVE_DEMO_PHASE in featurePhases.js
- * Elevated clinical aesthetic with refined phase chips and smooth transitions
+ * Sidebar.jsx — Streamlined 5-Destination Research Navigation
+ * ============================================================================
+ * Implements the simplified, research-focused navigation architecture:
+ * 1. Overview (/overview)
+ * 2. Analyze (/analyze)
+ * 3. Patient Explorer (/patients)
+ * 4. Research & Validation (/research)
+ * 5. Reports & Evidence (/reports)
+ * + Compact platform settings action in the footer.
+ * ============================================================================
  */
-import React from 'react'
-import { NavLink } from 'react-router-dom'
+import React from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
-  Database,
-  Brain,
-  TrendingUp,
-  BarChart3,
-  Zap,
-  MessageSquare,
-  BookOpen,
-  Bot,
+  FlaskConical,
+  Users,
+  ShieldCheck,
   FileText,
   Settings,
   Dna,
   X,
-  Lock,
-  GitMerge,
-  Award,
+  ChevronRight,
   Activity,
-} from 'lucide-react'
-import clsx from 'clsx'
-import { useDemoPhase } from '../../context/DemoPhaseContext'
+} from 'lucide-react';
+import clsx from 'clsx';
+import { useDemoPhase } from '../../context/DemoPhaseContext';
 
-const NAV_SECTIONS = [
+const PRIMARY_DESTINATIONS = [
   {
-    label: 'Platform — Phase 1',
-    phaseRequired: 1,
-    items: [
-      { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard',       phase: 1 },
-      { to: '/settings',  icon: Settings,        label: 'Settings',        phase: 1 },
-    ],
+    to: '/overview',
+    icon: LayoutDashboard,
+    label: 'Overview',
+    description: 'System metrics & research status',
   },
   {
-    label: 'Data & Ingestion — Phase 2',
-    phaseRequired: 2,
-    items: [
-      { to: '/datasets',  icon: Database,        label: 'Dataset Explorer', phase: 2 },
-    ],
+    to: '/analyze',
+    icon: FlaskConical,
+    label: 'Analyze',
+    description: 'Models, workflow & SHAP',
   },
   {
-    label: 'Machine Learning — Phase 3',
-    phaseRequired: 3,
-    items: [
-      { to: '/alzheimer',  icon: Brain,       label: 'Alzheimer Analysis', phase: 3 },
-      { to: '/trajectory', icon: Activity,    label: 'Risk Trajectory',    phase: 3 },
-      { to: '/ml',         icon: TrendingUp,  label: 'ML Prediction',      phase: 3 },
-      { to: '/models',     icon: BarChart3,   label: 'Model Comparison',   phase: 3 },
-      { to: '/shap',       icon: Zap,         label: 'SHAP Explainability', phase: 3 },
-      { to: '/reports',    icon: FileText,    label: 'Reports & PDF',      phase: 3 },
-    ],
+    to: '/patients',
+    icon: Users,
+    label: 'Patient Explorer',
+    description: '102 subjects & timeline history',
   },
   {
-    label: 'AI & Literature — Phase 4',
-    phaseRequired: 4,
-    items: [
-      { to: '/workflow',    icon: GitMerge,      label: 'ADAM Workflow',     phase: 4 },
-      { to: '/performance', icon: Award,         label: 'ADAM Performance', phase: 4 },
-      { to: '/assistant',   icon: MessageSquare, label: 'Research Assistant', phase: 4 },
-      { to: '/literature',  icon: BookOpen,      label: 'Literature / RAG',   phase: 4 },
-      { to: '/agents',      icon: Bot,           label: 'AI Agents',          phase: 4 },
-    ],
+    to: '/research',
+    icon: ShieldCheck,
+    label: 'Research & Validation',
+    description: 'Datasets, benchmarks & linkage',
   },
-]
-
-function NavItem({ to, icon: Icon, label, phase, activeDemoPhase, onClose }) {
-  const isLocked = phase > activeDemoPhase
-  const isCurrentActive = phase === activeDemoPhase
-
-  return (
-    <NavLink
-      to={to}
-      onClick={onClose}
-      className={({ isActive }) =>
-        clsx(
-          isActive ? 'nav-item-active' : 'nav-item',
-          isLocked && 'opacity-60 hover:opacity-85',
-        )
-      }
-      title={isLocked ? `${label} — Coming in Phase ${phase}` : `${label} — Phase ${phase}`}
-    >
-      <Icon size={16} className={clsx('shrink-0 transition-colors', isLocked && 'text-surface-500')} />
-      <span className="flex-1 truncate font-medium">{label}</span>
-      {isLocked ? (
-        <span className="shrink-0 flex items-center gap-1 rounded-md text-[10px] px-1.5 py-0.5 bg-surface-800 text-amber-500/80 border border-amber-500/25 font-mono font-bold">
-          <Lock size={9} />
-          P{phase}
-        </span>
-      ) : isCurrentActive ? (
-        <span className="shrink-0 flex items-center gap-1 rounded-md text-[9px] px-1.5 py-0.5 bg-accent-500/15 text-accent-600 dark:text-accent-400 font-mono font-bold border border-accent-500/30">
-          <span className="w-1.5 h-1.5 rounded-full bg-accent-500"></span>
-          P{phase}
-        </span>
-      ) : (
-        <span className="shrink-0 rounded-md text-[9px] px-1.5 py-0.5 bg-surface-800/80 text-surface-400 font-mono font-semibold border border-surface-700/50">
-          P{phase}
-        </span>
-      )}
-    </NavLink>
-  )
-}
+  {
+    to: '/reports',
+    icon: FileText,
+    label: 'Reports & Evidence',
+    description: 'Dossiers, RAG & citations',
+  },
+];
 
 export default function Sidebar({ isOpen, onClose }) {
-  const { activeDemoPhase } = useDemoPhase()
+  const { activeDemoPhase } = useDemoPhase();
 
   return (
     <>
-      {/* Mobile overlay */}
+      {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden transition-opacity"
           onClick={onClose}
         />
       )}
 
-      {/* Sidebar panel */}
+      {/* Main Sidebar Drawer */}
       <aside
         className={clsx(
-          'fixed top-0 left-0 z-40 h-full w-64 bg-surface-900 border-r border-surface-700/70 shadow-sm no-print print:hidden',
+          'fixed top-0 left-0 z-50 h-full w-64 bg-surface-900 border-r border-surface-700/70 shadow-lg no-print print:hidden',
           'flex flex-col transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : '-translate-x-full',
-          'lg:translate-x-0 lg:static lg:z-auto lg:h-auto lg:flex-shrink-0',
+          'lg:translate-x-0 lg:static lg:z-auto lg:h-auto lg:flex-shrink-0 lg:shadow-none'
         )}
       >
-        {/* Mobile header */}
+        {/* Mobile Header / Brand */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-surface-700/60 lg:hidden">
           <div className="flex items-center gap-2">
-            <Dna size={16} className="text-accent-500" />
-            <span className="text-sm font-bold text-surface-50">Navigation</span>
+            <div className="p-1.5 rounded-lg bg-primary-600/20 text-primary-400 border border-primary-500/30">
+              <Dna size={16} />
+            </div>
+            <div>
+              <span className="text-sm font-bold text-surface-50">ADAM-1</span>
+              <span className="ml-1 text-xs text-primary-400 font-semibold">Enhanced</span>
+            </div>
           </div>
-          <button onClick={onClose} className="p-1 rounded-md text-surface-400 hover:text-surface-100 hover:bg-surface-800">
+          <button
+            onClick={onClose}
+            className="p-1 rounded-md text-surface-400 hover:text-surface-100 hover:bg-surface-800"
+            aria-label="Close navigation menu"
+          >
             <X size={18} />
           </button>
         </div>
 
-        {/* Navigation links */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
-          {NAV_SECTIONS.map((section) => {
-            const isSectionFuture = section.phaseRequired > activeDemoPhase
-            return (
-              <div key={section.label} className="space-y-1">
-                <div className="flex items-center justify-between px-3 mb-1.5">
-                  <p className={clsx(
-                    'text-[10px] font-bold uppercase tracking-wider',
-                    isSectionFuture ? 'text-surface-600' : 'text-surface-400',
-                  )}>
-                    {section.label}
-                  </p>
-                  {isSectionFuture && (
-                    <span className="text-[9px] font-bold text-amber-500/70 font-mono">
-                      Upcoming
-                    </span>
+        {/* Navigation Category Label */}
+        <div className="px-4 pt-4 pb-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-surface-400">
+            Research Workspace
+          </p>
+        </div>
+
+        {/* 5 Core Navigation Destinations */}
+        <nav className="flex-1 overflow-y-auto px-2.5 py-1 space-y-1">
+          {PRIMARY_DESTINATIONS.map(({ to, icon: Icon, label, description }) => (
+            <NavLink
+              key={to}
+              to={to}
+              onClick={onClose}
+              className={({ isActive }) =>
+                clsx(
+                  'group flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-medium transition-all duration-150',
+                  isActive
+                    ? 'bg-primary-500/15 text-primary-300 border border-primary-500/30 shadow-sm font-semibold'
+                    : 'text-surface-300 hover:text-surface-100 hover:bg-surface-800/80 border border-transparent'
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <Icon
+                    size={18}
+                    className={clsx(
+                      'shrink-0 transition-colors',
+                      isActive ? 'text-primary-400' : 'text-surface-400 group-hover:text-surface-200'
+                    )}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <div className="truncate leading-tight">{label}</div>
+                    <div className="text-[10px] text-surface-500 truncate font-normal leading-tight mt-0.5">
+                      {description}
+                    </div>
+                  </div>
+                  {isActive && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary-400 shrink-0" />
                   )}
-                </div>
-                <div className="space-y-0.5">
-                  {section.items.map((item) => (
-                    <NavItem
-                      key={item.to}
-                      {...item}
-                      activeDemoPhase={activeDemoPhase}
-                      onClose={onClose}
-                    />
-                  ))}
-                </div>
-              </div>
-            )
-          })}
+                </>
+              )}
+            </NavLink>
+          ))}
         </nav>
 
-        {/* Sidebar Footer */}
-        <div className="border-t border-surface-700/60 px-4 py-3 bg-surface-950/30">
-          <p className="text-[10px] text-surface-500 font-medium">ADAM-1 Enhanced Platform</p>
-          <p className="text-[10px] text-accent-500 font-semibold mt-0.5 flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent-500 inline-block animate-pulse"></span>
-            Phase {activeDemoPhase} Production Active
-          </p>
+        {/* Platform Settings & System Status Footer */}
+        <div className="border-t border-surface-700/60 p-3 bg-surface-950/40 space-y-2">
+          {/* Settings Link */}
+          <NavLink
+            to="/settings"
+            onClick={onClose}
+            className={({ isActive }) =>
+              clsx(
+                'flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors',
+                isActive
+                  ? 'bg-surface-800 text-surface-100 border border-surface-700'
+                  : 'text-surface-400 hover:text-surface-200 hover:bg-surface-850'
+              )
+            }
+          >
+            <Settings size={15} className="shrink-0" />
+            <span className="flex-1 truncate">Settings &amp; Environment</span>
+            <ChevronRight size={13} className="text-surface-500" />
+          </NavLink>
+
+          {/* Verification Badge */}
+          <div className="px-3 py-2 rounded-lg bg-surface-900/80 border border-surface-800 text-[10px] space-y-1">
+            <div className="flex items-center justify-between text-surface-400">
+              <span className="font-medium">Pipeline Status</span>
+              <span className="text-emerald-400 font-bold flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                Verified
+              </span>
+            </div>
+            <div className="text-surface-500 text-[9px] font-mono truncate">
+              Phase {activeDemoPhase} • IEEE Access (2025)
+            </div>
+          </div>
         </div>
       </aside>
     </>
-  )
+  );
 }

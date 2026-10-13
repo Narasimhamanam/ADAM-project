@@ -1,0 +1,6381 @@
+{
+  "manifest_name": "BENCH_001 Predictor Column Categorization and Leakage Audit Manifest",
+  "timestamp": "2026-10-13T11:20:00Z",
+  "source_dataset": {
+    "filename": "clinical_microbiome_df.csv",
+    "path": "backend/data/global_resources/clinical_microbiome_df.csv",
+    "sha256": "bfba6fae29845d728f4d02931665bf9ade9f56f0f557a449247f60e4caecf894",
+    "total_rows": 335,
+    "total_columns": 1050
+  },
+  "model_modality_audit": {
+    "reported_model_type": "Combined Multimodal (Microbiome Relative Abundance + Clinical/Demographic Covariates)",
+    "modalities_breakdown": {
+      "microbiome_derived_features_count": 940,
+      "clinical_covariates_count": 99,
+      "demographic_variables_count": 3,
+      "visit_variables_count": 1,
+      "other_metadata_count": 1,
+      "total_features_used": 1044
+    },
+    "pure_microbiome_comparison": {
+      "pure_microbiome_features_count": 940,
+      "full_held_out_73_accuracy": 0.726,
+      "full_held_out_73_roc_auc": 0.7619,
+      "comparison_note": "The original ADAM code utilized all 1,044 non-dropped columns combining 940 taxonomic relative abundances with 104 clinical/demographic covariates. BENCH_001 is now correctly labeled as Combined Multimodal."
+    }
+  },
+  "target_leakage_audit": {
+    "alzheimers_excluded": true,
+    "dementia_other_excluded": true,
+    "study_id_excluded": true,
+    "sample_id_excluded": true,
+    "date_sample_excluded": true,
+    "future_outcomes_present": false,
+    "leakage_status": "PASS_ZERO_TARGET_LEAKAGE",
+    "preprocessing_fitting_protocol": "Fitted strictly on 262 training samples only (median imputation, XGBoost model weights). Test samples (73 held-out) remained frozen."
+  },
+  "all_column_category_counts": {
+    "Identifier": 2,
+    "Date or visit variable": 2,
+    "Demographic variable": 4,
+    "Clinical covariate": 99,
+    "Other metadata": 1,
+    "Target or target-derived field": 2,
+    "Microbiome-derived feature": 940
+  },
+  "predictor_column_category_counts": {
+    "Date or visit variable": 1,
+    "Demographic variable": 3,
+    "Clinical covariate": 99,
+    "Other metadata": 1,
+    "Microbiome-derived feature": 940
+  },
+  "excluded_columns_count": 6,
+  "excluded_columns": [
+    "Sample ID",
+    "study_id",
+    "Date Sample",
+    "age",
+    "Alzheimers",
+    "Dementia Other"
+  ],
+  "predictor_columns_count": 1044,
+  "columns": [
+    {
+      "column_name": "Sample ID",
+      "exclusive_category": "identifier",
+      "included_in_model": false,
+      "exclusion_reason": "Participant or sample identifier"
+    },
+    {
+      "column_name": "study_id",
+      "exclusive_category": "identifier",
+      "included_in_model": false,
+      "exclusion_reason": "Participant or sample identifier"
+    },
+    {
+      "column_name": "day",
+      "exclusive_category": "date_visit",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Date Sample",
+      "exclusive_category": "date_visit",
+      "included_in_model": false,
+      "exclusion_reason": "Absolute calendar date - temporal leakage risk"
+    },
+    {
+      "column_name": "age",
+      "exclusive_category": "demographic",
+      "included_in_model": false,
+      "exclusion_reason": "Continuous age redundant with age_cat (binned)"
+    },
+    {
+      "column_name": "age_cat",
+      "exclusive_category": "demographic",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "male",
+      "exclusive_category": "demographic",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "abx6mo",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "hopsn",
+      "exclusive_category": "other_metadata",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "malnutrition_indicator_sco",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "clinical_frailty_scale",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "polypharm5",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "PPI",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "H2 Blocker",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Statins",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Atypical Antipsychotics",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "cholinesterase inhibitors",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Calcium-channel blockers",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dihydropyridine calcium-channel blockers",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Nonselective calcium-channel blockers",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Non-dihydropyridine calcium-channel blockers",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Beta blockers",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Nonselective beta blocker agents",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Beta-1 selective agents",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Beta-2 selective agents",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Beta-3 selective agents",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Beta-1 selective antagonist and Beta-3 agonist agents",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "SSRIs",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oral corticosteroids",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "NSAIDs",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Thyroid replacement hormones",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Injectable Insulin Medication",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oral Medications for Diabetes",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alpha-glucosidase inhibitors",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Biguanides",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dopamine agonist",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dipeptidyl peptidase-4 DPP-4 inhibitors",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Glucagon-like peptide-1 receptor agonists GLP-1 receptor agonists",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Meglitinides",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sodium-glucose transporter SGLT 2 inhibitors",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sulfonylureas",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Thiazolidinediones",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Angiotensin 2 receptor blockers",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anticoagulation",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Older Anticoags",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blocks Specific Factors",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Antiplatelet Medications",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Diuretics",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Thiazide diuretics",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Loop diuretics",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Potassium-sparing diuretics",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Probiotics",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus acidophilus solo",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus acidophilus combo",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus rhamnosus gg",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Saccharomyces boulardii lyo",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Seizure Medications",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "AMPA Receptor Antagonist",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Calcium Channel Modulators",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Carbonic Anhydrase Inhibitor",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Carboxamides",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GABA Analogs",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GABA Reuptake Inhibitors",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "K-Channel Opener",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "NMDA Receptor Blockers",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Succinimides",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sulfamate-Substitute Monosaccharides",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sulfonamides",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Valproic Acid",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Barbiturates",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Benzodiazepenes",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Chemotherapy Medication",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "ACE Inhibitors",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Antihistamines",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Nerve pain medication and antidepressants",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Antidepressants",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anti-inflammatory",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Immunosuppresive",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Vasodilators",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dopamine Promoters",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Antiviral",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bowel Surgery",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "COPD",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bronchitis",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Asthma",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "HTN",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "High Cholesterol",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Smoker (Past or Present))",
+      "exclusive_category": "demographic",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Myocardial infarction ",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Congestive heart failure",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peripheral Vascular disease",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Cerebrovascular disease: CVA with mild or no residua or TIA",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Chronic pulmonary disease",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Connective tissue disease",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptic ulcer disease",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mild liver disease",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Diabetes without end-organ damage ",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Stroke Hemiplegia",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Moderate or severe renal disease",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Diabetes with end-organ damage ",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Tumor without metastasis ",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Leukemia(acute or chronic)",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lymphoma",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Metastatic Cancer",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "AIDS ",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Severe Liver disease",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "ostomy",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alzheimers",
+      "exclusive_category": "target",
+      "included_in_model": false,
+      "exclusion_reason": "Binary classification target"
+    },
+    {
+      "column_name": "Dementia Other",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": false,
+      "exclusion_reason": "Non-AD dementia exclusion criterion (near-zero variance after cohort filtering)"
+    },
+    {
+      "column_name": "Parkinsons",
+      "exclusive_category": "clinical_covariate",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalibacterium prausnitzii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusicatenibacter saccharivorans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium siraeum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gemmiger formicilis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium rectale",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phocaeicola vulgatus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae bacterium WCA3 601 WT 6H",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes putredinis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AF15 49",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia wexlerae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium adolescentis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9758 SGB15368",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes onderdonkii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus bromii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Barnesiella intestinihominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coprococcus eutactus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia faecis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3341 SGB4420",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides uniformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Roseburia faecis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oscillibacter sp ER4",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Paraprevotella clara",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium longum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AF34 10BH",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phocaeicola massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus lactaris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parabacteroides distasonis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia obeum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides stercoris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9635 SGB15106",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides caccae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes shahii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AF36 4",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AM49 4BH",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dorea longicatena",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rikenellaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parabacteroides merdae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus torques",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Collinsella aerofaciens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia faecicola",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Agathobaculum butyriciproducens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3278 SGB4328",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium KLE1615",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospira sp NSJ 43",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parasutterella excrementihominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coprococcus comes",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium phoceensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phascolarctobacterium faecium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerostipes hadrus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospira SGB5076",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AF34 13",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AF20 17LB",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lacrimispora amygdalina",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacteriaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dysosmobacter welbionis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae unclassified SGB15260",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lacrimispora celerecrescens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Haemophilus parainfluenzae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Avimicrobium caecorum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9619 SGB15067",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coprococcus catus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerobutyricum hallii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Firmicutes bacterium AF16 15",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides fragilis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium fessum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Gastranaerophilales bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Akkermansia muciniphila",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AF27 2AA",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides xylanisolvens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides intestinalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes finegoldii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Roseburia hominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Adlercreutzia equolifaciens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium disporicum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus salivarius",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bilophila wadsworthia",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Roseburia intestinalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB4447",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eggerthellaceae unclassified SGB14341",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Odoribacter splanchnicus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Evtepia gabavorous",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9667 SGB15164",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9557 SGB14966",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes communis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides ovatus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerotignum faecicola",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides thetaiotaomicron",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB6276",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Veillonella dispar",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus thermophilus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Gastranaerophilales unclassified SGB8630",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudoruminococcus massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dorea formicigenerans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospira eligens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Erysipelotrichaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia sp AF19 10LB",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium ventriosum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9176 SGB14114",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Flavonifractor plautii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus bicirculans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae bacterium BX3",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3614 SGB4886",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AM22 11AC",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Roseburia inulinivorans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9620 SGB15068",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia SGB4815",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3523 SGB4703",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Turicibacter sanguinis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9818 SGB15459",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9347 SGB14313",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sellimonas intestinalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9623 SGB15076",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3746 SGB5089",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaeromassilibacillus sp An250",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiaceae bacterium OM08 6BH",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gordonibacter pamelaeae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus parasanguinis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9524 SGB14923",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia schinkii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Holdemania filiformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides cellulosilyticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalibacillus intestinalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB58158 SGB79798",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9632 SGB15089",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Pseudobutyricicoccus lothianensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Pseudoscilispira faecavium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes senegalensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Monoglobus pectinilyticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudoflavonifractor capillosus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes indistinctus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4585 SGB6340",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mediterraneibacter butyricigenes",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinimonas gabonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides eggerthii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3293 SGB4348",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Cibiobacter qucibialis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dialister invisus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB6317",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Duodenibacillus massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4599 SGB6362",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Collinsella phocaeensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes ihumii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rothia mucilaginosa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Veillonella atypica",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces sp ICM58",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces graevenitzii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Saccharibacteria unclassified SGB19850",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces sp ICM47",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium sulci",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lancefieldella parvula",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Solobacterium SGB6833",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus sp 263 SSPC",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Trueperella pyogenes",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus infantis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus sp A12",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus mitis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mogibacterium diversum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoanaerobaculum orale",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Neisseria subflava",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas pasteri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces sp S6 Spd3",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella oris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alloscardovia omnicolens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gemella sanguinis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella nigrescens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Veillonella parvula",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoanaerobaculum sp ICM7",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Nanoperiomorbus periodonticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Isoptericola variabilis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus oralis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Neisseria sicca",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Corynebacterium matruchotii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus sanguinis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oribacterium sinus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces dentalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rothia dentocariosa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lancefieldella rimae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus gordonii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella veroralis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinobaculum sp oral taxon 183",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella buccae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus anginosus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rothia aeria",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus gnavus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae unclassified SGB15234",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus sp NSJ 71",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalimonas umbilicata",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyrivibrio crossotus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3256 SGB4303",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eggerthellaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroidales unclassified SGB2135",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9623 SGB15075",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB4367",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Tyzzerella nexilis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9615 SGB15053",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9635 SGB15103",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sutterella SGB9281",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9602 SGB15031",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4249 SGB5749",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB14844",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium leptum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides finegoldii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Methanobrevibacter smithii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9361 SGB14336",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9634 SGB15093",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Erysipelatoclostridium ramosum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrio piger",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinibacter bartlettii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Massilistercora timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae unclassified SGB4894",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyricimonas paravirosa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia SGB4831",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3277 SGB4327",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruthenibacterium lactatiformans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptococcaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Neglecta timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9694 SGB15204",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium dentium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium paraputrificum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9512 SGB14909",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9551 SGB14958",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9522 SGB14921",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes inops",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9694 SGB15203",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinibacter SGB6139",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9342 SGB14306",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9699 SGB15216",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parabacteroides goldsteinii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Escherichia coli",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Senegalimassilia anaerobia",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae bacterium AM07 15",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3570 SGB4777",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroidales bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia SGB4805",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudoflavonifractor SGB15156",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Amedibacillus dolichus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium innocuum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Allisonella histaminiformans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9787 SGB15410",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6649 SGB9391",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerotruncus massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB45432 SGB63101",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Borkfalkia ceftriaxoniphila",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dorea sp AF24 7LB",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3478 SGB4643",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia sp MSK 20 85",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9730 SGB15291",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales unclassified SGB15145",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Catenibacillus scindens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Woodwardibium gallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium Marseille P2846",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterococcus faecium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AT4",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lawsonibacter sp NSJ 51",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacilli bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae bacterium OM04 12BH",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium ramulus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB66170",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Neochristensenella gallicola",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinimonas butyriciproducens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Romboutsia timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9707 SGB15229",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Klebsiella pneumoniae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3486 SGB4658",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae bacterium D5",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Cloacibacillus evryensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coprobacter fastidiosus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9614 SGB15049",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Limosilactobacillus fermentum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Roseburia sp AF02 12",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB45491 SGB63163",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB15402",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Angelakisella massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB36331 SGB53806",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinimonas massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiaceae unclassified SGB4769",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus gasseri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coprobacter secundus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Firmicutes bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB51441 SGB71759",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4739 SGB6564",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB29535 SGB42321",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dysosmobacter sp NSJ 60",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3571 SGB4778",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterobacter hormaechei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Flavonifractor sp An100",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oscillospiraceae bacterium NSJ 64",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mediterraneibacter massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Pararuminococcus gallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia sp OF03 15BH",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalibacterium SGB15346",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterocloster lavalensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9705 SGB15224",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parasutterella SGB9260",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9705 SGB15225",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9646 SGB15123",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3537 SGB4727",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Allobutyricicoccus pentlandensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudoflavonifractor sp An176",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gemmiger SGB15295",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gordonibacter urolithinfaciens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sutterella sp AM11 39",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenellaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oscillibacter sp NSJ 62",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB55957 SGB77276",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3677 SGB4990",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dorea sp AF36 15AT",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9694 SGB15201",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp AM33 3",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9621 SGB15073",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4456 SGB6141",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gemmiger SGB15299",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3733 SGB5066",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium bifidum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9677 SGB15180",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6612 SGB9346",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sutterella wadsworthensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Gastranaerophilales unclassified SGB8631",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrio legallii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae unclassified SGB15233",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalibacillus faecis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9608 SGB15041",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9631 SGB15087",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyricimonas virosa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9633 SGB15090",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9524 SGB14924",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides nordii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB4121",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Frisingicoccus SGB4674",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae unclassified SGB15236",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oxalobacter formigenes",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Collinsella stercoris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB2982 SGB3964",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9568 SGB14980",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium Choco116",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lentisphaeria bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sanguibacteroides justesenii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae bacterium NSJ 29",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9186 SGB14125",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium animalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lacticaseibacillus rhamnosus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9583 SGB15004",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lacticaseibacillus paracasei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eggerthella lenta",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerofilum sp BX8",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9291 SGB14248",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eisenbergiella tayi",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Hungatella hathewayi",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9423 SGB14792",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospira pectinoschiza",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Avimonas narfia",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9532 SGB14933",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9350 SGB14317",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3510 SGB4687",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB71281",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9768 SGB15386",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Catabacter hongkongensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterocloster bolteae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerotruncus colihominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Akkermansia sp KLE1605",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phocaeicola dorei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3433 SGB4573",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6613 SGB9347",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae unclassified SGB15265",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9523 SGB14922",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae unclassified SGB66069",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9739 SGB15313",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Cloacibacillus porcorum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium pseudocatenulatum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacilli unclassified SGB6571",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia argi",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3034 SGB4030",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6007 SGB8634",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia caecimuris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mediterraneibacter glycyrrhizinilyticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia producta",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia bacterium UC5 1 1E11",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroidaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterocloster clostridioformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia hydrogenotrophica",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3123 SGB4135",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Gallimonas faecium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eisenbergiella massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9530 SGB14930",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenella sp Marseille P3954",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9494 SGB14891",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterocloster citroniae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoclostridium sp An138",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterocloster aldensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB2980 SGB3962",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Holdemania sp Marseille P2844",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9537 SGB14940",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bittarella massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Massilioclostridium coli",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces SGB17154",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalicatena contorta",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactonifactor sp BIOML A6",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Massilimaliae timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenellaceae bacterium NSJ 53",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerotruncus rubiinfantis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenella timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia bacterium UC5 1 1D1",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerostipes caccae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rhodobacteraceae unclassified SGB53807",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9633 SGB15091",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9712 SGB15244",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coriobacteriia bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9059 SGB13976",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrio fairfieldensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6132 SGB8779",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9348 SGB14315",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Methanomassiliicoccus intestinalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides salyersiae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB45495 SGB63167",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Odoribacter laneus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Slackia isoflavoniconvertens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9237 SGB14179",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9695 SGB15209",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium maltosivorans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9677 SGB15179",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Methanosphaera stadtmanae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Microbacterium SGB53518",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus SGB4421",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia sp MSK 21 1",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes sp AF17 16",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Acidaminococcaceae unclassified SGB5785",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalicatena fissicatena",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Turicimonas muris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4566 SGB6305",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides clarus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium UBA1390",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Massilimicrobiota sp An134",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9631 SGB15085",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Marvinbryantia SGB4691",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3569 SGB4776",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parabacteroides johnsonii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Schneewindia gallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia bacterium 12CBH8",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus callidus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp Marseille P3244",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Allochristensenella caecavium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Victivallis vadensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1266 SGB1699",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phascolarctobacterium succinatutens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium sp AM28 29",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9581 SGB14999",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae unclassified SGB4924",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dorea phocaeensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces SGB17168",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus rubneri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oribacterium parvum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB12785 SGB19823",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Capnocytophaga gingivalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9640 SGB15115",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB38171 SGB72433",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Longibaculum muris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium symbiosum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3004 SGB3995",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium 1 7 47FAA",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phocea massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4239 SGB5731",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alistipes dispar",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parabacteroides gordonii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Longicatena caecimuris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Flavobacteriales bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrio desulfuricans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterocloster asparagiformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB5980 SGB8599",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia hansenii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Holdemania massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3606 SGB4870",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Massilimaliae massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia glucerasea",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Collinsella intestinalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Harryflintia acetispora",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9634 SGB15097",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9642 SGB15119",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB14951",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9454 SGB14846",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eggerthellaceae unclassified SGB14322",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3005 SGB3996",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Acidaminococcus intestini",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyricimonas SGB1783",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium breve",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium scindens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Agathobaculum desmolans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9574 SGB14987",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB36472 SGB47660",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerotignum lactatifermentans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB51510 SGB71883",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bariatricus massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB32463 SGB47515",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB58233 SGB79883",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Neobittarella massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudomonas aeruginosa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Merdimonas faecis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaeroglobus geminatus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusobacterium nucleatum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterococcus avium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Collinsella sp AF08 23",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Negativibacillus massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9580 SGB14998",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9644 SGB15121",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB51959 SGB72479",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyricimonas faecihominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella copri clade A",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Paralachnospira caecorum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia sp An249",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Emergencia sp 1XD21 50",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp chh4 2",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Cuneatibacter caecimuris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Emergencia timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1680 SGB2312",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Opitutales bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9288 SGB14243",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB14297",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales Family XIII bacterium WCA MUC 591 APC 4B",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9086 SGB14014",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Extibacter muris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Oscillibacter ruminantium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lawsonibacter sp NSJ 52",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium callanderi",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9695 SGB15210",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB6293",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiaceae bacterium NSJ 31",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Heteroclostridium caecigallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB33432 SGB47280",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinimonas timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiaceae bacterium NSJ 33",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides faecis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrionaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Frisingicoccus caecimuris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas SGB1977",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella buccalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium transplantifaecale",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudoflavonifractor sp Marseille P3106",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lacrimispora saccharolytica",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dielma fastidiosa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lautropia dentalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parvimonas micra",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus cristatus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus intermedius",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Corynebacterium durum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coprobacillus cateniformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinibacillus sp Marseille P6563",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB71368",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9581 SGB79823",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Heteroruminococcus faecigallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoclostridium sp An131",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium spiroforme",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas asaccharolytica",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoclostridium SGB4598",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactiplantibacillus plantarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Hydrogeniiclostidium mannosilyticum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB12785 SGB19825",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eikenella corrodens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB12788 SGB19831",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phocaeicola plebeius",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1153 SGB1481",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospira SGB5077",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae unclassified SGB4191",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae unclassified SGB4882",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Neoclostridium roslinense",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Avispirillum faecium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Klebsiella michiganensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterococcus gallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp NSJ 42",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9590 SGB15012",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB33516 SGB54347",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB58071 SGB79702",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces oris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas gingivalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus mutans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rikenellaceae unclassified SGB2230",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella hominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella copri clade B",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4266 SGB5809",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1420 SGB1957",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella sp P4 51",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyricimonas faecalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alphaproteobacteria bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Collinsella bouchesdurhonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalitalea cylindroides",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9239 SGB14181",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB781 SGB1024",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacilli unclassified SGB6473",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4491 SGB6188",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenella massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gemella haemolysans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Abiotrophia defectiva",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Slackia piriformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactococcus lactis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Nanosynsacchari sp TM7 ANC 38 39 G1 1",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "TM7 phylum sp oral taxon 348",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Neisseria elongata",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Granulicatella adiacens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces naeslundii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Olsenella sp oral taxon 807",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Olsenella profusa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9634 SGB15095",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella sp 885",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1495 SGB2071",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3463 SGB4621",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pyramidobacter piscolens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacteriaceae bacterium CHKCI004",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Citrobacter freundii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3817 SGB5182",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus johnsonii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9627 SGB15081",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB2983 SGB3965",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium SGB6179",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1662 SGB2276",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyricicoccus SGB14985",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Coprococcus sp AF21 14LB",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp SN20",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ligilactobacillus salivarius",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Scardovia wiggsiae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB12790 SGB19845",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Campylobacter gracilis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Citrobacter amalonaticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enorma SGB14753",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB2977 SGB3959",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9774 SGB15394",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1689 SGB2321",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Catenibacterium sp AM22 15",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9635 SGB15101",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB34228 SGB72916",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae bacterium OF09 6",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4482 SGB6177",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Weissella cibaria",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Akkermansia sp BIOML A40",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium sp AF15 50",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9501 SGB14898",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6601 SGB9333",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6606 SGB9340",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Megasphaera massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Raoultibacter timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenella minuta",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium sp AF34 35BH",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerofustis stercorihominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus gauvreauii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Slackia SGB14778",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Roseburia SGB4958",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia stercoris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mediterraneibacter sp gm002",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium hylemonae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Urmitella timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gardnerella vaginalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fannyhessea vaginae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella disiens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas SGB1980",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas somerae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Acholeplasmatales unclassified SGB6584",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB6376",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella pectinovora",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae unclassified SGB4425",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Phocaeicola coprocola",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacilli unclassified SGB6487",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Pseudoruminococcus merdavium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3892 SGB5290",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9695 SGB15211",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Parachristensenella avicola",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Geddesella stercoravicola",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9452 SGB14843",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4569 SGB6312",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4750 SGB6579",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Weissella confusa",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacilli unclassified SGB6422",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus delbrueckii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Collinsella tanakaei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusobacteriaceae unclassified SGB59307",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9580 SGB14996",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella bivia",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fournierella massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Massilicoli timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB41458 SGB58520",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Morganella morganii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3118 SGB4130",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB51960 SGB72480",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudomonas fragi",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1691 SGB2323",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Butyricimonas sp Marseille P3923",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3490 SGB4664",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides congonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Erysipelotrichaceae bacterium 3 1 53",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium methylpentosum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9730 SGB15290",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9303 SGB14264",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium perfringens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3385 SGB4472",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus lutetiensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enorma massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Terrisporobacter othiniensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterococcus faecalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnospiraceae bacterium 2 1 46FAA",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoclostridium edouardi",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eggerthella sp YY7918",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Alloscillospira gallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales unclassified SGB15150",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Metaruminococcus gallistercoris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium pullorum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Corynebacterium argentoratense",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3424 SGB4551",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium scardovii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium jeddahense",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia hominis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB25063 SGB36986",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas sp HMSC065F10",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridioides difficile",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium Marseille P5551",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoclostridium phocaeense",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptacetobacter hiranonis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusobacteriaceae unclassified SGB6035",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusobacterium mortiferum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Megasphaera sp AM44 1BH",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4277 SGB5832",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Firmicutes bacterium AM41 11",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Hafnia paralvei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Limosilactobacillus reuteri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1681 SGB2313",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptococcus niger",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB39918 SGB47522",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pygmaiobacter massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Selenomonadales bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dysgonomonas gadei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Erysipelatoclostridium sp An15",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrio intestinalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp OM07 10AC",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3532 SGB4720",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Metalachnospira gallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9052 SGB13957",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9694 SGB15207",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Massilimicrobiota timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Parabacteroides faecis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Traorella massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9610 SGB15045",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Faecalicatena orotica",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Nanosynbacter lyticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9209 SGB14148",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eisenbergiella sp OF01 20",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus gallolyticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Saccharomyces cerevisiae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Megamonas funiformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium catenulatum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pediococcus acidilactici",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB42389 SGB59559",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus acidophilus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium SGB4751",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3583 SGB4799",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcus sp JE7A12",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1235 SGB1614",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mesosutterella multiformis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1456 SGB2019",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1455 SGB2018",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fenollaria massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusobacterium naviforme",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Klebsiella grimontii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1407 SGB1930",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1227 SGB1600",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1621 SGB2219",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1219 SGB1587",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Synergistaceae bacterium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rikenellaceae unclassified SGB2181",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridia unclassified SGB6369",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus sobrinus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus crispatus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella stercorea",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusobacterium ulcerans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterococcus durans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB38987 SGB63305",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enteroscipio rubneri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gemella morbillorum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dialister pneumosintes",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus constellatus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenella sp AF73 05CM02",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Leuconostoc mesenteroides",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3678 SGB4991",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB29668 SGB42476",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB48169 SGB66172",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lachnoclostridium sp An118",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9101 SGB14033",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB18381 SGB27144",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces johnsonii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales Family XIII Incertae Sedis unclassified SGB3978",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Timburyella stercoris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB27776 SGB40190",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB27872 SGB40306",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenellaceae bacterium NSJ 44",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterococcus casseliflavus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrio sp 86",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1631 SGB2239",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus pontis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Limosilactobacillus oris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Intestinibacillus massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces israelii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus vaginalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Proteus mirabilis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9668 SGB15165",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Klebsiella oxytoca",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Methanomassiliicoccaceae archaeon DOK",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Cellulosilyticum lentocellum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Murimonas intestini",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Methanobrevibacter arboriphilus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sp C5 48",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9716 SGB15269",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Kytococcus sedentarius",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1215 SGB1581",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella copri clade D",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB6565 SGB9274",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Alangreenwoodia gallinarii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiaceae bacterium DONG20 135",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9480 SGB14875",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB28645 SGB41268",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudomonas fluorescens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1380 SGB1883",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Agathobaculum sp Marseille P7918",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacilliculturomica massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Varibaculum SGB15480",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fusobacterium varium",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9270 SGB14221",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Streptococcus agalactiae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella bergensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Robinsoniella peoriensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium saccharogumia",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB8965 SGB13825",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1109 SGB1423",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactococcus petauri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium limosum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Heritagella gallinarum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Megasphaera sp MJR8396C",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Christensenella sp NSJ 35",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces gerencseriae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Olsenella uli",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Finegoldia magna",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonas bennonis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptoniphilus lacrimalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridiales bacterium S5 A14a",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerococcus obesiensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Campylobacter ureolyticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Schaalia turicensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerocolumna aminovalerica",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Megasphaera hexanoica",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9603 SGB15035",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Colibacter massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella oralis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Saccharibacteria bacterium oral taxon 955",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candida albicans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Eubacterium infirmum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB12790 SGB19844",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Staphylococcus aureus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Mogibacterium timidum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Desulfovibrio sp OH1186 COT 070",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Cutibacterium acnes",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Dysgonomonas mossii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Thermus thermophilus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anoxybacillus flavithermus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Geobacillus stearothermophilus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptostreptococcus anaerobius",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lawsonella SGB3665",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fenollaria timonensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Porphyromonadaceae bacterium FC4",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Alterileibacterium massiliense",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Atopobium deltae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lentilactobacillus parabuchneri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacillus thermoamylovorans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium sporosphaeroides",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptoniphilus grossensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lawsonella clevelandensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces ihuae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9045 SGB13947",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB28990 SGB41704",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB27930 SGB40369",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB28779 SGB41432",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Aggregatibacter aphrophilus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB12785 SGB19827",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB26772 SGB38957",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Prevotella colorans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Terrisporobacter mayombei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Blautia sp An81",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Xanthomonas campestris",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bacteroides acidifaciens",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4733 SGB6557",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Lactobacillus ultunensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Clostridium cocleatum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB35456 SGB47582",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Alloruminococcus vanvlietii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Aerococcus urinae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinotignum timonense",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptoniphilus harei",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Anaerococcus lactolyticus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ralstonia pickettii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB46116 SGB63877",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1617 SGB2214",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Enterococcus raffinosus",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4579 SGB6329",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Sneathia amnii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1246 SGB1667",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1267 SGB1701",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB1250 SGB1672",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3859 SGB5234",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB4672 SGB6461",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ruminococcaceae bacterium Marseille P2935",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Atopobium sp oral taxon 199",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB31184 SGB44478",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3664 SGB4976",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9729 SGB15288",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Citrobacter murliniae",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Varibaculum cambriense",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptoniphilus duerdenii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Peptoniphilus pacaensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Veillonella seminalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Gleimia europaea",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Paenibacillus antibioticophila",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candidatus Stoquefichus sp SB1",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Rahnella variigena",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Pseudomonas lurida",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Acinetobacter albensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB24853 SGB36753",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ezakiella SGB6726",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB2945 SGB3918",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB9674 SGB15173",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Aerococcus sp HMSC035B07",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces oricola",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Citrobacter werkmanii",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Bifidobacterium angulatum",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Fructilactobacillus fructivorans",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Schaalia meyeri",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Ndongobacter massiliensis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Actinomyces radicidentis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "Candida tropicalis",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    },
+    {
+      "column_name": "GGB3297 SGB4356",
+      "exclusive_category": "microbiome_derived",
+      "included_in_model": true,
+      "exclusion_reason": null
+    }
+  ],
+  "column_summary": {
+    "total_columns": 1050,
+    "microbiome_derived": 940,
+    "clinical_covariate_included": 99,
+    "clinical_covariate_excluded": 1,
+    "demographic_included": 3,
+    "demographic_excluded": 1,
+    "identifier_excluded": 2,
+    "date_visit_included": 1,
+    "date_visit_excluded": 1,
+    "target_excluded": 1,
+    "other_metadata_included": 1,
+    "total_included_predictor_columns": 1044,
+    "total_excluded_columns": 6
+  }
+}

@@ -1,0 +1,2549 @@
+{
+  "manifest_name": "BENCH_001 Subject-Level Split Reproducibility and Sample Accounting Manifest",
+  "timestamp": "2026-10-13T11:25:00Z",
+  "split_specification": {
+    "split_api": "sklearn.model_selection.train_test_split",
+    "grouping_key": "study_id",
+    "target_variable": "Alzheimers",
+    "diagnosis_stratification_method": "Aggregated subject-level diagnosis (max of Alzheimers per study_id)",
+    "random_state": 42,
+    "test_size": 0.2,
+    "zero_participant_leakage_verified": true,
+    "participant_overlap_count": 0
+  },
+  "subject_accounting": {
+    "total_unique_subjects": 102,
+    "train_unique_subjects": 81,
+    "test_unique_subjects": 21,
+    "train_subject_diagnosis_distribution": {
+      "Control (0)": 51,
+      "Alzheimers (1)": 30
+    },
+    "test_subject_diagnosis_distribution": {
+      "Control (0)": 13,
+      "Alzheimers (1)": 8
+    }
+  },
+  "sample_accounting": {
+    "total_samples_accounted": 335,
+    "train_samples": 262,
+    "train_samples_distribution": {
+      "Control (0)": 178,
+      "Alzheimers (1)": 84
+    },
+    "held_out_test_samples_total": 73,
+    "held_out_test_samples_distribution": {
+      "Control (0)": 47,
+      "Alzheimers (1)": 26
+    },
+    "held_out_test_balanced_subset": 30,
+    "held_out_test_balanced_subset_distribution": {
+      "Control (0)": 15,
+      "Alzheimers (1)": 15
+    },
+    "held_out_test_balanced_subset_participants_represented": 16,
+    "held_out_test_unbalanced_remainder": 43,
+    "held_out_test_unbalanced_remainder_distribution": {
+      "Control (0)": 32,
+      "Alzheimers (1)": 11
+    },
+    "held_out_test_unbalanced_remainder_participants_represented": 16,
+    "disclosure_note": "The 43 samples designated HELD_OUT_TEST_UNBALANCED_REMAINDER belong to the SAME 21 held-out test subjects and do NOT constitute an independent validation cohort."
+  },
+  "test_subjects_sample_contributions": [
+    {
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "total_samples": 12,
+      "samples_in_balanced_30": 4,
+      "samples_in_remainder_43": 8
+    },
+    {
+      "study_id": "CH1-020",
+      "alzheimers": 0,
+      "total_samples": 4,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 3
+    },
+    {
+      "study_id": "CH1-032",
+      "alzheimers": 0,
+      "total_samples": 1,
+      "samples_in_balanced_30": 0,
+      "samples_in_remainder_43": 1
+    },
+    {
+      "study_id": "CH1-037",
+      "alzheimers": 1,
+      "total_samples": 2,
+      "samples_in_balanced_30": 2,
+      "samples_in_remainder_43": 0
+    },
+    {
+      "study_id": "CH1-046",
+      "alzheimers": 1,
+      "total_samples": 4,
+      "samples_in_balanced_30": 4,
+      "samples_in_remainder_43": 0
+    },
+    {
+      "study_id": "CH1-052",
+      "alzheimers": 0,
+      "total_samples": 2,
+      "samples_in_balanced_30": 0,
+      "samples_in_remainder_43": 2
+    },
+    {
+      "study_id": "CH1-060",
+      "alzheimers": 0,
+      "total_samples": 4,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 3
+    },
+    {
+      "study_id": "CH1-065",
+      "alzheimers": 1,
+      "total_samples": 1,
+      "samples_in_balanced_30": 0,
+      "samples_in_remainder_43": 1
+    },
+    {
+      "study_id": "CH1-073",
+      "alzheimers": 0,
+      "total_samples": 1,
+      "samples_in_balanced_30": 0,
+      "samples_in_remainder_43": 1
+    },
+    {
+      "study_id": "CH1-085",
+      "alzheimers": 0,
+      "total_samples": 1,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 0
+    },
+    {
+      "study_id": "CH1-096",
+      "alzheimers": 1,
+      "total_samples": 4,
+      "samples_in_balanced_30": 2,
+      "samples_in_remainder_43": 2
+    },
+    {
+      "study_id": "CH1-108",
+      "alzheimers": 0,
+      "total_samples": 2,
+      "samples_in_balanced_30": 2,
+      "samples_in_remainder_43": 0
+    },
+    {
+      "study_id": "CH1-110",
+      "alzheimers": 1,
+      "total_samples": 5,
+      "samples_in_balanced_30": 4,
+      "samples_in_remainder_43": 1
+    },
+    {
+      "study_id": "CH1-129",
+      "alzheimers": 0,
+      "total_samples": 1,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 0
+    },
+    {
+      "study_id": "CH1-134",
+      "alzheimers": 1,
+      "total_samples": 4,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 3
+    },
+    {
+      "study_id": "CH1-145",
+      "alzheimers": 1,
+      "total_samples": 4,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 3
+    },
+    {
+      "study_id": "CH1-152",
+      "alzheimers": 0,
+      "total_samples": 1,
+      "samples_in_balanced_30": 0,
+      "samples_in_remainder_43": 1
+    },
+    {
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "total_samples": 8,
+      "samples_in_balanced_30": 2,
+      "samples_in_remainder_43": 6
+    },
+    {
+      "study_id": "CH1-177",
+      "alzheimers": 0,
+      "total_samples": 4,
+      "samples_in_balanced_30": 2,
+      "samples_in_remainder_43": 2
+    },
+    {
+      "study_id": "CH1-205",
+      "alzheimers": 1,
+      "total_samples": 2,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 1
+    },
+    {
+      "study_id": "CH3-010",
+      "alzheimers": 0,
+      "total_samples": 6,
+      "samples_in_balanced_30": 1,
+      "samples_in_remainder_43": 5
+    }
+  ],
+  "sample_level_manifest": [
+    {
+      "sample_id": "DC071",
+      "study_id": "CH1-002",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC013",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC019",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC014",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC015",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC016",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC017",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC018",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC020",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC021",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC022",
+      "study_id": "CH1-003",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC072",
+      "study_id": "CH1-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC073",
+      "study_id": "CH1-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC075",
+      "study_id": "CH1-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC074",
+      "study_id": "CH1-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC076",
+      "study_id": "CH1-005",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC077",
+      "study_id": "CH1-005",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC079",
+      "study_id": "CH1-005",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB002",
+      "study_id": "CH1-005",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC028",
+      "study_id": "CH1-006",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC045",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC046",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC047",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC048",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC049",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC050",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC051",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC052",
+      "study_id": "CH1-007",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC024",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC025",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC026",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC027",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC029",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC030",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC031",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC032",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC033",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC034",
+      "study_id": "CH1-009",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC054",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC055",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC056",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC057",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "DC058",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "DC059",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC060",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "DC061",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC062",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "DC063",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC064",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB003",
+      "study_id": "CH1-011",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC001",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC002",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC003",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC004",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC005",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC006",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC007",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC008",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC009",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC010",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC011",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC012",
+      "study_id": "CH1-017",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC080",
+      "study_id": "CH1-018",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC081",
+      "study_id": "CH1-018",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC082",
+      "study_id": "CH1-018",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC083",
+      "study_id": "CH1-018",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC084",
+      "study_id": "CH1-019",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC085",
+      "study_id": "CH1-019",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC086",
+      "study_id": "CH1-019",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC087",
+      "study_id": "CH1-019",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC088",
+      "study_id": "CH1-020",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "DC089",
+      "study_id": "CH1-020",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC090",
+      "study_id": "CH1-020",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC091",
+      "study_id": "CH1-020",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "DC092",
+      "study_id": "CH1-022",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC093",
+      "study_id": "CH1-024",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC094",
+      "study_id": "CH1-024",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB211",
+      "study_id": "CH1-024",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC095",
+      "study_id": "CH1-025",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC096",
+      "study_id": "CH1-025",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB014",
+      "study_id": "CH1-032",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB034",
+      "study_id": "CH1-036",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB015",
+      "study_id": "CH1-036",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB041",
+      "study_id": "CH1-036",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB064",
+      "study_id": "CH1-036",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC099",
+      "study_id": "CH1-037",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB004",
+      "study_id": "CH1-037",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "DC102",
+      "study_id": "CH1-040",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB026",
+      "study_id": "CH1-040",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB009",
+      "study_id": "CH1-045",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB033",
+      "study_id": "CH1-045",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB040",
+      "study_id": "CH1-045",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB061",
+      "study_id": "CH1-045",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB031",
+      "study_id": "CH1-046",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB037",
+      "study_id": "CH1-046",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB076",
+      "study_id": "CH1-046",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB079",
+      "study_id": "CH1-046",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB049",
+      "study_id": "CH1-051",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB074",
+      "study_id": "CH1-051",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB039",
+      "study_id": "CH1-052",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB063",
+      "study_id": "CH1-052",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB036",
+      "study_id": "CH1-053",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB018",
+      "study_id": "CH1-060",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB072",
+      "study_id": "CH1-060",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB077",
+      "study_id": "CH1-060",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB082",
+      "study_id": "CH1-060",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB054",
+      "study_id": "CH1-063",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB043",
+      "study_id": "CH1-065",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB053",
+      "study_id": "CH1-067",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB048",
+      "study_id": "CH1-073",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB058",
+      "study_id": "CH1-085",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB062",
+      "study_id": "CH1-088",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB144",
+      "study_id": "CH1-088",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB146",
+      "study_id": "CH1-088",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB199",
+      "study_id": "CH1-088",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB088",
+      "study_id": "CH1-091",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB110",
+      "study_id": "CH1-091",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB143",
+      "study_id": "CH1-091",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB150",
+      "study_id": "CH1-091",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB206",
+      "study_id": "CH1-091",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB059",
+      "study_id": "CH1-093",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB163",
+      "study_id": "CH1-093",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB194",
+      "study_id": "CH1-093",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB057",
+      "study_id": "CH1-096",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB109",
+      "study_id": "CH1-096",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB161",
+      "study_id": "CH1-096",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB158",
+      "study_id": "CH1-096",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB084",
+      "study_id": "CH1-097",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB125",
+      "study_id": "CH1-097",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB108",
+      "study_id": "CH1-097",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB147",
+      "study_id": "CH1-097",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB176",
+      "study_id": "CH1-097",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB099",
+      "study_id": "CH1-098",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB116",
+      "study_id": "CH1-098",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB091",
+      "study_id": "CH1-102",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB086",
+      "study_id": "CH1-104",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB096",
+      "study_id": "CH1-104",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB131",
+      "study_id": "CH1-104",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB130",
+      "study_id": "CH1-104",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB201",
+      "study_id": "CH1-104",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB095",
+      "study_id": "CH1-106",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB135",
+      "study_id": "CH1-106",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB119",
+      "study_id": "CH1-106",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB193",
+      "study_id": "CH1-106",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB089",
+      "study_id": "CH1-107",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB124",
+      "study_id": "CH1-107",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB128",
+      "study_id": "CH1-107",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB180",
+      "study_id": "CH1-107",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB094",
+      "study_id": "CH1-108",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB118",
+      "study_id": "CH1-108",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB126",
+      "study_id": "CH1-109",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB087",
+      "study_id": "CH1-110",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB121",
+      "study_id": "CH1-110",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB151",
+      "study_id": "CH1-110",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB178",
+      "study_id": "CH1-110",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB177",
+      "study_id": "CH1-110",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB132",
+      "study_id": "CH1-111",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB113",
+      "study_id": "CH1-111",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB175",
+      "study_id": "CH1-111",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB152",
+      "study_id": "CH1-111",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB100",
+      "study_id": "CH1-112",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB112",
+      "study_id": "CH1-112",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB164",
+      "study_id": "CH1-112",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB145",
+      "study_id": "CH1-112",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB105",
+      "study_id": "CH1-113",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB133",
+      "study_id": "CH1-113",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB173",
+      "study_id": "CH1-113",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB170",
+      "study_id": "CH1-113",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB104",
+      "study_id": "CH1-114",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB140",
+      "study_id": "CH1-114",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB168",
+      "study_id": "CH1-114",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB155",
+      "study_id": "CH1-114",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB103",
+      "study_id": "CH1-115",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB134",
+      "study_id": "CH1-115",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB174",
+      "study_id": "CH1-115",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB156",
+      "study_id": "CH1-115",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB106",
+      "study_id": "CH1-118",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB111",
+      "study_id": "CH1-118",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB166",
+      "study_id": "CH1-118",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB167",
+      "study_id": "CH1-118",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB097",
+      "study_id": "CH1-119",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB137",
+      "study_id": "CH1-119",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB169",
+      "study_id": "CH1-119",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB159",
+      "study_id": "CH1-119",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB139",
+      "study_id": "CH1-120",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB114",
+      "study_id": "CH1-120",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB171",
+      "study_id": "CH1-120",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB165",
+      "study_id": "CH1-120",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB232",
+      "study_id": "CH1-126",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB227",
+      "study_id": "CH1-129",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB224",
+      "study_id": "CH1-131",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB220",
+      "study_id": "CH1-132",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB221",
+      "study_id": "CH1-132",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB253",
+      "study_id": "CH1-132",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB267",
+      "study_id": "CH1-132",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB225",
+      "study_id": "CH1-134",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB247",
+      "study_id": "CH1-134",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB242",
+      "study_id": "CH1-134",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB275",
+      "study_id": "CH1-134",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB217",
+      "study_id": "CH1-135",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB223",
+      "study_id": "CH1-136",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB219",
+      "study_id": "CH1-137",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB244",
+      "study_id": "CH1-137",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB229",
+      "study_id": "CH1-138",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB246",
+      "study_id": "CH1-138",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB255",
+      "study_id": "CH1-138",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB280",
+      "study_id": "CH1-138",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB306",
+      "study_id": "CH1-142",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB237",
+      "study_id": "CH1-142",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB262",
+      "study_id": "CH1-142",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB190",
+      "study_id": "CH1-142",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB290",
+      "study_id": "CH1-142",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB196",
+      "study_id": "CH1-144",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB192",
+      "study_id": "CH1-145",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB213",
+      "study_id": "CH1-145",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB266",
+      "study_id": "CH1-145",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB302",
+      "study_id": "CH1-145",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB207",
+      "study_id": "CH1-147",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB276",
+      "study_id": "CH1-149",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB334",
+      "study_id": "CH1-149",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB423",
+      "study_id": "CH1-149",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB424",
+      "study_id": "CH1-149",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB240",
+      "study_id": "CH1-152",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB314",
+      "study_id": "CH1-153",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB435",
+      "study_id": "CH1-153",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB437",
+      "study_id": "CH1-153",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB353",
+      "study_id": "CH1-153",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB409",
+      "study_id": "CH1-154",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB413",
+      "study_id": "CH1-154",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB320",
+      "study_id": "CH1-154",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB311",
+      "study_id": "CH1-154?",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB285",
+      "study_id": "CH1-155",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB356",
+      "study_id": "CH1-155",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB410",
+      "study_id": "CH1-155",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB312",
+      "study_id": "CH1-158",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB399",
+      "study_id": "CH1-158",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB400",
+      "study_id": "CH1-158",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB315",
+      "study_id": "CH1-159",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB307",
+      "study_id": "CH1-159",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB398",
+      "study_id": "CH1-159",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB393",
+      "study_id": "CH1-159",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB420",
+      "study_id": "CH1-159",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB408",
+      "study_id": "CH1-163",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB412",
+      "study_id": "CH1-163",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB439",
+      "study_id": "CH1-163",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB239",
+      "study_id": "CH1-165",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB344",
+      "study_id": "CH1-165",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB310",
+      "study_id": "CH1-165",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB394",
+      "study_id": "CH1-165",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB331",
+      "study_id": "CH1-168",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB316",
+      "study_id": "CH1-168",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB259",
+      "study_id": "CH1-169",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB282",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB313",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB321",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB319",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB354",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB402",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB404",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB438",
+      "study_id": "CH1-172",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB277",
+      "study_id": "CH1-173",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB325",
+      "study_id": "CH1-173",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB355",
+      "study_id": "CH1-173",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB422",
+      "study_id": "CH1-173",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB414",
+      "study_id": "CH1-173",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB323",
+      "study_id": "CH1-173",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB308",
+      "study_id": "CH1-174",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB357",
+      "study_id": "CH1-174",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB301",
+      "study_id": "CH1-174",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB295",
+      "study_id": "CH1-175",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB350",
+      "study_id": "CH1-175",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB361",
+      "study_id": "CH1-175",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB385",
+      "study_id": "CH1-175",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB348",
+      "study_id": "CH1-177",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB351",
+      "study_id": "CH1-177",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB448",
+      "study_id": "CH1-177",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB367",
+      "study_id": "CH1-177",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB345",
+      "study_id": "CH1-178",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB441",
+      "study_id": "CH1-178",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB383",
+      "study_id": "CH1-178",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB291",
+      "study_id": "CH1-178 ",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB294",
+      "study_id": "CH1-179",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB370",
+      "study_id": "CH1-179",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB443",
+      "study_id": "CH1-179",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB444",
+      "study_id": "CH1-179",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB299",
+      "study_id": "CH1-182",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB347",
+      "study_id": "CH1-182",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB359",
+      "study_id": "CH1-182",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB369",
+      "study_id": "CH1-182",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB300",
+      "study_id": "CH1-184",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB360",
+      "study_id": "CH1-184",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB384",
+      "study_id": "CH1-184",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB318",
+      "study_id": "CH1-184",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB340",
+      "study_id": "CH1-190",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB430",
+      "study_id": "CH1-190",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB338",
+      "study_id": "CH1-192",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB341",
+      "study_id": "CH1-196",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB376",
+      "study_id": "CH1-197",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB389",
+      "study_id": "CH1-197",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB363",
+      "study_id": "CH1-198",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB390",
+      "study_id": "CH1-198",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB379",
+      "study_id": "CH1-198",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB375",
+      "study_id": "CH1-199",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB391",
+      "study_id": "CH1-199",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB380",
+      "study_id": "CH1-199",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB374",
+      "study_id": "CH1-203",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB371",
+      "study_id": "CH1-203",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB386",
+      "study_id": "CH1-205",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB382",
+      "study_id": "CH1-205",
+      "alzheimers": 1,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB332",
+      "study_id": "CH1BL-01",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB418",
+      "study_id": "CH1BL-07",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB427",
+      "study_id": "CH1BL-07",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB411",
+      "study_id": "CH1BR-11",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB446",
+      "study_id": "CH1BR-11",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB336",
+      "study_id": "CH1BR-15",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB442",
+      "study_id": "CH1BR-15",
+      "alzheimers": 1,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB432",
+      "study_id": "CH2-01",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB433",
+      "study_id": "CH2-01",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB445",
+      "study_id": "CH2-02",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC035",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC036",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC037",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC038",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC039",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC040",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC041",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC042",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC043",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "DC044",
+      "study_id": "CH3-004",
+      "alzheimers": 0,
+      "primary_partition": "TRAIN",
+      "sub_partition": "TRAIN"
+    },
+    {
+      "sample_id": "FB186",
+      "study_id": "CH3-010",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB187",
+      "study_id": "CH3-010",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB188",
+      "study_id": "CH3-010",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_BALANCED_SUBSET"
+    },
+    {
+      "sample_id": "FB185",
+      "study_id": "CH3-010",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB200",
+      "study_id": "CH3-010",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    },
+    {
+      "sample_id": "FB204",
+      "study_id": "CH3-010",
+      "alzheimers": 0,
+      "primary_partition": "HELD_OUT_TEST",
+      "sub_partition": "HELD_OUT_TEST_UNBALANCED_REMAINDER"
+    }
+  ]
+}
