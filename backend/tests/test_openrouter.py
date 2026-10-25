@@ -34,13 +34,13 @@ def test_openrouter_client_lazy_init():
 def test_openrouter_client_headers():
     """Verify OpenRouterClient adds HTTP-Referer, X-Title, and Authorization headers."""
     client = OpenRouterClient(
-        api_key="sk-or-v1-testkey12345",
+        api_key="mock-openrouter-key-12345",
         app_name="ADAM-1 Test App",
         site_url="https://adam-test.example.com",
     )
     assert client.is_available
     headers = client._get_headers()
-    assert headers["Authorization"] == "Bearer sk-or-v1-testkey12345"
+    assert headers["Authorization"] == "Bearer mock-openrouter-key-12345"
     assert headers["HTTP-Referer"] == "https://adam-test.example.com"
     assert headers["X-Title"] == "ADAM-1 Test App"
     assert headers["Content-Type"] == "application/json"
@@ -48,7 +48,7 @@ def test_openrouter_client_headers():
 
 def test_openrouter_client_success_mock():
     """Verify chat_completion correctly parses choices, usage, and telemetry on 200 OK."""
-    client = OpenRouterClient(api_key="sk-or-v1-testkey12345")
+    client = OpenRouterClient(api_key="mock-openrouter-key-12345")
 
     mock_resp = MagicMock()
     mock_resp.status_code = 200
