@@ -14,24 +14,18 @@ ADAM-1 Enhanced is a production-quality, full-stack research platform built on t
 
 ### Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    React Frontend                        │
-│              (Vite + Tailwind CSS)                       │
-│           http://localhost:5173 (dev)                    │
-└──────────────────────┬──────────────────────────────────┘
-                       │ REST API
-┌──────────────────────▼──────────────────────────────────┐
-│                  FastAPI Backend                          │
-│              http://localhost:8000                       │
-│   /api/health   /api/datasets   /api/ml/predict          │
-│   /api/ml/shap  /api/ai/chat    /api/ai/agent/execute    │
-└──────────────────────┬──────────────────────────────────┘
-                       │ SQLAlchemy (asyncpg)
-┌──────────────────────▼──────────────────────────────────┐
-│          PostgreSQL 16 + pgvector extension              │
-│                  localhost:5432                          │
-└─────────────────────────────────────────────────────────┘
+```mermaid
+graph TD
+    UI["React 18 Frontend<br/>(Vite + Tailwind CSS + Lucide)"]
+    API["FastAPI Backend<br/>(Python 3.11 + Uvicorn)"]
+    DB[("PostgreSQL 16 + pgvector<br/>(SQLAlchemy + asyncpg)")]
+    ML["Bioinformatics ML Engine<br/>(XGBoost + TreeSHAP Attributions)"]
+    AIRA["AIRA Multi-Agent Framework<br/>(Literature RAG + PubMed Vectors)"]
+
+    UI -->|REST API / Async HTTP| API
+    API -->|asyncpg ORM| DB
+    API -->|Biomarker Inference & Force Plots| ML
+    API -->|Semantic Retrieval & Reasoning| AIRA
 ```
 
 ---
@@ -170,6 +164,24 @@ Full interactive API docs: `http://localhost:8000/docs` (Swagger UI)
 | **Research Assistant** | `/assistant` | ✅ Complete | Phase 4 |
 | **Literature / RAG** | `/literature` | ✅ Complete | Phase 4 |
 | **AI Agents** | `/agents` | ✅ Complete | Phase 4 |
+
+---
+
+## 🧪 Automated Test Suite & Verification
+
+The platform backend includes 12 automated pytest suites validating API endpoints, ML inference, longitudinal data integrity, and PubMed vector retrieval:
+
+```bash
+cd backend
+pytest tests/ -v
+```
+
+### Verified Test Areas:
+- **`tests/test_trajectory.py`**: Zero subject-leakage validation, trajectory slopes, and longitudinal observation grouping.
+- **`tests/test_api.py` & `test_system_info.py`**: Health checks, runtime system metadata, and CORS policy enforcement.
+- **`tests/test_openrouter.py`**: Multi-agent LLM client headers, failover handling, and mock response telemetry parsing.
+- **`tests/test_pubmed.py`**: PubMed vector search and literature RAG grounding.
+- **`tests/test_agent.py`**: 3-Tier AIRA multi-agent execution pipeline.
 
 ---
 
