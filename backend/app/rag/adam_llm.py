@@ -21,6 +21,8 @@ Implements the multi-agent LLM reasoning pipeline specified by the ADAM-1 paper:
 from __future__ import annotations
 
 import hashlib
+import tempfile
+import threading
 import json
 import os
 import re
@@ -147,10 +149,11 @@ class AdamClassificationResult:
 # ---------------------------------------------------------------------------
 
 _AGENT_CACHE_FILE = os.path.join(
-    os.path.dirname(__file__), "..", "..", "saved_models", "adam_agent_cache.json"
+    os.path.dirname(__file__), "..", "..", "saved_models", "adam_agent_runtime_v2.json"
 )
 _AGENT_CACHE: Dict[str, Dict[str, Any]] = {}
 _CACHE_LOADED = False
+_AGENT_CACHE_LOCK = threading.RLock()
 
 
 def _get_agent_cache() -> Dict[str, Dict[str, Any]]:
@@ -168,12 +171,19 @@ def _get_agent_cache() -> Dict[str, Dict[str, Any]]:
 
 
 def _persist_agent_cache() -> None:
+    temporary = None
     try:
-        os.makedirs(os.path.dirname(_AGENT_CACHE_FILE), exist_ok=True)
-        with open(_AGENT_CACHE_FILE, "w", encoding="utf-8") as f:
-            json.dump(_AGENT_CACHE, f, indent=2)
-    except Exception as e:
-        logger.warning("Could not persist agent cache to disk", error=str(e))
+        with _AGENT_CACHE_LOCK:
+            os.makedirs(os.path.dirname(_AGENT_CACHE_FILE), exist_ok=True)
+            fd, temporary = tempfile.mkstemp(dir=os.path.dirname(_AGENT_CACHE_FILE), suffix=".tmp")
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                json.dump(_AGENT_CACHE, handle, allow_nan=False)
+            os.replace(temporary, _AGENT_CACHE_FILE)
+    except Exception as exc:
+        logger.warning("Could not persist agent cache", error=str(exc))
+    finally:
+        if temporary and os.path.exists(temporary):
+            os.unlink(temporary)
 
 
 def get_cached_agent_result(cache_key: str) -> Optional[Dict[str, Any]]:
@@ -193,20 +203,23 @@ def get_cached_agent_result(cache_key: str) -> Optional[Dict[str, Any]]:
 
 
 def set_cached_agent_result(cache_key: str, data: Dict[str, Any]) -> None:
-    cache = _get_agent_cache()
-    if isinstance(data, dict):
-        data_copy = dict(data)
-        if "summary_text" in data_copy and data_copy["summary_text"]:
-            data_copy["summary_text"] = normalize_final_text(data_copy["summary_text"])
-            data_copy["plain_text_summary"] = data_copy["summary_text"]
-        if "decision_basis" in data_copy and data_copy["decision_basis"]:
-            data_copy["decision_basis"] = normalize_final_text(data_copy["decision_basis"])
-        if "reasoning" in data_copy and data_copy["reasoning"]:
-            data_copy["reasoning"] = normalize_final_text(data_copy["reasoning"])
-        cache[cache_key] = data_copy
-    else:
-        cache[cache_key] = data
-    _persist_agent_cache()
+    with _AGENT_CACHE_LOCK:
+        cache = _get_agent_cache()
+        if isinstance(data, dict):
+            data_copy = dict(data)
+            if "summary_text" in data_copy and data_copy["summary_text"]:
+                data_copy["summary_text"] = normalize_final_text(data_copy["summary_text"])
+                data_copy["plain_text_summary"] = data_copy["summary_text"]
+            if "decision_basis" in data_copy and data_copy["decision_basis"]:
+                data_copy["decision_basis"] = normalize_final_text(data_copy["decision_basis"])
+            if "reasoning" in data_copy and data_copy["reasoning"]:
+                data_copy["reasoning"] = normalize_final_text(data_copy["reasoning"])
+            cache[cache_key] = data_copy
+        else:
+            cache[cache_key] = data
+        while len(cache) > 512:
+            cache.pop(next(iter(cache)))
+        _persist_agent_cache()
 
 
 # ---------------------------------------------------------------------------
@@ -355,7 +368,8 @@ def call_summarization_agent(
 
     safe_model_tag = sum_model.replace("/", "_")
     rag_tag = "rag" if rag_docs else "norag"
-    cache_key = f"sum_{clean_id}_{provider}_{safe_model_tag}_{rag_tag}"
+    context_hash = hashlib.sha256(json.dumps([comp_agent_output, rag_docs, sample_context], sort_keys=True, default=str).encode()).hexdigest()
+    cache_key = f"v2_sum_{clean_id}_{provider}_{safe_model_tag}_{rag_tag}_{context_hash}"
 
     if not strict_research_mode:
         cached = get_cached_agent_result(cache_key)
@@ -800,7 +814,8 @@ def call_classification_agent(
 
     safe_model_tag = cls_model.replace("/", "_")
     rag_tag = "rag" if rag_docs else "norag"
-    cache_key = f"cls_{clean_id}_{provider}_{safe_model_tag}_{rag_tag}"
+    context_hash = hashlib.sha256(json.dumps([comp_agent_output, summary_text, rag_docs, sample_context], sort_keys=True, default=str).encode()).hexdigest()
+    cache_key = f"v2_cls_{clean_id}_{provider}_{safe_model_tag}_{rag_tag}_{context_hash}"
 
     if not strict_research_mode:
         cached = get_cached_agent_result(cache_key)

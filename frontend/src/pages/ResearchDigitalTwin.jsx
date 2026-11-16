@@ -4,7 +4,7 @@
  * Interactive research digital twin tracking an individual's observed multi-omic history:
  * - Chronological visit timeline across all 102 cohort participants (up to 12 visits)
  * - Multi-omic microbial dysbiosis index and clinical frailty tracking
- * - Calibrated risk estimates with 95% bootstrap prediction intervals
+ * - Subject-held-out predictions with explicit uncertainty availability
  * - Model abstention flags (e.g. antibiotic exposure)
  * - Strict research governance banner prohibiting unvalidated future conversion claims
  */
@@ -107,7 +107,7 @@ export default function ResearchDigitalTwin() {
             </h1>
           </div>
           <p className="text-sm text-surface-400 mt-1">
-            Tracks individual multi-omic observed histories, clinical frailty drift, and calibrated risk estimates over time under static diagnostic ground truth.
+            Tracks individual multi-omic observed histories, clinical frailty drift, and subject-held-out model estimates over time under static diagnostic ground truth.
           </p>
         </div>
       </div>
@@ -240,7 +240,7 @@ export default function ResearchDigitalTwin() {
 
                 <div className="space-y-3">
                   {profile.observed_visits.map((visit) => {
-                    const isHighRisk = visit.calibrated_probability >= 0.7
+                    const isHighRisk = visit.estimated_ad_risk_probability >= 0.7
                     return (
                       <div
                         key={visit.sample_id}
@@ -273,10 +273,10 @@ export default function ResearchDigitalTwin() {
                                 isHighRisk ? 'text-rose-400' : 'text-emerald-400'
                               )}
                             >
-                              {(visit.calibrated_probability * 100).toFixed(1)}%
+                              {(visit.estimated_ad_risk_probability * 100).toFixed(1)}%
                             </span>
                             <span className="text-[10px] text-surface-500 font-mono">
-                              CI: [{(visit.prediction_interval_95[0] * 100).toFixed(0)}%-{(visit.prediction_interval_95[1] * 100).toFixed(0)}%]
+                              Uncertainty interval unavailable
                             </span>
                           </div>
                         </div>

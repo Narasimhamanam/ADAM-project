@@ -123,21 +123,6 @@ export const FEATURE_CONFIG = {
     ],
     enabled: true,
   },
-  '/reports': {
-    id: 'reports',
-    name: 'Reports & Scientific Evidence',
-    path: '/reports',
-    phase: 1,
-    plannedPhaseName: 'Clinical & Scientific Dissemination',
-    description: 'Comprehensive research dossier generator, peer-reviewed PubMed RAG evidence explorer, and publication-ready plain-text summaries.',
-    capabilities: [
-      'Multi-modal clinical research dossier generator with Print & Markdown export',
-      'Semantic literature search over peer-reviewed PubMed publications',
-      'Publication-grade plain-text narrative without raw markdown syntax artifacts',
-      'Full scientific limitations and provenance disclaimers',
-    ],
-    enabled: true,
-  },
 
   '/dashboard': {
     id: 'dashboard',

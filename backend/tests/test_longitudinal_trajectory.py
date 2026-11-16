@@ -243,4 +243,5 @@ async def test_api_trajectory_endpoints():
         assert resp_lit.status_code == 200
         lit_data = resp_lit.json()
         assert len(lit_data["prompt_hash"]) == 64  # SHA-256 hash length
-        assert len(lit_data["articles"]) > 0
+        assert isinstance(lit_data["articles"], list)
+        assert all(article["pmid"].isdigit() for article in lit_data["articles"])

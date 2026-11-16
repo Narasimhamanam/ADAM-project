@@ -33,44 +33,19 @@ _CACHED_FEATURE_NAMES: Optional[List[str]] = None
 _CACHED_BACKGROUND: Optional[np.ndarray] = None
 
 
-def get_trained_pipeline():
-    """Ensure trained XGBoost model and background dataset are loaded."""
-    global _CACHED_XGB_MODEL, _CACHED_FEATURE_NAMES, _CACHED_BACKGROUND
-
-    if _CACHED_XGB_MODEL is not None:
-        return _CACHED_XGB_MODEL, _CACHED_FEATURE_NAMES, _CACHED_BACKGROUND
-
-    df = load_dataset_df()
-    split = preprocess_and_split(df, seed=42)
-    feature_names = split["feature_columns"]
-
-    # Try loading from disk or train on split
-    saved = load_saved_model("xgboost", seed=42)
-    if saved is not None and "model" in saved:
-        model = saved["model"]
-    else:
-        res = train_and_evaluate(
-            model_name="xgboost",
-            X_train=split["X_train"],
-            y_train=split["y_train"],
-            X_test=split["X_test"],
-            y_test=split["y_test"],
-            feature_names=feature_names,
-            seed=42,
-            scale_pos_weight=split["scale_pos_weight"],
-        )
-        model = res["model_obj"]
-
-    _CACHED_XGB_MODEL = model
-    _CACHED_FEATURE_NAMES = feature_names
-    _CACHED_BACKGROUND = split["X_train"]
-    return _CACHED_XGB_MODEL, _CACHED_FEATURE_NAMES, _CACHED_BACKGROUND
+def get_trained_pipeline(split=None):
+    """Use exact split provenance shared with the prediction service."""
+    from app.ml.predict_service import get_cached_split, get_or_load_model
+    split = split if split is not None else get_cached_split(seed=42)
+    model = get_or_load_model("xgboost", split)
+    return model, split["feature_columns"], split["X_train"]
 
 
 def run_adam_pipeline(
     sample_id: str,
     use_rag: bool = True,
     strict_research_mode: bool = False,
+    evaluation_split: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     """Execute complete real-data ADAM pipeline for a specific sample."""
     clean_id = str(sample_id).strip().upper()
@@ -102,7 +77,10 @@ def run_adam_pipeline(
         comorbidities.append("Secondary Dementia")
 
     # 1. Biological Diversity Profile (Exact Calculations)
-    div_profile = compute_sample_diversity_profile(df, clean_id)
+    if evaluation_split is None:
+        from app.ml.predict_service import get_cached_split
+        evaluation_split = get_cached_split(seed=42)
+    div_profile = compute_sample_diversity_profile(df, clean_id, reference_df=evaluation_split["train_df"])
     alpha = div_profile["alpha_diversity"]
     beta = div_profile["beta_diversity"]
 
@@ -121,7 +99,7 @@ def run_adam_pipeline(
     top_abundant_taxa = abundances[:10]
 
     # 3. Model Inference & TreeSHAP Local Feature Attribution
-    model, feature_names, X_bg = get_trained_pipeline()
+    model, feature_names, X_bg = get_trained_pipeline(evaluation_split)
     feature_vals = []
     for col in feature_names:
         val = pd.to_numeric(sample_row.get(col, 0.0), errors="coerce")

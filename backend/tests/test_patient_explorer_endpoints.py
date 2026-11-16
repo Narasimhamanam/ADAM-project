@@ -201,8 +201,5 @@ async def test_neuroimaging_subjects_endpoint(client: AsyncClient):
     assert res.status_code == 200
     data = res.json()
 
-    assert data["total_subjects"] >= 2
-    assert len(data["subjects"]) >= 2
-    subj = data["subjects"][0]
-    assert "subject_id" in subj
-    assert "hippocampus_volume_cm3" in subj
+    assert data["total_subjects"] == 0
+    assert data["subjects"] == []

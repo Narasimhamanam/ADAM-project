@@ -36,7 +36,7 @@ from app.schemas.ml import (
     PerformanceComparisonResponse,
     SamplePredictionResponse,
 )
-from app.ml.predict_service import get_sample_prediction_details
+from app.ml.predict_service import get_sample_prediction_details, get_or_load_model
 from app.ml.performance import get_full_performance_comparison
 from app.ml.ablation import evaluate_ablation_run
 from app.ml.efficiency import profile_pipeline_efficiency
@@ -113,6 +113,7 @@ async def train_model(payload: TrainRequest) -> TrainResponse:
             y_test=split["y_test"],
             feature_names=split["feature_columns"],
             params=payload.params,
+            save_model=False,
             seed=payload.seed,
             scale_pos_weight=split["scale_pos_weight"],
         )
@@ -155,38 +156,7 @@ async def predict_risk(payload: PredictRequest) -> PredictResponse:
         split = get_cached_split(seed=42)
         feature_names = split["feature_columns"]
 
-        # Ensure model is initialized from cache, disk, or trained asynchronously
-        if model_name in _TRAINED_MODELS and len(_TRAINED_MODELS[model_name].get("feature_names", [])) != len(feature_names):
-            del _TRAINED_MODELS[model_name]
-
-        if model_name not in _TRAINED_MODELS:
-            saved = load_saved_model(model_name, seed=42)
-            if saved is not None and "model" in saved and len(saved.get("feature_names", [])) == len(feature_names):
-                _TRAINED_MODELS[model_name] = {
-                    "model": saved["model"],
-                    "feature_names": feature_names,
-                    "split": split,
-                }
-            else:
-                res = await asyncio.to_thread(
-                    train_and_evaluate,
-                    model_name=model_name,
-                    X_train=split["X_train"],
-                    y_train=split["y_train"],
-                    X_test=split["X_test"],
-                    y_test=split["y_test"],
-                    feature_names=feature_names,
-                    seed=42,
-                    scale_pos_weight=split["scale_pos_weight"],
-                )
-                _TRAINED_MODELS[model_name] = {
-                    "model": res["model_obj"],
-                    "feature_names": feature_names,
-                    "split": split,
-                }
-
-        model_entry = _TRAINED_MODELS[model_name]
-        model = model_entry["model"]
+        model = await asyncio.to_thread(get_or_load_model, model_name, split)
 
         # Extract and sanitize sample vector matching exact training feature order
         if payload.sample_id:

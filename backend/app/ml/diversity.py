@@ -11,6 +11,9 @@ from __future__ import annotations
 from typing import Dict, Any, List, Optional
 import numpy as np
 import pandas as pd
+from functools import lru_cache
+from pathlib import Path
+from app.ingestion.pipeline import get_global_resources_dir
 from scipy.spatial.distance import braycurtis, jaccard, canberra
 
 from app.core.logging import get_logger
@@ -22,34 +25,27 @@ _HEALTHY_CONTROL_CENTROID: Optional[np.ndarray] = None
 _TAXA_COLUMNS: Optional[List[str]] = None
 
 
+@lru_cache(maxsize=4)
+def _taxonomy_names(directory: str) -> frozenset[str]:
+    taxonomy = pd.read_csv(Path(directory) / "clade_species_df.csv")
+    return frozenset(taxonomy["species_name"].str.replace("_", " "))
+
+
 def get_taxa_columns(df: pd.DataFrame) -> List[str]:
-    """Extract taxonomic relative abundance column names from dataset."""
-    excluded = {
-        "Sample ID", "study_id", "day", "Date Sample", "age", "age_cat",
-        "male", "abx6mo", "hopsn", "malnutrition_indicator_sco",
-        "clinical_frailty_scale", "PPI", "Alzheimers", "Dementia Other"
-    }
-    return [c for c in df.columns if c not in excluded and df[c].dtype in ["float64", "int64"]]
+    """Match actual taxonomy; medication and comorbidity columns are not taxa."""
+    names = _taxonomy_names(get_global_resources_dir())
+    return [c for c in df.columns if c.replace("_", " ") in names]
 
 
 def get_control_centroid(df: pd.DataFrame) -> np.ndarray:
-    """Compute and cache mean taxonomic abundance vector for healthy controls (Alzheimers == 0)."""
-    global _HEALTHY_CONTROL_CENTROID
-    if _HEALTHY_CONTROL_CENTROID is not None:
-        return _HEALTHY_CONTROL_CENTROID
-
+    """Compute a reference from the supplied cohort, without cross-cohort cache reuse."""
     taxa_cols = get_taxa_columns(df)
     controls = df[df["Alzheimers"] == 0.0]
     if controls.empty:
-        controls = df
-
-    centroid = controls[taxa_cols].mean(axis=0).values.astype(np.float64)
-    c_sum = centroid.sum()
-    if c_sum > 0:
-        centroid = centroid / c_sum
-
-    _HEALTHY_CONTROL_CENTROID = centroid
-    return _HEALTHY_CONTROL_CENTROID
+        raise ValueError("A control reference requires at least one control subject")
+    centroid = controls[taxa_cols].mean(axis=0).to_numpy(dtype=float)
+    total = centroid.sum()
+    return centroid / total if total > 0 else centroid
 
 
 def compute_alpha_diversity(abundance_vector: np.ndarray) -> Dict[str, float]:
@@ -135,7 +131,7 @@ def compute_beta_diversity(
     }
 
 
-def compute_sample_diversity_profile(df: pd.DataFrame, sample_id: str) -> Dict[str, Any]:
+def compute_sample_diversity_profile(df: pd.DataFrame, sample_id: str, reference_df: Optional[pd.DataFrame] = None) -> Dict[str, Any]:
     """Compute complete alpha & beta diversity profile for a given sample ID."""
     matching = df[df["Sample ID"] == sample_id]
     if matching.empty:
@@ -146,7 +142,7 @@ def compute_sample_diversity_profile(df: pd.DataFrame, sample_id: str) -> Dict[s
     sample_vec = sample_row[taxa_cols].values.astype(np.float64)
 
     alpha = compute_alpha_diversity(sample_vec)
-    control_centroid = get_control_centroid(df)
+    control_centroid = get_control_centroid(reference_df if reference_df is not None else df)
     beta = compute_beta_diversity(sample_vec, control_centroid)
 
     return {

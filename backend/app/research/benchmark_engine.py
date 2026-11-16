@@ -51,7 +51,7 @@ class EvaluationMetrics:
     pr_auc: float
     brier_score: float
     confusion_matrix: List[List[int]]
-    confidence_intervals_95: Dict[str, Tuple[float, float]]
+    confidence_intervals_95: Dict[str, Optional[Tuple[float, float]]]
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -61,12 +61,12 @@ class EvaluationMetrics:
             "specificity": round(self.specificity, 4),
             "precision": round(self.precision, 4),
             "f1_score": round(self.f1_score, 4),
-            "roc_auc": round(self.roc_auc, 4),
-            "pr_auc": round(self.pr_auc, 4),
+            "roc_auc": round(self.roc_auc, 4) if self.roc_auc is not None else None,
+            "pr_auc": round(self.pr_auc, 4) if self.pr_auc is not None else None,
             "brier_score": round(self.brier_score, 4),
             "confusion_matrix": self.confusion_matrix,
             "confidence_intervals_95": {
-                k: [round(v[0], 4), round(v[1], 4)]
+                k: [round(v[0], 4), round(v[1], 4)] if v is not None else None
                 for k, v in self.confidence_intervals_95.items()
             },
         }
@@ -140,7 +140,15 @@ def compute_binary_metrics_with_ci(
     Computes all standard discrimination and calibration metrics,
     with 95% Bootstrap Confidence Intervals sampled at the SUBJECT level.
     """
-    y_true = np.asarray(y_true).astype(int)
+    y_true = np.asarray(y_true)
+    y_pred_proba = np.asarray(y_pred_proba, dtype=float)
+    subject_ids = np.asarray(subject_ids)
+    if (y_true.ndim != 1 or y_pred_proba.shape != y_true.shape or subject_ids.shape != y_true.shape
+            or not len(y_true) or not np.isin(y_true, [0, 1]).all()
+            or not np.isfinite(y_pred_proba).all() or ((y_pred_proba < 0) | (y_pred_proba > 1)).any()
+            or pd.isna(subject_ids).any() or n_bootstrap < 0 or not 0 <= threshold <= 1):
+        raise ValueError("Aligned nonempty binary labels, valid probabilities and subject IDs are required")
+    y_true = y_true.astype(int)
     y_pred_proba = np.asarray(y_pred_proba).astype(float)
     y_pred = (y_pred_proba >= threshold).astype(int)
 
@@ -155,16 +163,10 @@ def compute_binary_metrics_with_ci(
     tn, fp, fn, tp = cm.ravel() if cm.size == 4 else (0, 0, 0, 0)
     spec = float(tn / (tn + fp)) if (tn + fp) > 0 else 0.0
 
-    # ROC-AUC & PR-AUC
-    try:
-        roc_auc = float(roc_auc_score(y_true, y_pred_proba))
-    except Exception:
-        roc_auc = 0.5
-
-    try:
-        pr_auc = float(average_precision_score(y_true, y_pred_proba))
-    except Exception:
-        pr_auc = 0.5
+    # Discrimination is undefined when the evaluation contains only one class.
+    both_classes = len(np.unique(y_true)) == 2
+    roc_auc = float(roc_auc_score(y_true, y_pred_proba)) if both_classes else None
+    pr_auc = float(average_precision_score(y_true, y_pred_proba)) if both_classes else None
 
     # Brier calibration score
     brier = float(brier_score_loss(y_true, y_pred_proba))
@@ -205,7 +207,7 @@ def compute_binary_metrics_with_ci(
 
     def get_ci(arr: List[float], default_val: float) -> Tuple[float, float]:
         if len(arr) < 10:
-            return (max(0.0, default_val - 0.1), min(1.0, default_val + 0.1))
+            return None
         return (float(np.percentile(arr, 2.5)), float(np.percentile(arr, 97.5)))
 
     ci_dict = {

@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.core.logging import configure_logging, get_logger
-from app.database import init_db
+from app.database import init_db, engine
 from app.routers import health, system, datasets, ml, ai, trajectory, research
 
 # ---------------------------------------------------------------------------
@@ -90,7 +90,7 @@ async def _prewarm_performance_cache() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage startup and shutdown lifecycle events."""
-    global _ingestion_task
+    global _ingestion_task, _prewarm_task
     # ── Startup ──────────────────────────────────────────────────────────
     logger.info(
         "Starting ADAM-1 Enhanced backend",
@@ -104,12 +104,18 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     _ingestion_task = asyncio.create_task(run_background_ingestion())
 
     # 3. Pre-warm performance cache so the first user page load is instant
-    _prewarm_task = asyncio.create_task(_prewarm_performance_cache())
+    _prewarm_task = (asyncio.create_task(_prewarm_performance_cache())
+                     if settings.prewarm_performance_cache else None)
 
     logger.info("FastAPI ready and listening on port immediately; background ingestion and cache pre-warming running")
 
-    yield
+    try:
+        yield
+    finally:
+        await _shutdown_background_tasks()
 
+
+async def _shutdown_background_tasks() -> None:
     # ── Shutdown ─────────────────────────────────────────────────────────
     logger.info("Shutting down ADAM-1 Enhanced backend")
     for task, name in [(_ingestion_task, "ingestion"), (_prewarm_task, "prewarm")]:
@@ -120,6 +126,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
                 await task
             except asyncio.CancelledError:
                 pass
+    await engine.dispose()
 
 
 # ---------------------------------------------------------------------------
@@ -144,7 +151,6 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|.*\.onrender\.com)(:\d+)?",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

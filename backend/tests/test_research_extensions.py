@@ -176,14 +176,8 @@ def test_bootstrap_subject_level_confidence_intervals():
 def test_neuroimaging_subject_retrieval():
     """Test retrieving neuroimaging volumetric biomarkers."""
     subjects = list_neuroimaging_subjects()
-    assert len(subjects) >= 4
-
-    subj = get_subject_neuroimaging("OAS1_0001")
-    assert subj is not None
-    assert subj["hippocampus_volume_cm3"] > 0
-    assert subj["lateral_ventricles_volume_cm3"] > 0
-    assert len(subj["scans"]) >= 1
-    assert subj["scans"][0]["field_strength_tesla"] in (1.5, 3.0)
+    assert subjects == []  # External imaging observations have not been ingested.
+    assert get_subject_neuroimaging("OAS1_0001") is None
 
 
 # ── 5. DIGITAL TWIN & ZERO-TRANSITION GOVERNANCE TESTS ──────────────────────
@@ -201,8 +195,10 @@ def test_digital_twin_zero_transition_governance():
     assert "RESEARCH DIGITAL TWIN DISCLAIMER" in profile["governance_disclaimer"]
     assert len(profile["observed_visits"]) == 12
     for v in profile["observed_visits"]:
-        assert 0.0 <= v["calibrated_probability"] <= 1.0
-        assert len(v["prediction_interval_95"]) == 2
+        assert 0.0 <= v["estimated_ad_risk_probability"] <= 1.0
+        assert v["calibrated_probability"] is None
+        assert v["prediction_interval_95"] is None
+        assert v["uncertainty_std_error"] is None
 
 
 # ── 6. GARD REQUEST WORKFLOW TESTS ──────────────────────────────────────────

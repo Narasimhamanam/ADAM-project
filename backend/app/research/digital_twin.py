@@ -16,6 +16,9 @@ Therefore:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional
+from app.ml.subject_predictions import subject_held_out_predictions
+from app.ml.diversity import get_taxa_columns, compute_alpha_diversity
 import os
 import datetime
 import pandas as pd
@@ -50,13 +53,13 @@ class DigitalTwinVisitObservation:
     amyloid_pet_suvr: Optional[float] = None
     # Model Inference & Uncertainty
     estimated_ad_risk_probability: float = 0.5
-    calibrated_probability: float = 0.5
-    uncertainty_std_error: float = 0.05
-    prediction_interval_95: List[float] = field(default_factory=lambda: [0.4, 0.6])
+    calibrated_probability: Optional[float] = None
+    uncertainty_std_error: Optional[float] = None
+    prediction_interval_95: Optional[List[float]] = None
     risk_tier: str = "Moderate"
     abstention_flag: bool = False
     abstention_reason: Optional[str] = None
-    model_version: str = "xgboost_v1.0"
+    model_version: str = "xgboost_subject_held_out_v2"
     ground_truth_label: int = 0  # Static clinical label
 
     def to_dict(self) -> Dict[str, Any]:
@@ -77,9 +80,9 @@ class DigitalTwinVisitObservation:
             "hippocampus_volume_cm3": round(self.hippocampus_volume_cm3, 3) if self.hippocampus_volume_cm3 else None,
             "amyloid_pet_suvr": round(self.amyloid_pet_suvr, 3) if self.amyloid_pet_suvr else None,
             "estimated_ad_risk_probability": round(self.estimated_ad_risk_probability, 4),
-            "calibrated_probability": round(self.calibrated_probability, 4),
-            "uncertainty_std_error": round(self.uncertainty_std_error, 4),
-            "prediction_interval_95": [round(x, 4) for x in self.prediction_interval_95],
+            "calibrated_probability": round(self.calibrated_probability, 4) if self.calibrated_probability is not None else None,
+            "uncertainty_std_error": round(self.uncertainty_std_error, 4) if self.uncertainty_std_error is not None else None,
+            "prediction_interval_95": [round(x, 4) for x in self.prediction_interval_95] if self.prediction_interval_95 is not None else None,
             "risk_tier": self.risk_tier,
             "abstention_flag": self.abstention_flag,
             "abstention_reason": self.abstention_reason,
@@ -106,7 +109,7 @@ class LongitudinalDigitalTwinProfile:
 
     def to_dict(self) -> Dict[str, Any]:
         mean_prob = (
-            round(float(np.mean([v.calibrated_probability for v in self.observed_visits])), 4)
+            round(float(np.mean([v.estimated_ad_risk_probability for v in self.observed_visits])), 4)
             if self.observed_visits
             else 0.5
         )
@@ -126,7 +129,7 @@ class LongitudinalDigitalTwinProfile:
                 "age_cat": "≥75 (Senior)" if self.baseline_age >= 75 else "<75 (Adult)",
                 "male": 1 if self.sex == "Male" else 0,
                 "sex": self.sex,
-                "smoker": "Non-smoker",
+                "smoker": "Not reported in this summary",
             },
             "progression_conversion_observed": self.progression_conversion_observed,
             "observed_visits": [v.to_dict() for v in self.observed_visits],
@@ -158,8 +161,6 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
         return None
 
     cache_key = f"{cohort_id}:{participant_id}"
-    if cache_key in _TWIN_PROFILES_CACHE:
-        return _TWIN_PROFILES_CACHE[cache_key]
 
     try:
         df = load_dataset_df()
@@ -178,7 +179,8 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
     span = int(subj_df["day"].max() - subj_df["day"].min())
 
     visits: List[DigitalTwinVisitObservation] = []
-    prev_prob = None
+    probabilities = subject_held_out_predictions(df)
+    taxa = get_taxa_columns(df)
 
     for idx, (_, row) in enumerate(subj_df.iterrows()):
         day = int(row["day"])
@@ -193,19 +195,9 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
         bact = float(row.get("Bacteroides fragilis", 0.002))
         dysbiosis = (bact + 1e-5) / (faec + 1e-5)
 
-        # Calibrated risk estimate derived from subject AD status + covariates
-        # (Preserves truthful distinction: AD subjects have elevated model risk, Controls have low risk)
-        if ad_val == 1:
-            base_p = 0.78 + (frailty - 4.0) * 0.03 - (faec * 1.5)
-            base_p = float(np.clip(base_p, 0.65, 0.95))
-        else:
-            base_p = 0.22 + (frailty - 4.0) * 0.02 - (faec * 1.0)
-            base_p = float(np.clip(base_p, 0.05, 0.40))
-
-        # Prediction interval & uncertainty
-        std_err = 0.04 + (0.03 if abx else 0.0)
-        pi_low = max(0.01, base_p - 1.96 * std_err)
-        pi_high = min(0.99, base_p + 1.96 * std_err)
+        # Ground truth is display-only; inference is fitted on other subjects.
+        base_p = probabilities[str(row["Sample ID"])]
+        alpha = compute_alpha_diversity(row[taxa].to_numpy(dtype=float))
 
         tier = "High Risk" if base_p >= 0.70 else "Low Risk" if base_p <= 0.35 else "Moderate Risk"
         abstain = False
@@ -220,19 +212,19 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
                 sample_id=str(row["Sample ID"]),
                 study_day=day,
                 calendar_date=date_str,
-                age_at_visit=base_age + (day / 365.25),
+                age_at_visit=float(row["age"]),
                 clinical_frailty_scale=frailty,
                 malnutrition_score=malnut,
                 ppi_medication=ppi,
                 antibiotics_prior_6mo=abx,
-                shannon_alpha_diversity=2.85 + (0.3 if ad_val == 0 else -0.4) + np.random.uniform(-0.1, 0.1),
+                shannon_alpha_diversity=alpha["shannon_index"],
                 faecalibacterium_prausnitzii_rel_abund=faec,
                 bacteroides_fragilis_rel_abund=bact,
                 dysbiosis_risk_ratio=dysbiosis,
                 estimated_ad_risk_probability=base_p,
-                calibrated_probability=base_p,
-                uncertainty_std_error=std_err,
-                prediction_interval_95=[pi_low, pi_high],
+                calibrated_probability=None,
+                uncertainty_std_error=None,
+                prediction_interval_95=None,
                 risk_tier=tier,
                 abstention_flag=abstain,
                 abstention_reason=abstain_reason,
@@ -243,14 +235,14 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
     # Compute longitudinal slope
     if len(visits) > 1:
         days = np.array([v.study_day for v in visits])
-        probs = np.array([v.calibrated_probability for v in visits])
+        probs = np.array([v.estimated_ad_risk_probability for v in visits])
         slope = float(np.polyfit(days, probs, 1)[0]) if len(np.unique(days)) > 1 else 0.0
     else:
         slope = 0.0
 
     verdict = (
-        "STABLE_ELEVATED_RISK" if ad_val == 1 and abs(slope) < 0.001
-        else "STABLE_LOW_RISK" if ad_val == 0 and abs(slope) < 0.001
+        "STABLE_ELEVATED_RISK" if np.mean([v.estimated_ad_risk_probability for v in visits]) >= 0.7 and abs(slope) < 0.001
+        else "STABLE_LOW_RISK" if np.mean([v.estimated_ad_risk_probability for v in visits]) <= 0.35 and abs(slope) < 0.001
         else "TRAJECTORY_DRIFT"
     )
 
@@ -271,7 +263,8 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
     )
 
     result_dict = profile.to_dict()
-    _TWIN_PROFILES_CACHE[cache_key] = result_dict
+    result_dict["inference_status"] = "SUBJECT_HELD_OUT_UNCALIBRATED"
+    result_dict["uncertainty_status"] = "NOT_ESTIMATED"
     return result_dict
 
 

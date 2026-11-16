@@ -64,7 +64,7 @@ def _get_cache_lock(key: str) -> threading.Lock:
 
 
 def _disk_cache_path(protocol: str, seed: int) -> str:
-    return os.path.join(_CACHE_DIR, f"performance_cache_{protocol}_seed{seed}.json")
+    return os.path.join(_CACHE_DIR, f"performance_cache_audit_v2_{protocol}_seed{seed}.json")
 
 
 def _load_disk_cache(protocol: str, seed: int) -> Optional[Dict[str, Any]]:
@@ -243,27 +243,10 @@ def _batch_evaluate_adam(
     """
     t0 = time.perf_counter()
 
-    # 1. Load XGBoost baseline predictions for comparison
-    saved = load_saved_model("xgboost", seed=seed)
-    if saved is not None and "model" in saved:
-        clf = saved["model"]
-    else:
-        saved_default = load_saved_model("xgboost", seed=42)
-        if saved_default is not None and "model" in saved_default:
-            clf = saved_default["model"]
-        else:
-            split_train = preprocess_and_split(df, seed=42, protocol=protocol)
-            clf_res = train_and_evaluate(
-                model_name="xgboost",
-                X_train=split_train["X_train"],
-                y_train=split_train["y_train"],
-                X_test=X_test,
-                y_test=y_test,
-                feature_names=feature_names,
-                seed=seed,
-                scale_pos_weight=split_train["scale_pos_weight"],
-            )
-            clf = clf_res["model_obj"]
+    # The baseline and agents must use the same training subjects for every seed.
+    from app.ml.predict_service import get_or_load_model
+    evaluation_split = preprocess_and_split(df, seed=seed, protocol=protocol)
+    clf = get_or_load_model("xgboost", evaluation_split)
 
     probs_xgb = clf.predict_proba(X_test)[:, 1]
     y_pred_xgb = clf.predict(X_test)
@@ -274,7 +257,7 @@ def _batch_evaluate_adam(
     pipeline_results: List[Dict[str, Any]] = []
 
     for sid in test_sample_ids:
-        res = run_adam_pipeline(sid)
+        res = run_adam_pipeline(sid, evaluation_split=evaluation_split)
         pipeline_results.append(res)
         fin = res["final_result"]
         lbl = int(fin.get("adam_binary_label", 0))
@@ -568,7 +551,9 @@ def get_full_performance_comparison(
     A per-key threading.Lock prevents cache-stampede when two requests arrive
     simultaneously on a cold server (e.g. React StrictMode double-invocation).
     """
-    cache_key = f"{protocol}_{seed}"
+    if protocol not in {"full_cohort", "paper_reconstructed"}:
+        raise ValueError("Unknown evaluation protocol")
+    cache_key = f"audit_v2_{protocol}_{seed}"
     lock = _get_cache_lock(cache_key)
 
     with lock:

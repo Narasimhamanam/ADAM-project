@@ -14,6 +14,7 @@ Guarantees:
 from __future__ import annotations
 
 import asyncio
+import threading
 from typing import Dict, Any, List, Optional
 import numpy as np
 import pandas as pd
@@ -21,7 +22,7 @@ from fastapi import HTTPException, status
 
 from app.core.logging import get_logger
 from app.ml.data_loader import load_dataset_df, preprocess_and_split
-from app.ml.models import train_and_evaluate, load_saved_model
+from app.ml.models import train_and_evaluate, load_saved_model, training_fingerprint, normalize_model_name
 from app.ml.shap_engine import explain_single_sample
 from app.schemas.ml import (
     FeatureContribution,
@@ -37,6 +38,7 @@ logger = get_logger(__name__)
 
 # Global model cache to avoid re-training during interactive browsing
 _LOADED_MODELS: Dict[str, Any] = {}
+_MODEL_LOCK = threading.RLock()
 _CACHED_SPLIT: Optional[Dict[str, Any]] = None
 
 
@@ -50,55 +52,30 @@ def get_cached_split(seed: int = 42) -> Dict[str, Any]:
 
 
 def canonicalize_model_name(raw_name: Optional[str]) -> tuple[str, str]:
-    """Normalize input model name to canonical key and human-readable label."""
-    norm = (raw_name or "xgboost").lower().replace("-", "").replace("_", "").replace(" ", "")
-    if "xgb" in norm or "xgboost" in norm:
-        return "xgboost", "XGBoost"
-    elif "rf" in norm or "randomforest" in norm or "forest" in norm:
-        return "randomforest", "Random Forest"
-    elif "logistic" in norm or "lr" in norm or "reg" in norm:
-        return "logisticregression", "Logistic Regression"
-    else:
-        return "xgboost", "XGBoost"
+    key = normalize_model_name(raw_name or "xgboost")
+    return key, {"xgboost": "XGBoost", "randomforest": "Random Forest", "logisticregression": "Logistic Regression"}[key]
 
 
 def get_or_load_model(model_key: str, split: Dict[str, Any]) -> Any:
-    """Load pre-trained model artifact or train on demand."""
-    feature_names = split["feature_columns"]
-
-    # Verify cached model
-    if model_key in _LOADED_MODELS:
-        cached_entry = _LOADED_MODELS[model_key]
-        if len(cached_entry.get("feature_names", [])) == len(feature_names):
-            return cached_entry["model"]
-        else:
-            del _LOADED_MODELS[model_key]
-
-    # Try loading from disk
-    saved = load_saved_model(model_key, seed=42)
-    if saved is not None and "model" in saved and len(saved.get("feature_names", [])) == len(feature_names):
-        _LOADED_MODELS[model_key] = {
-            "model": saved["model"],
-            "feature_names": feature_names,
-        }
-        return saved["model"]
-
-    # Train model synchronously if not yet trained
-    res = train_and_evaluate(
-        model_name=model_key,
-        X_train=split["X_train"],
-        y_train=split["y_train"],
-        X_test=split["X_test"],
-        y_test=split["y_test"],
-        feature_names=feature_names,
-        seed=42,
-        scale_pos_weight=split["scale_pos_weight"],
-    )
-    _LOADED_MODELS[model_key] = {
-        "model": res["model_obj"],
-        "feature_names": feature_names,
-    }
-    return res["model_obj"]
+    """Serialize initialization and require exact model-training provenance."""
+    model_key = normalize_model_name(model_key)
+    names, seed = split["feature_columns"], split["seed"]
+    fingerprint = training_fingerprint(split["X_train"], split["y_train"], names, seed)
+    with _MODEL_LOCK:
+        cached = _LOADED_MODELS.get(model_key, {})
+        if cached.get("training_fingerprint") == fingerprint:
+            return cached["model"]
+        saved = load_saved_model(model_key, seed=seed)
+        if saved and saved.get("training_fingerprint") == fingerprint and saved.get("feature_names") == names:
+            _LOADED_MODELS[model_key] = saved
+            return saved["model"]
+        result = train_and_evaluate(
+            model_key, split["X_train"], split["y_train"], split["X_test"], split["y_test"],
+            names, seed=seed, scale_pos_weight=split["scale_pos_weight"],
+        )
+        _LOADED_MODELS[model_key] = {"model": result["model_obj"], "feature_names": names,
+                                    "training_fingerprint": fingerprint}
+        return result["model_obj"]
 
 
 async def get_sample_prediction_details(
@@ -125,7 +102,7 @@ async def get_sample_prediction_details(
     # 1. Ground Truth Extraction
     raw_ad = row.get("Alzheimers")
     if pd.isna(raw_ad):
-        gt_label = 0
+        raise HTTPException(status_code=422, detail="Ground truth is unavailable for this sample")
     else:
         gt_label = int(float(raw_ad))
 
@@ -166,7 +143,7 @@ async def get_sample_prediction_details(
     # 3. Model Inference & Sample-Specific Explainability
     split = get_cached_split(seed=42)
     feature_names = split["feature_columns"]
-    model = get_or_load_model(canonical_key, split)
+    model = await asyncio.to_thread(get_or_load_model, canonical_key, split)
 
     # Build exact feature vector from dataset row matching training columns
     feature_vals = []

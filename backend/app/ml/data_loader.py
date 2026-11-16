@@ -8,6 +8,7 @@ to strictly eliminate longitudinal subject leakage.
 from __future__ import annotations
 
 import os
+import threading
 from copy import deepcopy
 from typing import List, Tuple, Dict, Any, Optional
 
@@ -33,6 +34,7 @@ DEFAULT_EXCLUDED_COLUMNS = [
 
 
 _CACHED_DF: Optional[pd.DataFrame] = None
+_DATA_LOCK = threading.RLock()
 
 
 def load_dataset_df(filepath: Optional[str] = None, force_reload: bool = False) -> pd.DataFrame:
@@ -51,10 +53,14 @@ def load_dataset_df(filepath: Optional[str] = None, force_reload: bool = False) 
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Primary dataset not found at {filepath}")
 
-    df = pd.read_csv(filepath)
-    if filepath == os.path.join(get_global_resources_dir(), "clinical_microbiome_df.csv"):
-        _CACHED_DF = df
-    return df
+    with _DATA_LOCK:
+        is_default = filepath == os.path.join(get_global_resources_dir(), "clinical_microbiome_df.csv")
+        if is_default and _CACHED_DF is not None and not force_reload:
+            return _CACHED_DF
+        df = pd.read_csv(filepath)
+        if is_default:
+            _CACHED_DF = df
+        return df
 
 
 def load_summary_subjects_df() -> pd.DataFrame:
@@ -89,6 +95,16 @@ def preprocess_and_split(
     if excluded_columns is None:
         excluded_columns = DEFAULT_EXCLUDED_COLUMNS
 
+    if protocol not in {"full_cohort", "paper_reconstructed"}:
+        raise ValueError("Unknown evaluation protocol")
+    required = {"Sample ID", "study_id", "Alzheimers"}
+    if not required.issubset(df.columns) or df[list(required)].isna().any().any():
+        raise ValueError("Non-missing sample IDs, subject IDs and binary labels are required")
+    if df["Sample ID"].duplicated().any() or not df["Alzheimers"].isin([0, 1]).all():
+        raise ValueError("Sample IDs must be unique and labels must be binary")
+    if df.groupby("study_id")["Alzheimers"].nunique().gt(1).any():
+        raise ValueError("Static-label protocol does not support changing subject diagnoses")
+    excluded_columns = set(excluded_columns) | required | {"Date Sample"}
     df_clean = df.copy()
 
     # Identify subject-level diagnosis
