@@ -17,5 +17,6 @@
 | LLM cache keys ignored evidence and writes were neither atomic nor bounded. | Include model inputs and retrieved content in cache keys, isolate historical data, and bound and synchronize runtime cache writes. |
 | The research UI read the wrong modality field, and the duplicate reports key disabled linting once ESLint was configured. | Match the API response, retain one reports route definition, add ESLint configuration, and update tests for the consolidated routing. |
 | The frontend image build attempted to download a browser during dependency installation. | Skip Puppeteer's optional browser download during Docker and Render builds. |
+| The data tests depended on a Windows-only path and silently skipped assertions when it was absent. | Validate the committed cohort files on all platforms, including sample overlap and the full Bray–Curtis matrix. |
 
 The audited baseline is `1f2244b5358df9235d514a9960d444cb314f3535`. The audit inspected the full repository tree and 54 commit summaries, retrieved and verified 301 text blobs, and used the published paper and original XGBoost notebook as methodological references. Nine existing binary assets were inventoried. External cohort ingestion and live model-provider validation require separately available research data and credentials.
