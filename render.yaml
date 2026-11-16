@@ -41,7 +41,7 @@ services:
         generateValue: true
 
       - key: CORS_ORIGINS
-        value: "*"
+        value: "https://adam-enhanced-frontend.onrender.com"
 
       - key: LLM_PROVIDER
         value: "groq"
@@ -62,7 +62,7 @@ services:
     runtime: static
     rootDir: frontend
 
-    buildCommand: npm ci && npm run build
+    buildCommand: PUPPETEER_SKIP_DOWNLOAD=true npm ci && npm run build
     staticPublishPath: ./dist
 
     routes:

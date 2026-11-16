@@ -8,7 +8,7 @@ Conducts rigorous scientific ablation comparing:
 4. ADAM without Microbiome (Clinical host features only)
 5. ADAM with Microbiome (Microbiome taxonomic relative abundances only)
 6. ADAM with Diversity Features (Clinical + Microbiome + Alpha & Beta diversity)
-7. Full ADAM Multi-Agent Pipeline (Integrated multi-modal pipeline with calibrated consensus)
+7. Deterministic Consensus Proxy (Integrated multi-modal pipeline with calibrated consensus)
 
 Reports: Accuracy, Precision, Recall, F1-Score, and ROC-AUC with mean ± std.
 Supports both 'full_cohort' and 'paper_reconstructed' protocols.
@@ -32,11 +32,7 @@ from app.ml.diversity import get_taxa_columns, get_control_centroid
 
 logger = get_logger(__name__)
 
-# Precomputed diversity cache for speed
-_GLOBAL_DIVERSITY_CACHE: Optional[pd.DataFrame] = None
-
-
-def get_dataset_with_diversity(df: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+def get_dataset_with_diversity(df: Optional[pd.DataFrame] = None, reference_df: Optional[pd.DataFrame] = None) -> pd.DataFrame:
     """
     Precompute and cache biological diversity metrics for all samples.
 
@@ -47,15 +43,11 @@ def get_dataset_with_diversity(df: Optional[pd.DataFrame] = None) -> pd.DataFram
     Runs in ~18 ms for 335 samples (was ~3 000 ms with the per-row loop).
     Results are bit-for-bit identical to compute_sample_diversity_profile per sample.
     """
-    global _GLOBAL_DIVERSITY_CACHE
-    if _GLOBAL_DIVERSITY_CACHE is not None:
-        return _GLOBAL_DIVERSITY_CACHE
-
     if df is None:
         df = load_dataset_df()
 
     taxa_cols = get_taxa_columns(df)
-    control_centroid = get_control_centroid(df)
+    control_centroid = get_control_centroid(df if reference_df is None else reference_df)
 
     X = df[taxa_cols].values.astype(np.float64)  # (N, T)
 
@@ -80,8 +72,7 @@ def get_dataset_with_diversity(df: Optional[pd.DataFrame] = None) -> pd.DataFram
     df_div["berger_parker_diversity"] = np.round(berger_parker, 4)
     df_div["bray_curtis_distance"] = np.round(bray_curtis, 4)
 
-    _GLOBAL_DIVERSITY_CACHE = df_div
-    return _GLOBAL_DIVERSITY_CACHE
+    return df_div
 
 
 def evaluate_ablation_run(
@@ -95,7 +86,7 @@ def evaluate_ablation_run(
     if seeds is None:
         seeds = [42, 123, 456, 789, 999]
 
-    df_div = get_dataset_with_diversity()
+    df_div = load_dataset_df()
     taxa_cols = get_taxa_columns(df_div)
     excluded = ["Sample ID", "study_id", "Alzheimers", "Date Sample", "age", "Dementia Other"]
     
@@ -121,17 +112,17 @@ def evaluate_ablation_run(
         "adam_clinical_only": "4. ADAM w/o Microbiome (Clinical Only)",
         "adam_microbiome_only": "5. ADAM w/ Microbiome (Taxa Only)",
         "adam_with_diversity": "6. ADAM w/ Diversity Features",
-        "adam_full_multiagent": "7. Full ADAM Multi-Agent Pipeline",
+        "adam_full_multiagent": "7. Deterministic Consensus Proxy",
     }
 
     descriptions = {
         "xgboost_baseline": "Full 1,044 multi-omic features using gradient boosted decision trees.",
         "random_forest_baseline": "Full 1,044 multi-omic features using balanced random forest ensemble.",
         "logistic_regression_baseline": "Standardized linear pipeline with L2 regularization.",
-        "adam_clinical_only": "Host clinical indicators only (8 features: frailty, malnutrition, age, sex, etc.).",
-        "adam_microbiome_only": "Metagenomic species relative abundances only (1,036 taxa).",
+        "adam_clinical_only": "Non-taxonomic predictors, including clinical indicators and sampling day.",
+        "adam_microbiome_only": "Metagenomic species relative abundances only (940 taxonomy-matched columns).",
         "adam_with_diversity": "Clinical + Microbiome + Shannon/Simpson/Bray-Curtis diversity metrics (1,048 features).",
-        "adam_full_multiagent": "Multi-modal feature suite with validated consensus and calibrated thresholding.",
+        "adam_full_multiagent": "Heuristic consensus applied to diversity-enhanced model scores without LLM calls.",
     }
 
     # Tracking storage: {cond: {metric: [vals_per_seed]}}
@@ -149,8 +140,9 @@ def evaluate_ablation_run(
             protocol=protocol,
         )
 
-        tr_df = split["train_df"]
-        te_df = split["test_df"]
+        reference = split["train_df"]
+        tr_df = get_dataset_with_diversity(reference, reference_df=reference)
+        te_df = get_dataset_with_diversity(split["test_df"], reference_df=reference)
         y_tr = split["y_train"]
         y_te = split["y_test"]
         spw = split["scale_pos_weight"]
@@ -245,7 +237,7 @@ def evaluate_ablation_run(
         lat_div = (time.perf_counter() - t0) * 1000.0 / len(y_te)
         _record(metrics_tracker["adam_with_diversity"], y_te, pred_div, prob_div, lat_div)
 
-        # 7. Full ADAM Multi-Agent Pipeline
+        # 7. Deterministic Consensus Proxy
         # Integrates probability calibration, diversity moderation, and clinical consensus
         t0 = time.perf_counter()
         # Calibrated decisioning combining base model with diversity and frailty stability
