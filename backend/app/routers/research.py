@@ -11,7 +11,9 @@ Endpoints providing access to:
 """
 from __future__ import annotations
 
-from typing import List, Optional, Dict, Any
+from functools import lru_cache
+from threading import Lock
+from typing import List, Optional, Dict, Any, Literal
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
@@ -48,6 +50,28 @@ from app.research.gard_request import (
 )
 
 router = APIRouter(prefix="/research", tags=["Research Extensions"])
+
+_subject_benchmark_lock = Lock()
+
+
+@lru_cache(maxsize=1)
+def _subject_benchmark_report() -> dict:
+    from app.ml.data_loader import load_dataset_df
+    from app.research.subject_conformal import run_subject_benchmark
+
+    return run_subject_benchmark(load_dataset_df())
+
+
+@router.get("/benchmark/subject-conformal", summary="Compare held-out subject prediction sets")
+def get_subject_conformal_benchmark(
+    mode: Literal["baseline", "visit_conformal", "subject_conformal", "compact_only", "compact_subject", "all"] = "all",
+) -> dict:
+    """Evaluate the fixed local research cohort and return aggregate results."""
+    with _subject_benchmark_lock:
+        report = _subject_benchmark_report()
+    if mode == "all":
+        return report
+    return {**report, "results": {mode: report["results"][mode]}}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -177,6 +201,7 @@ async def get_neuroimaging_subjects(cohort_id: Optional[str] = Query(None)):
     """Retrieve volumetric MRI and PET biomarkers across OASIS/ADNI cohorts."""
     subjects = list_neuroimaging_subjects(cohort_id=cohort_id)
     return {
+        "verification_status": "NO_PARTICIPANT_IMAGING_INGESTED",
         "total_subjects": len(subjects),
         "subjects": subjects,
     }
