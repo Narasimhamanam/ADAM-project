@@ -55,20 +55,20 @@ console.log('✓ LongitudinalRiskTrajectoryReport.jsx contains all clinical rese
 // 3. Verify App.jsx routes
 const appPath = path.join(__dirname, '..', 'src', 'App.jsx');
 const appContent = fs.readFileSync(appPath, 'utf8');
-if (!appContent.includes('/trajectory') || !appContent.includes('LongitudinalTrajectory')) {
+if (!appContent.includes('path="/trajectory" element={<Navigate to="/patients"') || !appContent.includes('path="/patients" element={<PatientExplorer')) {
   console.error('FAIL: App.jsx missing /trajectory route!');
   process.exit(1);
 }
-console.log('✓ App.jsx mounts /trajectory route with PhaseFeatureGuard.');
+console.log('✓ App.jsx redirects /trajectory to the Patient Explorer.');
 
 // 4. Verify Sidebar.jsx navigation
 const sidebarPath = path.join(__dirname, '..', 'src', 'components', 'layout', 'Sidebar.jsx');
 const sidebarContent = fs.readFileSync(sidebarPath, 'utf8');
-if (!sidebarContent.includes('/trajectory') || !sidebarContent.includes('Risk Trajectory')) {
-  console.error('FAIL: Sidebar.jsx missing /trajectory item!');
+if (!sidebarContent.includes('/patients')) {
+  console.error('FAIL: Sidebar.jsx missing Patient Explorer item!');
   process.exit(1);
 }
-console.log('✓ Sidebar.jsx includes Risk Trajectory navigation link.');
+console.log('✓ Sidebar.jsx includes Patient Explorer navigation.');
 
 // 5. Verify featurePhases.js
 const featPath = path.join(__dirname, '..', 'src', 'config', 'featurePhases.js');

@@ -1,0 +1,73 @@
+name: Verify ADAM
+
+on: [pull_request, push]
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: adam_user
+          POSTGRES_PASSWORD: adam_ci_only
+          POSTGRES_DB: adam_enhanced
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U adam_user -d adam_enhanced"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      DATABASE_URL: postgresql+asyncpg://adam_user:adam_ci_only@localhost:5432/adam_enhanced
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+      - run: python -m pip install -r requirements.txt
+      - run: python -m compileall -q app
+      - run: python -m pytest tests -q
+      - name: Verify PostgreSQL schema and pgvector
+        run: |
+          python - <<'PY'
+          import asyncio
+          from sqlalchemy import text
+          from app.database import init_db, engine
+
+          async def verify():
+              try:
+                  await init_db()
+                  async with engine.connect() as conn:
+                      assert await conn.scalar(text("SELECT to_regclass('public.datasets') IS NOT NULL"))
+                      assert await conn.scalar(text("SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'vector')"))
+              finally:
+                  await engine.dispose()
+
+          asyncio.run(verify())
+          PY
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: node scripts/test_trajectory_frontend.cjs
