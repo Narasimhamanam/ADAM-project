@@ -11,7 +11,9 @@ Endpoints providing access to:
 """
 from __future__ import annotations
 
-from typing import List, Optional, Dict, Any
+from functools import lru_cache
+from threading import Lock
+from typing import List, Optional, Dict, Any, Literal
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel, Field
 
@@ -48,6 +50,28 @@ from app.research.gard_request import (
 )
 
 router = APIRouter(prefix="/research", tags=["Research Extensions"])
+
+_subject_benchmark_lock = Lock()
+
+
+@lru_cache(maxsize=1)
+def _subject_benchmark_report() -> dict:
+    from app.ml.data_loader import load_dataset_df
+    from app.research.subject_conformal import run_subject_benchmark
+
+    return run_subject_benchmark(load_dataset_df())
+
+
+@router.get("/benchmark/subject-conformal", summary="Compare held-out subject prediction sets")
+def get_subject_conformal_benchmark(
+    mode: Literal["baseline", "visit_conformal", "subject_conformal", "compact_only", "compact_subject", "all"] = "all",
+) -> dict:
+    """Evaluate the fixed local research cohort and return aggregate results."""
+    with _subject_benchmark_lock:
+        report = _subject_benchmark_report()
+    if mode == "all":
+        return report
+    return {**report, "results": {mode: report["results"][mode]}}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -88,32 +112,18 @@ async def audit_dataset(dataset_id: str):
             detail=f"Dataset with ID '{dataset_id}' not found.",
         )
 
-    # Simulated realistic external taxa list for audit
-    is_16s = "16S" in "".join(ds["modalities"])
-    external_features = (
-        ["Bacteroides", "Faecalibacterium", "Prevotella", "Ruminococcus", "Alistipes", "Blautia", "Bifidobacterium", "Akkermansia"]
-        if is_16s else
-        ["Faecalibacterium_prausnitzii", "Bacteroides_fragilis", "Bacteroides_thetaiotaomicron", "Akkermansia_muciniphila", "Eubacterium_rectale"]
-    )
-    # Baseline 940 species (top representative sample)
-    baseline_sample = [
-        "Faecalibacterium_prausnitzii", "Bacteroides_fragilis", "Bacteroides_dorei", "Phocaeicola_vulgatus",
-        "Prevotella_copri", "Ruminococcus_bromii", "Bifidobacterium_adolescentis", "Akkermansia_muciniphila",
-        "Eubacterium_rectale", "Roseburia_intestinalis", "Coprococcus_comes", "Dialister_invisus"
-    ]
-
-    harmonization_report = audit_taxonomic_harmonization(
-        baseline_species=baseline_sample,
-        external_features=external_features,
-        external_cohort_id=dataset_id,
-        external_is_16s=is_16s,
-    )
-
-    return {
-        "dataset_id": dataset_id,
-        "access_status": ds["access_status"],
-        "harmonization_audit": harmonization_report.to_dict(),
-    }
+    if dataset_id != "ADAM1_BASELINE":
+        raise HTTPException(status_code=409, detail="External feature manifest is not ingested; a measured audit is unavailable.")
+    from app.ml.data_loader import load_dataset_df
+    from app.ml.diversity import get_taxa_columns
+    from app.ingestion.pipeline import get_global_resources_dir
+    from pathlib import Path
+    import pandas as pd
+    baseline_species = pd.read_csv(Path(get_global_resources_dir()) / "clade_species_df.csv")["species_name"].tolist()
+    features = get_taxa_columns(load_dataset_df())
+    report = audit_taxonomic_harmonization(baseline_species, features, dataset_id)
+    return {"dataset_id": dataset_id, "access_status": ds["access_status"],
+            "verification_status": "MEASURED_LOCAL_TAXONOMY", "harmonization_audit": report.to_dict()}
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -191,6 +201,7 @@ async def get_neuroimaging_subjects(cohort_id: Optional[str] = Query(None)):
     """Retrieve volumetric MRI and PET biomarkers across OASIS/ADNI cohorts."""
     subjects = list_neuroimaging_subjects(cohort_id=cohort_id)
     return {
+        "verification_status": "NO_PARTICIPANT_IMAGING_INGESTED",
         "total_subjects": len(subjects),
         "subjects": subjects,
     }
@@ -234,7 +245,7 @@ async def get_digital_twin_participants(cohort_id: str = Query("ADAM1_BASELINE")
 
 
 @router.get("/digital-twin/{cohort_id}/{participant_id}", summary="Get longitudinal Digital Twin profile")
-async def get_digital_twin_profile(cohort_id: str, participant_id: str):
+def get_digital_twin_profile(cohort_id: str, participant_id: str):
     """
     Retrieve personalized de-identified research digital twin:
     - Observed longitudinal timeline
@@ -251,7 +262,7 @@ async def get_digital_twin_profile(cohort_id: str, participant_id: str):
 
 
 @router.get("/digital-twin/{cohort_id}/{participant_id}/timeline", summary="Get observed history timeline")
-async def get_digital_twin_timeline(cohort_id: str, participant_id: str):
+def get_digital_twin_timeline(cohort_id: str, participant_id: str):
     """Retrieve simplified chronological timeline for charts and trendlines."""
     profile = build_participant_digital_twin(cohort_id=cohort_id, participant_id=participant_id)
     if not profile:

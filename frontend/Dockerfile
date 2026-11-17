@@ -4,7 +4,7 @@ WORKDIR /app
 
 # Install dependencies (including devDependencies needed for build)
 COPY package*.json ./
-RUN npm ci --prefer-offline
+RUN PUPPETEER_SKIP_DOWNLOAD=true npm ci --prefer-offline
 
 # Copy source code and build production assets
 COPY . .

@@ -4,8 +4,8 @@ Pydantic Schemas for Machine Learning & SHAP APIs
 """
 from __future__ import annotations
 
-from typing import List, Dict, Any, Optional
-from pydantic import BaseModel, Field
+from typing import List, Dict, Any, Optional, Literal
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class RocPoint(BaseModel):
@@ -15,7 +15,7 @@ class RocPoint(BaseModel):
 
 class ModelMetrics(BaseModel):
     accuracy: float
-    auc: float
+    auc: Optional[float]
     f1_score: float
     precision: float
     recall: float
@@ -56,9 +56,9 @@ class BenchmarkSummaryResponse(BaseModel):
 
 
 class TrainRequest(BaseModel):
-    model_name: str = Field(default="xgboost", description="xgboost | randomforest | logisticregression")
+    model_name: Literal["xgboost", "randomforest", "logisticregression"] = Field(default="xgboost", description="xgboost | randomforest | logisticregression")
     seed: int = Field(default=42, description="Random seed for subject-level split")
-    test_size: float = Field(default=0.25, description="Test split fraction (0.1 to 0.4)")
+    test_size: float = Field(default=0.25, ge=0.1, le=0.4, description="Test split fraction (0.1 to 0.4)")
     params: Optional[Dict[str, Any]] = Field(default=None, description="Optional hyperparameter overrides")
 
 
@@ -74,7 +74,8 @@ class TrainResponse(BaseModel):
 
 
 class PredictRequest(BaseModel):
-    model_name: Optional[str] = Field(default="xgboost", description="xgboost | randomforest | logisticregression")
+    model_config = ConfigDict(allow_inf_nan=False)
+    model_name: Optional[Literal["xgboost", "randomforest", "logisticregression"]] = Field(default="xgboost", description="xgboost | randomforest | logisticregression")
     sample_id: Optional[str] = Field(default=None, description="Optional existing Sample ID to score")
     features: Optional[Dict[str, float]] = Field(default=None, description="Custom feature values dictionary")
 

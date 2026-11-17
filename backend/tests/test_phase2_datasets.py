@@ -15,6 +15,7 @@ Uses SQLite in-memory async database so tests run offline without Docker.
 from __future__ import annotations
 
 import uuid
+from pathlib import Path
 import pytest
 from httpx import AsyncClient, ASGITransport
 from unittest.mock import AsyncMock, patch, MagicMock
@@ -233,112 +234,65 @@ async def test_alpha_diversity_coverage():
         assert len(overlap) == 335
 
 
-@pytest.mark.asyncio
-async def test_mph_sample_overlap():
-    """Verify mph_matching_ad contains 335 primary sample IDs + 18 auxiliary samples."""
+@pytest.fixture(scope="module")
+def bundled_cohort():
     import pandas as pd
-    import os
-
-    cm_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\clinical_microbiome_df.csv"
-    mph_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\mph_matching_ad.csv"
-    if os.path.exists(cm_path) and os.path.exists(mph_path):
-        cm = pd.read_csv(cm_path)
-        mph = pd.read_csv(mph_path)
-        
-        cm_samples = set(cm["Sample ID"].dropna().astype(str))
-        mph_samples = set(mph.columns[1:].astype(str))
-        
-        overlap = cm_samples.intersection(mph_samples)
-        extra = mph_samples - cm_samples
-        
-        assert len(overlap) == 335, f"Expected 335 overlap, got {len(overlap)}"
-        assert len(extra) == 18, f"Expected 18 extra samples, got {len(extra)}"
+    directory = Path(__file__).resolve().parents[1] / "data" / "global_resources"
+    return {name: pd.read_csv(directory / f"{name}.csv") for name in (
+        "clinical_microbiome_df", "clade_species_df", "mph_matching_ad", "bc_df",
+    )}
 
 
-@pytest.mark.asyncio
-async def test_taxa_column_count_in_clinical():
-    """Verify exactly 940 columns in clinical_microbiome_df match clade_species taxa."""
-    import pandas as pd
-    import os
-
-    cm_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\clinical_microbiome_df.csv"
-    cs_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\clade_species_df.csv"
-    if os.path.exists(cm_path) and os.path.exists(cs_path):
-        cm = pd.read_csv(cm_path)
-        cs = pd.read_csv(cs_path)
-        
-        taxa = set(cs["species_name"].apply(lambda x: x.replace("_", " ").strip()))
-        cm_cols = set(cm.columns)
-        matched = cm_cols.intersection(taxa)
-        
-        assert len(matched) == 940, f"Expected 940 matched taxa columns, got {len(matched)}"
+def test_mph_sample_overlap(bundled_cohort):
+    clinical = set(bundled_cohort["clinical_microbiome_df"]["Sample ID"])
+    abundance = set(bundled_cohort["mph_matching_ad"].columns[1:])
+    assert len(clinical & abundance) == 335
+    assert len(abundance - clinical) == 18
 
 
-@pytest.mark.asyncio
-async def test_column_classification_split():
-    """Verify 14 core + 96 secondary clinical + 940 taxa = 1050."""
-    import pandas as pd
-    import os
-
-    cm_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\clinical_microbiome_df.csv"
-    cs_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\clade_species_df.csv"
-    if os.path.exists(cm_path) and os.path.exists(cs_path):
-        cm = pd.read_csv(cm_path)
-        cs = pd.read_csv(cs_path)
-
-        core_cols = [
-            "Sample ID", "study_id", "day", "Date Sample", "age", "age_cat",
-            "male", "abx6mo", "hopsn", "malnutrition_indicator_sco",
-            "clinical_frailty_scale", "PPI", "Alzheimers", "Dementia Other"
-        ]
-        taxa = set(cs["species_name"].apply(lambda x: x.replace("_", " ").strip()))
-        secondary = [c for c in cm.columns if c not in core_cols and c not in taxa]
-
-        assert len(core_cols) == 14
-        assert len(taxa) == 940
-        assert len(secondary) == 96
-        assert 14 + 96 + 940 == 1050
+def test_taxa_column_count_in_clinical(bundled_cohort):
+    taxa = set(bundled_cohort["clade_species_df"]["species_name"].str.replace("_", " ").str.strip())
+    matched = taxa.intersection(bundled_cohort["clinical_microbiome_df"].columns)
+    assert len(taxa) == len(matched) == 940
 
 
-@pytest.mark.asyncio
-async def test_original_adam_not_modified():
-    """Verify that original_adam/ directory contains no modified git files."""
+def test_column_classification_split(bundled_cohort):
+    clinical = bundled_cohort["clinical_microbiome_df"]
+    taxonomy = bundled_cohort["clade_species_df"]
+    core = {
+        "Sample ID", "study_id", "day", "Date Sample", "age", "age_cat",
+        "male", "abx6mo", "hopsn", "malnutrition_indicator_sco",
+        "clinical_frailty_scale", "PPI", "Alzheimers", "Dementia Other",
+    }
+    taxa = set(taxonomy["species_name"].str.replace("_", " ").str.strip())
+    assert core <= set(clinical.columns)
+    assert len(set(clinical.columns) - core - taxa) == 96
+    assert clinical.shape == (335, 1050)
+
+
+def test_original_adam_not_modified():
+    """Ensure the upstream reference checkout is outside application version control."""
     import subprocess
+    root = Path(__file__).resolve().parents[2]
     result = subprocess.run(
-        ["git", "diff", "--name-only", "--", "original_adam/"],
-        capture_output=True,
-        text=True,
-        cwd=r"e:\ADAM-Enhanced"
+        ["git", "ls-files", "--", "original_adam/"], cwd=root,
+        capture_output=True, text=True, check=True,
     )
-    modified = result.stdout.strip()
-    assert modified == "", f"original_adam/ was modified: {modified}"
+    assert not result.stdout.strip()
 
 
-@pytest.mark.asyncio
-async def test_bray_curtis_shape():
-    """Verify bc_df is a 335×335 symmetric matrix."""
-    import pandas as pd
-    import os
-
-    bc_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\bc_df.csv"
-    if os.path.exists(bc_path):
-        bc = pd.read_csv(bc_path)
-        assert bc.shape == (335, 335), f"Expected 335x335, got {bc.shape}"
-        # Check diagonal is zero
-        for i in range(min(10, len(bc.columns))):
-            assert bc.iloc[i, i] == 0.0 or bc.iloc[i, i] < 1e-10
+def test_bray_curtis_shape(bundled_cohort):
+    import numpy as np
+    distances = bundled_cohort["bc_df"].to_numpy(dtype=float)
+    assert distances.shape == (335, 335)
+    np.testing.assert_allclose(np.diag(distances), 0, atol=1e-10)
+    np.testing.assert_allclose(distances, distances.T, atol=1e-10)
 
 
-@pytest.mark.asyncio
-async def test_no_duplicate_samples():
-    """Verify zero duplicate Sample IDs in clinical_microbiome_df."""
-    import pandas as pd
-    import os
-
-    cm_path = r"e:\ADAM-Enhanced\original_adam\ADAM\global_resources\clinical_microbiome_df.csv"
-    if os.path.exists(cm_path):
-        df = pd.read_csv(cm_path)
-        assert df["Sample ID"].duplicated().sum() == 0
+def test_no_duplicate_samples(bundled_cohort):
+    ids = bundled_cohort["clinical_microbiome_df"]["Sample ID"]
+    assert ids.notna().all()
+    assert ids.is_unique
 
 
 @pytest.mark.asyncio

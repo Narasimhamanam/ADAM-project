@@ -4,13 +4,12 @@
 
 [![Phase](https://img.shields.io/badge/Phase%204-AI%20%26%20Multi--Agent%20Complete-purple)](./docs/)
 [![Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20PostgreSQL-green)](./docs/)
-[![License](https://img.shields.io/badge/License-Research-orange)](./docs/)
 
 ---
 
 ## Overview
 
-ADAM-1 Enhanced is a production-quality, full-stack research platform built on top of the original [ADAM-1 research framework](https://doi.org/10.1109/ACCESS.2025.3599857) (University of Massachusetts, 2025). It transforms the original Jupyter notebook-based pipeline into a modular, API-first web application for Alzheimer's Disease and microbiome data analysis with Explainable AI (TreeSHAP) and multi-agent reasoning (AIRA).
+ADAM-1 Enhanced is a full-stack research platform built on top of the original [ADAM-1 research framework](https://doi.org/10.1109/ACCESS.2025.3599857) (University of Massachusetts, 2025). It transforms the original Jupyter notebook-based pipeline into a modular, API-first web application for Alzheimer's Disease and microbiome data analysis with Explainable AI (TreeSHAP) and multi-agent reasoning (AIRA).
 
 ### Architecture
 
@@ -26,6 +25,8 @@ graph TD
     API -->|asyncpg ORM| DB
     API -->|Biomarker Inference & Force Plots| ML
     API -->|Semantic Retrieval & Reasoning| AIRA
+    API --> STUDY["Subject-level conformal benchmark"]
+    STUDY --> ML
 ```
 
 ---
@@ -141,7 +142,7 @@ npm run dev
 | `POST` | `/api/trajectory/compare` | Side-by-side longitudinal trajectory comparison |
 | `GET` | `/api/trajectory/evaluation` | Cohort-level coverage and zero subject-leakage audit |
 | `GET` | `/api/trajectory/capabilities` | Architecture capabilities and time-to-event governance status |
-| `GET` | `/api/ai/literature/search` | PubMed semantic vector search |
+| `GET` | `/api/ai/literature/search` | Search over verified, locally indexed publication summaries |
 | `POST` | `/api/ai/agent/execute` | 3-Tier AIRA Multi-Agent execution workflow |
 
 Full interactive API docs: `http://localhost:8000/docs` (Swagger UI)
@@ -169,19 +170,38 @@ Full interactive API docs: `http://localhost:8000/docs` (Swagger UI)
 
 ## 🧪 Automated Test Suite & Verification
 
-The platform backend includes 12 automated pytest suites validating API endpoints, ML inference, longitudinal data integrity, and PubMed vector retrieval:
+Run the backend tests from `backend/` after installing `requirements.txt`:
 
 ```bash
-cd backend
-pytest tests/ -v
+python -m pytest tests -q
 ```
 
-### Verified Test Areas:
-- **`tests/test_trajectory.py`**: Zero subject-leakage validation, trajectory slopes, and longitudinal observation grouping.
-- **`tests/test_api.py` & `test_system_info.py`**: Health checks, runtime system metadata, and CORS policy enforcement.
-- **`tests/test_openrouter.py`**: Multi-agent LLM client headers, failover handling, and mock response telemetry parsing.
-- **`tests/test_pubmed.py`**: PubMed vector search and literature RAG grounding.
-- **`tests/test_agent.py`**: 3-Tier AIRA multi-agent execution pipeline.
+From `frontend/`, run `npm ci`, `npm run lint`, `npm run build`, and
+`node scripts/test_trajectory_frontend.cjs`. If you only need the application
+build, set `PUPPETEER_SKIP_DOWNLOAD=true` before installing dependencies. PDF
+generation requires a browser. To check a running deployment, confirm
+`GET /api/health` reports both `status: healthy` and `database: connected`.
+Set `CORS_ORIGINS` to the actual frontend origin when deploying.
+
+## Subject-level conformal benchmark
+
+The research API compares the full XGBoost predictor with a compact model and
+two ways of calibrating prediction sets. It fits and tests on disjoint subject
+groups, computes aggregate coverage and abstention, and does not need
+PostgreSQL or a language model key. Query the live comparison through Swagger
+or run the same evaluation locally:
+
+```bash
+curl "http://localhost:8000/api/research/benchmark/subject-conformal?mode=compact_subject"
+cd backend
+python -m app.research.run_subject_benchmark --output research-benchmark.json
+```
+
+The API also accepts `baseline`, `visit_conformal`, `subject_conformal`,
+`compact_only`, and `all` (default). The CLI runs all modes by default and
+accepts `--mode` to run one. See [research notes](RESEARCH_PAPER_NOTES.md) for
+the methods, measured results and limitations, and [changelog](CHANGELOG.md)
+for the repository audit.
 
 ---
 

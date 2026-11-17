@@ -48,3 +48,8 @@ keys.py
 # Download separately from: https://github.com/rkaunismaki/ADAM
 # Place in e:\ADAM-Enhanced\original_adam\
 original_adam/
+
+# Runtime caches
+backend/saved_models/adam_agent_runtime_v2.json
+backend/saved_models/performance_cache_audit_v2_*.json
+research-benchmark.json

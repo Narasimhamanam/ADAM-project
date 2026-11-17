@@ -78,7 +78,7 @@ export default function ResearchValidation() {
         if (runsRes.status === 'fulfilled') setBenchmarkRuns(runsRes.value?.runs || [])
         if (crossRes.status === 'fulfilled') setCrosswalkAudits(crossRes.value?.audits || [])
         if (neuroRes.status === 'fulfilled') setNeuroSubjects(neuroRes.value?.subjects || [])
-        if (modRes.status === 'fulfilled') setModalityComps(modRes.value?.comparisons || [])
+        if (modRes.status === 'fulfilled') setModalityComps(modRes.value?.models || [])
         if (gardRes.status === 'fulfilled') setGardStatus(gardRes.value)
       } catch (err) {
         setError('Failed to load research infrastructure telemetry.')

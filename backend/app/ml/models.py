@@ -7,6 +7,9 @@ evaluation metrics, confusion matrix, ROC curves, and model serialization.
 from __future__ import annotations
 
 import os
+import hashlib
+import json
+import tempfile
 from typing import Dict, Any, Optional, List, Tuple
 import numpy as np
 from sklearn.pipeline import Pipeline
@@ -33,9 +36,27 @@ MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "..", "saved_models")
 os.makedirs(MODELS_DIR, exist_ok=True)
 
 
+def normalize_model_name(name: str) -> str:
+    key = name.lower().replace("-", "").replace("_", "").replace(" ", "")
+    aliases = {"xgb": "xgboost", "rf": "randomforest", "lr": "logisticregression"}
+    key = aliases.get(key, key)
+    if key not in {"xgboost", "randomforest", "logisticregression"}:
+        raise ValueError("Unsupported model name")
+    return key
+
+
+def training_fingerprint(X, y, features, seed=42, params=None) -> str:
+    digest = hashlib.sha256(json.dumps([list(features), int(seed), params or {}], sort_keys=True).encode())
+    for values in (X, y):
+        array = np.ascontiguousarray(values, dtype=np.float64)
+        digest.update(str(array.shape).encode())
+        digest.update(array.tobytes())
+    return digest.hexdigest()
+
+
 def get_model_instance(model_name: str, params: Optional[Dict[str, Any]] = None, seed: int = 42, scale_pos_weight: float = 1.0) -> Any:
     """Instantiate a model with appropriate default/configured hyperparameters."""
-    model_key = model_name.lower().replace("-", "").replace("_", "").replace(" ", "")
+    model_key = normalize_model_name(model_name)
     params = params or {}
 
     if "xgboost" in model_key or "xgb" in model_key:
@@ -96,16 +117,19 @@ def evaluate_model(
     y_pred = (y_pred_proba >= 0.5).astype(int)
 
     acc = float(accuracy_score(y_test, y_pred))
-    auc = float(roc_auc_score(y_test, y_pred_proba)) if len(np.unique(y_test)) > 1 else 0.5
+    auc = float(roc_auc_score(y_test, y_pred_proba)) if len(np.unique(y_test)) > 1 else None
     f1 = float(f1_score(y_test, y_pred, zero_division=0))
     prec = float(precision_score(y_test, y_pred, zero_division=0))
     rec = float(recall_score(y_test, y_pred, zero_division=0))
 
-    cm = confusion_matrix(y_test, y_pred).tolist()
+    cm = confusion_matrix(y_test, y_pred, labels=[0, 1]).tolist()
     
     # Compute ROC Curve (downsampled for lightweight JSON payload)
-    fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
-    roc_points = [{"fpr": float(f), "tpr": float(t)} for f, t in zip(fpr, tpr)]
+    roc_points = []
+    if auc is not None:
+        fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+        indices = np.linspace(0, len(fpr) - 1, min(50, len(fpr)), dtype=int)
+        roc_points = [{"fpr": float(fpr[i]), "tpr": float(tpr[i])} for i in indices]
 
     return {
         "accuracy": acc,
@@ -157,18 +181,27 @@ def train_and_evaluate(
                 "importance": float(raw_coef[idx]),
             })
 
-    model_id = f"{model_name.lower().replace('-', '').replace('_', '')}_seed{seed}"
+    model_id = f"{normalize_model_name(model_name)}_seed{seed}"
     model_path = None
 
     if save_model:
         model_path = os.path.join(MODELS_DIR, f"{model_id}.joblib")
-        joblib.dump({
+        artifact = {
             "model": model,
             "model_name": model_name,
             "feature_names": feature_names,
             "seed": seed,
             "metrics": metrics,
-        }, model_path)
+            "training_fingerprint": training_fingerprint(X_train, y_train, feature_names, seed, params),
+        }
+        fd, temporary = tempfile.mkstemp(dir=MODELS_DIR, suffix=".joblib.tmp")
+        os.close(fd)
+        try:
+            joblib.dump(artifact, temporary)
+            os.replace(temporary, model_path)
+        finally:
+            if os.path.exists(temporary):
+                os.unlink(temporary)
         logger.info("Saved trained model artifact", model_id=model_id, path=model_path)
 
     return {
@@ -184,10 +217,9 @@ def train_and_evaluate(
 
 def load_saved_model(model_name: str, seed: int = 42) -> Optional[Dict[str, Any]]:
     """Load a trained model artifact from the saved_models directory if present."""
-    m_clean = model_name.lower().replace("-", "").replace("_", "").replace(" ", "")
+    m_clean = normalize_model_name(model_name)
     candidate_names = [
         f"{m_clean}_seed{seed}.joblib",
-        f"{model_name.lower()}_seed{seed}.joblib",
     ]
     for name in candidate_names:
         p = os.path.join(MODELS_DIR, name)

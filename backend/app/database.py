@@ -80,11 +80,13 @@ async def init_db() -> None:
             # Enable extensions if permissions allow
             for ext in ["vector", "pg_trgm"]:
                 try:
-                    await conn.execute(text(f"CREATE EXTENSION IF NOT EXISTS {ext}"))
+                    async with conn.begin_nested():
+                        await conn.execute(text(f"CREATE EXTENSION IF NOT EXISTS {ext}"))
                 except Exception as ext_err:
                     logger.warning(f"Could not auto-create extension {ext}", error=str(ext_err))
             try:
-                await conn.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
+                async with conn.begin_nested():
+                    await conn.execute(text('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"'))
             except Exception as ext_err:
                 logger.warning("Could not auto-create extension uuid-ossp", error=str(ext_err))
 

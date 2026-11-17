@@ -73,6 +73,9 @@ class Settings(BaseSettings):
             return v.replace("postgresql://", "postgresql+asyncpg://", 1)
         return v
 
+    # Opt-in: startup benchmarking may train models and invoke paid providers.
+    prewarm_performance_cache: bool = False
+
     # Security
     secret_key: str = "change-this-in-production"
 
