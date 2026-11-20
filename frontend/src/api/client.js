@@ -262,5 +262,6 @@ export const fetchGardStatus = () =>
 export const updateGardStatus = (status, notes, user = 'Researcher') =>
   apiClient.post('/research/gard/status', { status, notes, user }).then((r) => r.data)
 
-
-
+// Rigor suite: leakage audit, calibration, conformal uncertainty, SHAP stability
+export const fetchRigorReport = () =>
+  apiClient.get('/research/rigor').then((r) => r.data)

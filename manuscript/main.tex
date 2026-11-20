@@ -1,0 +1,74 @@
+\documentclass[manuscript,review,anonymous]{acmart}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\setcopyright{none}
+\settopmatter{printacmref=false}
+\acmDOI{}
+\acmISBN{}
+\title{Separating Calibration from Feature Compression in Longitudinal Alzheimer's Microbiome Classification}
+\begin{document}
+\begin{abstract}
+Repeated visits and correlated clinical covariates complicate evaluation of microbiome classifiers. We audit an Alzheimer's cohort containing 335 visits from 102 subjects using paired subject-level folds, conformal prediction sets, compositional sensitivity analysis and subject-resampled intervals. Full and compact XGBoost predictors are compared with and without calibration using identical fitting, calibration and test subjects. Class-conditional calibration and trivial baselines expose the trade-off between coverage and abstention. We provide executable evaluation audits rather than a new classifier or conformal theorem. All numerical results below are generated from recorded experiments. External validation remains incomplete.
+\end{abstract}
+\maketitle
+\section{Problem and scope}
+The ADAM-1 framework integrates microbiome and clinical variables for Alzheimer's classification \cite{huang}. Its bundled cohort contains repeated visits with constant diagnosis per participant. Random visit splitting can let subject identity influence test performance. Our study evaluates this tabular cohort, not the original paper's complete language-model reasoning workflow.
+
+We ask how participant separation changes apparent discrimination, how much prediction-set coverage costs in abstention, and whether compression changes these results when calibration is held fixed. We do not assume compression improves coverage or that predictive clinical covariates identify a microbial mechanism.
+
+\section{Related work and contribution}
+Dudek et al.\ review weaknesses in microbiome machine-learning practices \cite{dudek}. Du et al.\ evaluate subject-stratified random forests on longitudinal HMP2 data \cite{hmp2}. CRC-TrustBench combines leakage-aware evaluation and reliability assessment across colorectal-cancer studies and countries \cite{crc}. Neither leakage audits nor microbiome calibration benchmarks are new. Split conformal prediction is established \cite{angelopoulos}.
+
+Our contribution is an executable application and correction of these principles for this ADAM cohort: paired full/compact ablations, fitting-subject and feature-selection audit trails, a corrected calibration unit, and subject-balanced coverage/abstention reporting. We make no priority claim, new-algorithm claim or acceptance guarantee.
+
+\section{Data and protocol}
+The bundled table contains 940 taxonomy-matched species and 104 other predictors after excluding sample and subject IDs, diagnosis, date, age and other-dementia metadata. Coarse age category and visit day remain and are audited. Invalid IDs, duplicate samples, changing or nonbinary labels, and nonfinite features are rejected. Feature missingness follows the existing zero-fill convention, a limitation particularly for clinical fields.
+
+For seeds 42--71, unique subjects are partitioned into five test folds. Each remaining subject pool is partitioned into fitting and calibration subsets, approximately two thirds and one third, independently of outcomes. Full and compact models share exact partitions. Compact models retain 96 species selected by prevalence among fitting subjects, plus 104 other predictors. Selection is rerun inside each fold. A regression test perturbs all nonfitting observations and verifies selection invariance.
+
+XGBoost uses 100 trees, depth 6, learning rate 0.1, row and column subsampling 0.8, one thread and training-class weighting. Model seeds follow split seeds. A separate nested-CV sensitivity experiment uses seed 42, five stratified subject outer folds, three inner folds, and five Optuna trials over depth, tree count and learning rate. Compact selection is rerun inside every inner fitting partition. This small search budget is not evidence of global optimality.
+
+\section{Calibration and statistical analysis}
+With fitted visit probabilities $p_{ij}$ and subject diagnosis $y_i$, define
+\[
+r_{ij}=1-\widehat P(Y=y_i\mid x_{ij}),\qquad s_i=\max_j r_{ij}.
+\]
+For $n$ calibration subjects, use order statistic $k=\lceil(n+1)(1-\alpha)\rceil$, or threshold 1 when $k>n$. Include test label $c$ when $1-\widehat P(c\mid x_{ij})\leq q$. Subject coverage requires the true label at every observed visit. This corrects the supplied patch's pooling of visit calibration scores despite subject-disjoint splitting.
+
+Mondrian thresholds $q_c$ use only calibration subjects of class $c$. Small or absent classes receive conservative inclusion. This targets class-conditional simultaneous coverage under within-class exchangeability; empirical equality and cross-cohort validity do not follow. Nursing-home dependence and different visit patterns may violate exchangeability.
+
+Forced choice, full/compact subject calibration, and full/compact Mondrian methods use paired fits. The always-both-label reference has perfect coverage and no singleton predictions. The class-prior baseline estimates prevalence from fitting subjects and predicts the majority class. Risk--coverage curves vary $\alpha$ over 0.05, 0.10, 0.20, 0.30 and 0.40; horizontal coverage means singleton acceptance and risk means singleton error, with subjects weighted equally.
+
+Intervals use 1,000 bootstrap draws of subjects retaining all their repeats. They are conditional on fitted out-of-fold models and omit refitting uncertainty. Artifact AUROC intervals use probabilities averaged over visits and repeats; per-seed AUROCs are stored separately. Repeated folds are not independent cohorts. Paired coverage differences use the same resampled subjects.
+
+The permutation test reassigns labels at subject level, reconstructs stratified folds and refits the default full model for 199 permutations. Its plus-one $p$-value has resolution 0.005. This is an unadjusted global-exchangeability test, separate from tuning and not conditional on clinical covariates or nursing home.
+
+\section{Results}
+\input{results.tex}
+\begin{figure}
+\centering\includegraphics[width=.95\linewidth]{figures/coverage.pdf}
+\caption{Subject simultaneous coverage and singleton acceptance from the repeated-fold artifact; bootstrap intervals appear in the table.}
+\Description{Comparison of coverage and singleton acceptance for paired methods and trivial baselines.}
+\end{figure}
+\begin{figure}
+\centering\includegraphics[width=.85\linewidth]{figures/risk_coverage.pdf}
+\caption{Singleton error versus singleton acceptance at prespecified conformal levels. These descriptive curves do not select thresholds on test labels.}
+\Description{Risk and acceptance curves for full and compact subject and Mondrian calibration.}
+\end{figure}
+
+\section{Composition, proxies and external validation}
+CLR sensitivity closes each abundance vector, adds a fixed $10^{-6}$ pseudocount, and centers log abundances within sample. Clinical columns remain unchanged. Negative abundances and all-zero compositions are rejected. No transform parameter is selected on test labels.
+
+Proxy ablations remove age category/day, frailty/nutrition, and a recorded medication subset in separate grouped-CV runs. They assess predictive dependence, not causality or complete confounding adjustment. Medication use can encode diagnostic treatment. For the explanation stability audit, each bootstrap draw resamples training subjects with all their visits. Each refitted tree model explains the same held-out subjects in its fold. We rank features by absolute SHAP contribution, averaging visits within subject before averaging across subjects. Within each fold we compare all pairs of top-20 sets using intersection size divided by union size. This measures sensitivity to the training sample under one outer split and one model seed. Correlated features may substitute for one another.
+
+Public candidates exist: Japanese shotgun project PRJNA679346 and AlzBiom PRJEB47976. The first archive exposes raw reads, not a ready-to-score matrix; the latter browser did not provide a readable feature matrix during this execution. Another study identifies Chinese project PRJCA022804 and several 16S cohorts \cite{stage}. Public accession evidence and archive-level policies were checked, but no harmonized, licensed, labeled feature matrix was obtained. Raw-read processing and per-study permissions remain outstanding. We report no external performance and do not claim no public data exist.
+
+The frozen-model evaluator only normalizes whitespace/underscores, preserves feature order, rejects missing or ambiguous features, and never refits. Genus-level 16S profiles are not silently equated to shotgun species; clinical models require the same clinical fields. External observations were not simulated.
+
+\section{Limitations and reproducibility}
+This is one small retrospective cohort; all seeds reuse 102 subjects. Group separation does not remove acquisition, nursing-home or treatment effects. Conditional intervals omit refitting variability. Nested tuning uses one seed and a small budget; proxy ablations are not causal adjustment. The original LLM pipeline was not rerun. External validity, prospective calibration and clinical utility remain unestablished.
+
+Run \texttt{python -m app.research.rigor} and \texttt{python -m app.research.repeated} in \texttt{backend/}, then \texttt{python -m app.research.heldout\_stability}, followed by \texttt{python manuscript/generate.py} at repository root. Artifacts record versions, seeds, matrix/label/group/feature hashes and fitting-subject selections. Synthetic test fixtures are not experimental results. Patch-supplied measurements were replaced by executed measurements. The software's optional-storage mode preserves file-backed research during a DB outage; it does not restore a missing database. This manuscript is a research draft, not a clinically validated product.
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+\end{document}

@@ -11,7 +11,7 @@ import os
 from functools import lru_cache
 from typing import List, Optional
 
-from pydantic import field_validator
+from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -52,6 +52,10 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     # Database
+    database_optional: bool = True
+    database_startup_attempts: int = Field(default=5, ge=1, le=20)
+    database_retry_seconds: float = Field(default=1.0, ge=0, le=60)
+    database_connect_timeout: float = Field(default=2.0, gt=0, le=30)
     database_url: str = (
         "postgresql+asyncpg://adam_user:adam_dev_password@localhost:5432/adam_enhanced"
     )

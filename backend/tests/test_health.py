@@ -47,8 +47,8 @@ async def test_health_returns_200(mock_db_connected):
 
 
 @pytest.mark.asyncio
-async def test_health_degraded_when_db_down(mock_db_disconnected):
-    """Health endpoint should return 200 but status=degraded when DB is down."""
+async def test_health_healthy_when_optional_db_down(mock_db_disconnected):
+    """Health endpoint should return 200 but status=healthy when optional DB is down."""
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
@@ -56,8 +56,8 @@ async def test_health_degraded_when_db_down(mock_db_disconnected):
 
     assert response.status_code == 200
     data = response.json()
-    assert data["status"] == "degraded"
-    assert data["database"] == "disconnected"
+    assert data["status"] == "healthy"
+    assert data["database"] == "unavailable (optional)"
 
 
 @pytest.mark.asyncio

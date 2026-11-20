@@ -224,3 +224,31 @@ This platform is inspired by and built upon:
 ---
 
 © 2026 ADAM-1 Enhanced Project
+
+
+## Rigor Suite on PR #2
+
+Open `/rigor` for executed leakage, calibration and SHAP-stability artifacts.
+The supplied patch's visit-pooled conformal scores were corrected to subject maxima.
+Repeated full/compact comparisons distinguish feature compression from calibration.
+
+```bash
+cd backend
+python -m app.research.rigor
+python -m app.research.repeated --seeds 30 --permutations 199 --bootstrap 1000 --trials 5
+python -m pytest tests -q
+cd ../frontend
+npm run lint
+npm run build
+node scripts/test_trajectory_frontend.cjs
+cd ..
+python manuscript/generate.py
+cd manuscript
+latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+```
+
+See [results](docs/REPEATED_RESULTS.md), [verified literature and CFP dates](docs/RESEARCH_ROADMAP.md),
+[external validation limitations](docs/EXTERNAL_VALIDATION.md), and
+[optional DB/Render recovery](docs/OPTIONAL_DATABASE.md). Database unavailability
+does not prevent file-backed research; persistence still requires a working DB.
+The manuscript is an ACM-format research draft, not a promise of acceptance.

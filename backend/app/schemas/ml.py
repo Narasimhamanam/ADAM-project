@@ -178,6 +178,8 @@ class ShapGlobalResponse(BaseModel):
 
 
 class WorkflowExecuteRequest(BaseModel):
+    evidence_query: Optional[str] = Field(default=None, min_length=1, max_length=500, pattern=r"\S")
+    include_automatic_terms: bool = True
     sample_id: str = Field(..., description="Target sample ID to run through the complete ADAM multi-agent workflow")
 
 

@@ -27,6 +27,7 @@ import Analyze from './pages/Analyze';
 import PatientExplorer from './pages/PatientExplorer';
 import ResearchValidation from './pages/ResearchValidation';
 import ReportsEvidence from './pages/ReportsEvidence';
+import RigorSuite from './pages/RigorSuite';
 import Settings from './pages/Settings';
 
 export default function App() {
@@ -70,6 +71,7 @@ export default function App() {
           <Route path="/patients" element={<PatientExplorer />} />
           <Route path="/research" element={<ResearchValidation />} />
           <Route path="/reports" element={<ReportsEvidence />} />
+          <Route path="/rigor" element={<RigorSuite />} />
 
           {/* Platform Settings */}
           <Route path="/settings" element={<Settings />} />
