@@ -78,7 +78,7 @@ jobs:
       - name: Install TeX toolchain
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science
+          sudo apt-get install -y latexmk texlive-latex-extra texlive-fonts-recommended texlive-science texlive-publishers texlive-fonts-extra
       - name: Compile ACM manuscript
         working-directory: manuscript
         run: latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
@@ -86,3 +86,4 @@ jobs:
         with:
           name: acm-manuscript
           path: manuscript/main.pdf
+
