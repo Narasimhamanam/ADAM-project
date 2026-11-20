@@ -53,3 +53,19 @@ original_adam/
 backend/saved_models/adam_agent_runtime_v2.json
 backend/saved_models/performance_cache_audit_v2_*.json
 research-benchmark.json
+
+# Quick-mode rigor artifacts (smoke runs only)
+backend/app/research/artifacts/*_quick.json
+
+# Local TeX compiler output (source figures remain versioned)
+manuscript/*.aux
+manuscript/*.bbl
+manuscript/*.blg
+manuscript/*.fdb_latexmk
+manuscript/*.fls
+manuscript/*.log
+manuscript/*.out
+manuscript/main.pdf
+
+backend/app/research/artifacts/repeated_subject_predictions.csv
+backend/app/research/artifacts/repeated_report.json

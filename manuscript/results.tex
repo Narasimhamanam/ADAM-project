@@ -1,0 +1,28 @@
+\begin{table}
+\caption{Subject-balanced results over 30 repeated five-fold partitions. Coverage intervals resample subjects, conditional on fitted predictions.}
+\centering\small
+\begin{tabular}{lrrr}
+\toprule
+Method & Subject coverage [95\% CI] & Singleton & AD coverage\\
+\midrule
+class\_prior & 0.627 [0.529, 0.716] & 1.000 & 0.000\\
+always\_both & 1.000 [1.000, 1.000] & 0.000 & 1.000\\
+full\_forced & 0.570 [0.512, 0.631] & 1.000 & 0.447\\
+full\_subject & 0.931 [0.900, 0.960] & 0.222 & 0.882\\
+full\_mondrian & 0.929 [0.898, 0.958] & 0.201 & 0.934\\
+compact\_forced & 0.568 [0.509, 0.633] & 1.000 & 0.414\\
+compact\_subject & 0.925 [0.894, 0.956] & 0.226 & 0.872\\
+compact\_mondrian & 0.923 [0.895, 0.950] & 0.199 & 0.927\\
+clr\_full\_subject & 0.925 [0.893, 0.952] & 0.215 & 0.870\\
+\bottomrule
+\end{tabular}
+\end{table}
+The unadjusted subject permutation test yielded AUROC 0.772 and $p=0.005$ over 199 permutations.
+Nested full XGBoost subject AUROC was 0.725 (one outer seed, five trials per fold).
+Nested compact XGBoost subject AUROC was 0.751 (one outer seed, five trials per fold).
+full\_subject\_minus\_full\_forced: coverage difference 0.361, bootstrap interval [0.315, 0.407].
+compact\_subject\_minus\_full\_subject: coverage difference -0.006, bootstrap interval [-0.013, 0.001].
+compact\_forced\_minus\_full\_forced: coverage difference -0.002, bootstrap interval [-0.018, 0.013].
+full\_mondrian\_minus\_full\_subject: coverage difference -0.002, bootstrap interval [-0.016, 0.013].
+Intervals and point estimates must be interpreted jointly with singleton acceptance; perfect coverage alone is achieved by the always-both baseline.
+Across 5 held-out folds with 30 training-subject bootstrap refits each, mean pairwise Jaccard similarity of the top 20 features was 0.244 (fold range 0.220 to 0.260).

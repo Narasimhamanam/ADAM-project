@@ -6,6 +6,7 @@ Provides pgvector readiness check on startup.
 """
 from __future__ import annotations
 
+import asyncio
 from typing import AsyncGenerator
 
 from sqlalchemy import text
@@ -70,7 +71,7 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
 # ---------------------------------------------------------------------------
 # Lifecycle helpers
 # ---------------------------------------------------------------------------
-async def init_db() -> None:
+async def init_db() -> bool:
     """Create all tables and verify pgvector extension."""
     try:
         # Import models so they are registered on Base.metadata
@@ -95,11 +96,11 @@ async def init_db() -> None:
 
         logger.info("Database tables created/verified")
         await _verify_pgvector()
+        record_db_state(True)
+        return True
     except Exception as exc:
-        logger.warning(
-            "Database not reachable during startup - will connect on demand",
-            error=str(exc),
-        )
+        record_db_state(False)
+        return False
 
 
 async def _verify_pgvector() -> None:
@@ -128,7 +129,36 @@ async def check_db_connection() -> dict:
     try:
         async with AsyncSessionLocal() as session:
             await session.execute(text("SELECT 1"))
+        record_db_state(True)
         return {"status": "connected"}
     except Exception as exc:
-        logger.error("Database health check failed", error=str(exc))
-        return {"status": "disconnected", "error": str(exc)}
+        record_db_state(False)
+        return {"status": "disconnected", "error": "Database connection unavailable"}
+
+
+_db_available = None
+
+
+def record_db_state(available: bool) -> None:
+    """One sanitized availability log per state transition, per process."""
+    global _db_available
+    if available == _db_available:
+        return
+    _db_available = available
+    if available:
+        logger.info("Database connection available")
+    else:
+        logger.warning("Database connection unavailable", optional=settings.database_optional)
+
+
+async def initialize_with_backoff() -> bool:
+    """Bound startup work; cancellation propagates through queries and sleeps."""
+    for attempt in range(settings.database_startup_attempts):
+        try:
+            if await asyncio.wait_for(init_db(), settings.database_connect_timeout):
+                return True
+        except (TimeoutError, OSError):
+            record_db_state(False)
+        if attempt + 1 < settings.database_startup_attempts:
+            await asyncio.sleep(min(settings.database_retry_seconds * 2 ** attempt, 30.0))
+    return False

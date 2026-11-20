@@ -379,9 +379,14 @@ async def get_efficiency_metrics(
     description="Executes the full ADAM diagnostic sequence on a real patient record: Computational Agent (ML + TreeSHAP + Alpha/Beta Diversity), Summarization Agent (10 Checkpoints), Classification Agent (10 Checkpoints), and Final Consensus Decision.",
 )
 async def execute_adam_workflow(payload: WorkflowExecuteRequest) -> Dict[str, Any]:
+    if not payload.include_automatic_terms and payload.evidence_query is None:
+        raise HTTPException(status_code=422, detail="Manual retrieval requires evidence_query")
     try:
         logger.info("Executing ADAM workflow", sample_id=payload.sample_id)
-        result = await asyncio.to_thread(run_adam_pipeline, sample_id=payload.sample_id)
+        options = ({"evidence_query": payload.evidence_query,
+                    "include_automatic_terms": payload.include_automatic_terms}
+                   if payload.evidence_query is not None else {})
+        result = await asyncio.to_thread(run_adam_pipeline, sample_id=payload.sample_id, **options)
 
         # Research API Validation: enforce clean plain text for Stage 6 and Stage 7
         sum_agent = result.get("summarization_agent", {})

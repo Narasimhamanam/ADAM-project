@@ -41,11 +41,25 @@ def get_trained_pipeline(split=None):
     return model, split["feature_columns"], split["X_train"]
 
 
+def choose_evidence_query(automatic, researcher, combine):
+    """Choose retrieval terms independently of the prediction threshold."""
+    if researcher is None:
+        if not combine:
+            raise ValueError("Manual retrieval requires search terms")
+        return automatic, "automatic"
+    terms = researcher.strip()
+    if not terms or len(terms) > 500:
+        raise ValueError("Provide between 1 and 500 characters of search terms")
+    return (f"{terms} {automatic}", "hybrid") if combine else (terms, "manual")
+
+
 def run_adam_pipeline(
     sample_id: str,
     use_rag: bool = True,
     strict_research_mode: bool = False,
     evaluation_split: Optional[Dict[str, Any]] = None,
+    evidence_query: Optional[str] = None,
+    include_automatic_terms: bool = True,
 ) -> Dict[str, Any]:
     """Execute complete real-data ADAM pipeline for a specific sample."""
     clean_id = str(sample_id).strip().upper()
@@ -141,9 +155,11 @@ def run_adam_pipeline(
             query_tokens.append("alpha diversity collapse")
 
         rag_query = f"{' '.join(query_tokens)} Alzheimer gut microbiome dementia".strip()
+        rag_query, retrieval_mode = choose_evidence_query(rag_query, evidence_query, include_automatic_terms)
         lit_results = search_literature(rag_query, top_k=3)
     else:
         rag_query = ""
+        retrieval_mode = "disabled"
         lit_results = []
 
     citations = [
@@ -472,6 +488,7 @@ def run_adam_pipeline(
                 else (sum_res.get("error") or cls_result.error or "Pipeline execution failure")
             ),
             "rag_details": {
+                "retrieval_mode": retrieval_mode,
                 "query": rag_query,
                 "document_ids": [d.get("pmid") for d in lit_results],
                 "similarity_scores": [round(float(d.get("similarity_score", 0.0)), 4) for d in lit_results],

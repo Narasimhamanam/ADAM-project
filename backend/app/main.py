@@ -21,7 +21,7 @@ from fastapi.responses import JSONResponse
 
 from app.config import get_settings
 from app.core.logging import configure_logging, get_logger
-from app.database import init_db, engine
+from app.database import initialize_with_backoff, engine
 from app.routers import health, system, datasets, ml, ai, trajectory, research
 
 # ---------------------------------------------------------------------------
@@ -58,6 +58,11 @@ async def run_background_ingestion() -> None:
         except Exception as exc:
             logger.error("Background dataset ingestion failed", error=str(exc), exc_info=True)
 
+
+
+async def _initialize_and_ingest() -> None:
+    if await initialize_with_backoff():
+        await run_background_ingestion()
 
 
 async def _prewarm_performance_cache() -> None:
@@ -97,11 +102,14 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         version=settings.app_version,
         environment=settings.app_env,
     )
-    # 1. Initialize schema & extensions immediately
-    await init_db()
-
-    # 2. Launch real data ingestion asynchronously in background
-    _ingestion_task = asyncio.create_task(run_background_ingestion())
+    # Optional storage must not delay the serving of file-backed research APIs.
+    if settings.database_optional:
+        _ingestion_task = asyncio.create_task(_initialize_and_ingest())
+    else:
+        if not await initialize_with_backoff():
+            await engine.dispose()
+            raise RuntimeError("Required database unavailable after startup retries")
+        _ingestion_task = asyncio.create_task(run_background_ingestion())
 
     # 3. Pre-warm performance cache so the first user page load is instant
     _prewarm_task = (asyncio.create_task(_prewarm_performance_cache())

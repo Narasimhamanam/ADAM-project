@@ -23,6 +23,7 @@ import {
   X,
   ChevronRight,
   Activity,
+  Scale,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { useDemoPhase } from '../../context/DemoPhaseContext';
@@ -57,6 +58,12 @@ const PRIMARY_DESTINATIONS = [
     icon: FileText,
     label: 'Reports & Evidence',
     description: 'Dossiers, RAG & citations',
+  },
+  {
+    to: '/rigor',
+    icon: Scale,
+    label: 'Rigor Suite',
+    description: 'Leakage, calibration & uncertainty',
   },
 ];
 

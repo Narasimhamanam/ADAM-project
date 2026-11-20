@@ -1,0 +1,490 @@
+{
+  "provenance": {
+    "n_samples": 335,
+    "n_subjects": 102,
+    "n_features": 1044,
+    "n_microbiome_features": 940,
+    "n_clinical_features": 104,
+    "design_matrix_sha256": "e33b29520fd6547bc969f511560cfdb3d3419e04ea3c0f2daaf6c06cb245e900",
+    "python": "3.13.5",
+    "numpy": "2.4.4",
+    "pandas": "2.3.0",
+    "scikit_learn": "1.8.0",
+    "xgboost": "2.1.4"
+  },
+  "quick_mode": false,
+  "leakage_audit": {
+    "config": {
+      "n_repeats": 5,
+      "n_splits": 5,
+      "seed": 42
+    },
+    "models": {
+      "xgboost": {
+        "auroc_sample_level_cv": {
+          "mean": 0.9684,
+          "sd": 0.0046,
+          "min": 0.9616,
+          "max": 0.9731,
+          "n": 5
+        },
+        "auroc_subject_grouped_cv": {
+          "mean": 0.8224,
+          "sd": 0.0133,
+          "min": 0.8096,
+          "max": 0.8449,
+          "n": 5
+        },
+        "auroc_inflation_from_leakage": {
+          "mean": 0.146,
+          "sd": 0.0177,
+          "min": 0.1167,
+          "max": 0.1635,
+          "n": 5
+        },
+        "mean_subjects_shared_between_train_and_test_per_fold": {
+          "sample_level_cv": 42.48,
+          "subject_grouped_cv": 0.0
+        }
+      },
+      "logisticregression": {
+        "auroc_sample_level_cv": {
+          "mean": 0.9188,
+          "sd": 0.0131,
+          "min": 0.9057,
+          "max": 0.9392,
+          "n": 5
+        },
+        "auroc_subject_grouped_cv": {
+          "mean": 0.7407,
+          "sd": 0.0215,
+          "min": 0.7152,
+          "max": 0.7624,
+          "n": 5
+        },
+        "auroc_inflation_from_leakage": {
+          "mean": 0.1781,
+          "sd": 0.0252,
+          "min": 0.1506,
+          "max": 0.2146,
+          "n": 5
+        },
+        "mean_subjects_shared_between_train_and_test_per_fold": {
+          "sample_level_cv": 42.48,
+          "subject_grouped_cv": 0.0
+        }
+      }
+    },
+    "runtime_seconds": 19.2
+  },
+  "feature_group_ablation": {
+    "config": {
+      "model": "xgboost",
+      "n_repeats": 3,
+      "n_splits": 5,
+      "seed": 42,
+      "proxy_columns": [
+        "age_cat",
+        "day"
+      ]
+    },
+    "settings": {
+      "all_features": {
+        "n_features": 1044,
+        "auroc_subject_grouped_cv": {
+          "mean": 0.8167,
+          "sd": 0.0062,
+          "min": 0.8096,
+          "max": 0.8212,
+          "n": 3
+        }
+      },
+      "microbiome_only": {
+        "n_features": 940,
+        "auroc_subject_grouped_cv": {
+          "mean": 0.7204,
+          "sd": 0.0037,
+          "min": 0.7174,
+          "max": 0.7245,
+          "n": 3
+        }
+      },
+      "clinical_covariates_only": {
+        "n_features": 104,
+        "auroc_subject_grouped_cv": {
+          "mean": 0.806,
+          "sd": 0.0311,
+          "min": 0.7762,
+          "max": 0.8382,
+          "n": 3
+        }
+      },
+      "all_minus_age_cat_and_day": {
+        "n_features": 1042,
+        "auroc_subject_grouped_cv": {
+          "mean": 0.8184,
+          "sd": 0.0123,
+          "min": 0.8043,
+          "max": 0.8267,
+          "n": 3
+        }
+      }
+    },
+    "runtime_seconds": 16.7
+  },
+  "calibration": {
+    "config": {
+      "model": "xgboost",
+      "n_repeats": 3,
+      "n_splits": 5,
+      "seed": 42,
+      "calibration_subject_fraction_per_training_fold": 0.25
+    },
+    "raw_probabilities": {
+      "auroc": {
+        "mean": 0.792,
+        "sd": 0.0183,
+        "min": 0.7785,
+        "max": 0.8128,
+        "n": 3
+      },
+      "brier": {
+        "mean": 0.1798,
+        "sd": 0.0119,
+        "min": 0.1669,
+        "max": 0.1903,
+        "n": 3
+      },
+      "log_loss": {
+        "mean": 0.5696,
+        "sd": 0.0395,
+        "min": 0.5241,
+        "max": 0.5938,
+        "n": 3
+      },
+      "ece_10bin": {
+        "mean": 0.1128,
+        "sd": 0.0142,
+        "min": 0.0975,
+        "max": 0.1257,
+        "n": 3
+      }
+    },
+    "platt_scaled_on_held_out_subjects": {
+      "auroc": {
+        "mean": 0.7728,
+        "sd": 0.043,
+        "min": 0.7322,
+        "max": 0.8179,
+        "n": 3
+      },
+      "brier": {
+        "mean": 0.1786,
+        "sd": 0.0204,
+        "min": 0.1562,
+        "max": 0.1961,
+        "n": 3
+      },
+      "log_loss": {
+        "mean": 0.5441,
+        "sd": 0.0588,
+        "min": 0.4769,
+        "max": 0.5862,
+        "n": 3
+      },
+      "ece_10bin": {
+        "mean": 0.0818,
+        "sd": 0.0273,
+        "min": 0.0504,
+        "max": 0.1006,
+        "n": 3
+      }
+    },
+    "reliability_bins_raw_last_repeat": [
+      {
+        "bin": 0,
+        "n": 127,
+        "mean_predicted": 0.0353,
+        "observed_rate": 0.0866
+      },
+      {
+        "bin": 1,
+        "n": 44,
+        "mean_predicted": 0.1436,
+        "observed_rate": 0.2273
+      },
+      {
+        "bin": 2,
+        "n": 27,
+        "mean_predicted": 0.2429,
+        "observed_rate": 0.4074
+      },
+      {
+        "bin": 3,
+        "n": 14,
+        "mean_predicted": 0.3509,
+        "observed_rate": 0.3571
+      },
+      {
+        "bin": 4,
+        "n": 14,
+        "mean_predicted": 0.4346,
+        "observed_rate": 0.2857
+      },
+      {
+        "bin": 5,
+        "n": 17,
+        "mean_predicted": 0.5572,
+        "observed_rate": 0.4118
+      },
+      {
+        "bin": 6,
+        "n": 23,
+        "mean_predicted": 0.6495,
+        "observed_rate": 0.4348
+      },
+      {
+        "bin": 7,
+        "n": 18,
+        "mean_predicted": 0.7666,
+        "observed_rate": 0.5556
+      },
+      {
+        "bin": 8,
+        "n": 24,
+        "mean_predicted": 0.8495,
+        "observed_rate": 0.6667
+      },
+      {
+        "bin": 9,
+        "n": 27,
+        "mean_predicted": 0.9533,
+        "observed_rate": 0.963
+      }
+    ],
+    "runtime_seconds": 4.2
+  },
+  "conformal": {
+    "config": {
+      "model": "xgboost",
+      "alpha": 0.1,
+      "target_coverage": 0.9,
+      "n_repeats_requested": 20,
+      "n_repeats_used": 20,
+      "seed": 42,
+      "subject_fractions_train_calibration_test": [
+        0.5,
+        0.25,
+        0.25
+      ]
+    },
+    "empirical_coverage": {
+      "mean": 0.926,
+      "sd": 0.0599,
+      "min": 0.8,
+      "max": 1.0,
+      "n": 20
+    },
+    "coverage_given_true_class": {
+      "control": {
+        "mean": 0.95,
+        "sd": 0.0628,
+        "min": 0.8125,
+        "max": 1.0,
+        "n": 20
+      },
+      "alzheimers": {
+        "mean": 0.8833,
+        "sd": 0.1273,
+        "min": 0.6667,
+        "max": 1.0,
+        "n": 20
+      }
+    },
+    "mean_prediction_set_size": {
+      "mean": 1.6785,
+      "sd": 0.1698,
+      "min": 1.3182,
+      "max": 1.9459,
+      "n": 20
+    },
+    "fraction_singleton_sets": {
+      "mean": 0.3215,
+      "sd": 0.1698,
+      "min": 0.0541,
+      "max": 0.6818,
+      "n": 20
+    },
+    "fraction_both_labels_abstain": {
+      "mean": 0.6785,
+      "sd": 0.1698,
+      "min": 0.3182,
+      "max": 0.9459,
+      "n": 20
+    },
+    "fraction_empty_sets": {
+      "mean": 0.0,
+      "sd": 0.0,
+      "min": 0.0,
+      "max": 0.0,
+      "n": 20
+    },
+    "test_auroc_of_underlying_model": {
+      "mean": 0.791,
+      "sd": 0.0907,
+      "min": 0.5678,
+      "max": 0.9294,
+      "n": 20
+    },
+    "caveat": "Empirical all-visit subject coverage, calibrated on subject maxima. Exchangeability is an assumption; test sets are small (~25 subjects) so per-repeat coverage is noisy. Not external validation.",
+    "runtime_seconds": 4.5
+  },
+  "shap_stability": {
+    "config": {
+      "model": "xgboost",
+      "n_boot_requested": 10,
+      "n_boot_used": 10,
+      "top_k": 20,
+      "seed": 42,
+      "resampling_unit": "subject (study_id)"
+    },
+    "pairwise_jaccard_top_k": {
+      "mean": 0.2544,
+      "sd": 0.0737,
+      "min": 0.0526,
+      "max": 0.4286,
+      "n": 45
+    },
+    "pairwise_spearman_all_features": {
+      "mean": 0.6165,
+      "sd": 0.0317,
+      "min": 0.5367,
+      "max": 0.6763,
+      "n": 45
+    },
+    "consensus_top_features": [
+      {
+        "feature": "malnutrition_indicator_sco",
+        "selected_in_n_bootstraps": 10,
+        "selection_frequency": 1.0,
+        "mean_abs_shap": 0.82061
+      },
+      {
+        "feature": "clinical_frailty_scale",
+        "selected_in_n_bootstraps": 9,
+        "selection_frequency": 0.9,
+        "mean_abs_shap": 0.60505
+      },
+      {
+        "feature": "PPI",
+        "selected_in_n_bootstraps": 9,
+        "selection_frequency": 0.9,
+        "mean_abs_shap": 0.57886
+      },
+      {
+        "feature": "Neglecta timonensis",
+        "selected_in_n_bootstraps": 9,
+        "selection_frequency": 0.9,
+        "mean_abs_shap": 0.50088
+      },
+      {
+        "feature": "Phocaeicola dorei",
+        "selected_in_n_bootstraps": 9,
+        "selection_frequency": 0.9,
+        "mean_abs_shap": 0.2569
+      },
+      {
+        "feature": "Cloacibacillus evryensis",
+        "selected_in_n_bootstraps": 8,
+        "selection_frequency": 0.8,
+        "mean_abs_shap": 0.25388
+      },
+      {
+        "feature": "GGB3433 SGB4573",
+        "selected_in_n_bootstraps": 8,
+        "selection_frequency": 0.8,
+        "mean_abs_shap": 0.22634
+      },
+      {
+        "feature": "GGB3005 SGB3996",
+        "selected_in_n_bootstraps": 6,
+        "selection_frequency": 0.6,
+        "mean_abs_shap": 0.09233
+      },
+      {
+        "feature": "Faecalibacterium prausnitzii",
+        "selected_in_n_bootstraps": 5,
+        "selection_frequency": 0.5,
+        "mean_abs_shap": 0.16739
+      },
+      {
+        "feature": "GABA Analogs",
+        "selected_in_n_bootstraps": 5,
+        "selection_frequency": 0.5,
+        "mean_abs_shap": 0.16636
+      },
+      {
+        "feature": "Roseburia faecis",
+        "selected_in_n_bootstraps": 5,
+        "selection_frequency": 0.5,
+        "mean_abs_shap": 0.11564
+      },
+      {
+        "feature": "Bilophila wadsworthia",
+        "selected_in_n_bootstraps": 5,
+        "selection_frequency": 0.5,
+        "mean_abs_shap": 0.0878
+      },
+      {
+        "feature": "Phocaeicola vulgatus",
+        "selected_in_n_bootstraps": 4,
+        "selection_frequency": 0.4,
+        "mean_abs_shap": 0.12131
+      },
+      {
+        "feature": "Clostridium leptum",
+        "selected_in_n_bootstraps": 4,
+        "selection_frequency": 0.4,
+        "mean_abs_shap": 0.09659
+      },
+      {
+        "feature": "Bacteroides uniformis",
+        "selected_in_n_bootstraps": 4,
+        "selection_frequency": 0.4,
+        "mean_abs_shap": 0.09087
+      },
+      {
+        "feature": "Seizure Medications",
+        "selected_in_n_bootstraps": 4,
+        "selection_frequency": 0.4,
+        "mean_abs_shap": 0.08962
+      },
+      {
+        "feature": "Clostridia unclassified SGB4121",
+        "selected_in_n_bootstraps": 4,
+        "selection_frequency": 0.4,
+        "mean_abs_shap": 0.06374
+      },
+      {
+        "feature": "Ruminococcus torques",
+        "selected_in_n_bootstraps": 3,
+        "selection_frequency": 0.3,
+        "mean_abs_shap": 0.08918
+      },
+      {
+        "feature": "Barnesiella intestinihominis",
+        "selected_in_n_bootstraps": 3,
+        "selection_frequency": 0.3,
+        "mean_abs_shap": 0.07926
+      },
+      {
+        "feature": "Probiotics",
+        "selected_in_n_bootstraps": 3,
+        "selection_frequency": 0.3,
+        "mean_abs_shap": 0.0566
+      }
+    ],
+    "runtime_seconds": 7.1
+  },
+  "total_runtime_seconds": 51.8
+}

@@ -15,7 +15,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from app.database import check_db_connection
+from app.database import check_db_connection, record_db_state
 from app.config import get_settings
 
 import asyncio
@@ -79,9 +79,13 @@ async def health_check() -> HealthResponse:
         db_err = "Database connection timed out (2s limit)"
     except Exception as e:
         db_status = "disconnected"
-        db_err = str(e)
+        db_err = "Database connection unavailable"
 
-    overall_status = "healthy" if db_status == "connected" else "degraded"
+    available = db_status == "connected"
+    record_db_state(available)
+    overall_status = "healthy" if available or settings.database_optional else "degraded"
+    if not available and settings.database_optional:
+        db_status = "unavailable (optional)"
 
     return HealthResponse(
         status=overall_status,
