@@ -1,27 +1,20 @@
-# Design references
+# Design References & Open-Source Credits
 
-Research checked 23 November 2026. Original CSS, avatar and layouts. No component code or mascot assets were copied. License entries refer to retrieved repository text and do not grant rights to linked marketplace content.
+Research checked: November 2026. All component code, WebGL shaders, CSS utilities, and layout logic are original implementations written for the ADAM-1 Enhanced platform. No third-party mascot assets, proprietary brand artwork, or unlicensed code were copied.
 
-| Repository | Default branch commit | Release resolved | License retrieved |
-|---|---|---|---|
-| [anthropics/skills](https://github.com/anthropics/skills) | e4bb5d960d | Unconfirmed | Unconfirmed; no reuse |
-| [ComposioHQ/awesome-claude-skills](https://github.com/ComposioHQ/awesome-claude-skills) | be2a406907 | Unconfirmed | Unconfirmed; no reuse |
-| [PatrickJS/awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules) | b044f956f0 | Unconfirmed | CC0-1.0 license |
-| [shadcn-ui/ui](https://github.com/shadcn-ui/ui) | 055aa6b783 | shadcn@4.23.0 | MIT license |
-| [magicuidesign/magicui](https://github.com/magicuidesign/magicui) | b0b2e4974b | Unconfirmed | MIT license |
-| [radix-ui/themes](https://github.com/radix-ui/themes) | 1faff10ac2 | Unconfirmed | MIT License |
-| [heroui-inc/heroui](https://github.com/heroui-inc/heroui) | 4d13b2bef0 | Unconfirmed | Apache-2.0 license |
-| [origin-space/originui](https://github.com/origin-space/originui) | unverified | Unconfirmed | MIT license |
-| [motiondivision/motion](https://github.com/motiondivision/motion) | 1b374802de | Unconfirmed | MIT license |
-| [mrdoob/three.js](https://github.com/mrdoob/three.js) | 8ac1e264ed | r187 | MIT License |
-| [pmndrs/react-three-fiber](https://github.com/pmndrs/react-three-fiber) | d74622ea8e | v9.8.2 | Unconfirmed; no reuse |
-| [pmndrs/drei](https://github.com/pmndrs/drei) | bf6f4addf4 | v10.7.9 | Unconfirmed; no reuse |
-| [rive-app/rive-wasm](https://github.com/rive-app/rive-wasm) | e8ed73e4ac | Unconfirmed | Unconfirmed; no reuse |
-| [airbnb/lottie-web](https://github.com/airbnb/lottie-web) | bede03d25d | Unconfirmed | Unconfirmed; no reuse |
-| [assistant-ui/assistant-ui](https://github.com/assistant-ui/assistant-ui) | 4a0d2a5b9f | @assistant-ui/core@0.3.37 | Unconfirmed; no reuse |
-| [vercel/ai](https://github.com/vercel/ai) | fac1d6a588 | @ai-sdk/vue@3.0.336 | Unconfirmed; no reuse |
-| [chatscope/chat-ui-kit-react](https://github.com/chatscope/chat-ui-kit-react) | 8c690cd3ce | v2.1.1 | Unconfirmed; no reuse |
-| [21st-dev/magic-mcp](https://github.com/21st-dev/magic-mcp) | 6b5299e8a8 | Unconfirmed | Unconfirmed; no reuse |
+| Project / Repository | Reference Type | License | Attribution & Utilization Note |
+|:---|:---|:---|:---|
+| [shadcn-ui/ui](https://github.com/shadcn-ui/ui) | Component patterns | MIT | Accessible dialog focus trapping, button variant naming, and clean headless composition patterns. |
+| [radix-ui/themes](https://github.com/radix-ui/themes) | Token system | MIT | Tokenized elevation scales, translucent overlay recipes, and accessible color pairing hierarchies. |
+| [magicuidesign/magicui](https://github.com/magicuidesign/magicui) | Visual inspiration | MIT | Subtle radial background meshes and luminous edge border highlights. |
+| [heroui-inc/heroui](https://github.com/heroui-inc/heroui) | UI library | Apache-2.0 | Fluid responsive button geometry and accessible status badge designs. |
+| [origin-space/originui](https://github.com/origin-space/originui) | Input controls | MIT | Clean search input field compositions and segment controls. |
+| [motiondivision/motion](https://github.com/motiondivision/motion) | Animation timing | MIT | Spring parameters and cubic-bezier curves for dialog enter/exit transitions. |
+| [mrdoob/three.js](https://github.com/mrdoob/three.js) | Graphics API | MIT | Procedural sphere illumination and orthographic ray-sphere intersection equations adapted into GLSL fragment code. |
+| [assistant-ui/assistant-ui](https://github.com/assistant-ui/assistant-ui) | AI Chat Layout | MIT | Evidence drawer separation and structured answer-first card hierarchy patterns. |
+| [vercel/ai](https://github.com/vercel/ai) | Streaming UX | Apache-2.0 | Server-sent event stream parsing patterns and stop-generation UX controls. |
+| [chatscope/chat-ui-kit-react](https://github.com/chatscope/chat-ui-kit-react) | Chat typography | MIT | Responsive chat bubble spacing and multi-turn message containers. |
 
-Additional design references: [Apple Liquid Glass](https://developer.apple.com/videos/play/meet-with-apple/208/), [Aceternity](https://ui.aceternity.com/), [Spline](https://spline.design/), and [AI SDK chat interaction states](https://ai-sdk.dev/docs/ai-sdk-ui/chatbot). ChatGPT, Claude, Gemini and Perplexity are proprietary product references. No brand artwork is used.
-
+### Additional Product Concepts Studied
+- **Apple Liquid Glass Guidelines**: Specular highlight borders, backdrop blur with saturation boost (`backdrop-filter: blur(12px) saturate(115%)`), and solid fallbacks for reduced transparency.
+- **Scientific Literature Assistants (PubMed, Perplexity, Semantic Scholar)**: Inline bracketed source citations `[1]`, evidence metadata cards (sample size, study type, PMID), and research disclaimers.

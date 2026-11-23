@@ -533,33 +533,34 @@ html, body {
 }
 
 
-:root{--glass-base:#fff;--glass-text:#172d37;--glass-muted:#435d65;--glass-tint:#075f63;--glass-edge:#a6c1c2;--glass-mesh:#e5f2ee;--glass-shadow:0 1px 2px #13373312,0 8px 24px #113d3a0b}
-.dark{--glass-base:#172631;--glass-text:#eef6f5;--glass-muted:#b5cbd0;--glass-tint:#87e3dc;--glass-edge:#49636a;--glass-mesh:#163237;--glass-shadow:0 1px 2px #0004,0 8px 24px #0002}
+:root{--glass-base:#fff;--glass-text:#172d37;--glass-muted:#435d65;--glass-tint:#075f63;--glass-edge:#a6c1c2;--glass-mesh:#e5f2ee;--glass-shadow:0 1px 3px #13373318,0 8px 24px #113d3a12}
+.dark{--glass-base:#172631;--glass-text:#eef6f5;--glass-muted:#b5cbd0;--glass-tint:#87e3dc;--glass-edge:#49636a;--glass-mesh:#163237;--glass-shadow:0 2px 6px #0006,0 10px 28px #0004}
 .glass-shell{color:var(--glass-text);background:radial-gradient(ellipse at 86% 4%,var(--glass-mesh),transparent 54%),rgb(var(--surface-950))}
-.glass-shell .card,.aira-dialog,.aira-launch{background-color:var(--glass-base);border:1px solid var(--glass-edge);border-radius:16px;box-shadow:inset 0 1px 0 #ffffff28,var(--glass-shadow)}
+.glass-shell .card,.aira-dialog,.aira-launch{background-color:var(--glass-base);border:1px solid var(--glass-edge);border-radius:16px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.22),var(--glass-shadow)}
 .glass-shell main>div{max-width:90rem;margin-inline:auto}
-.glass-shell .card{background-image:linear-gradient(145deg,#ffffff0c,transparent 45%)}
+.glass-shell .card{background-image:linear-gradient(145deg,rgba(255,255,255,0.06),transparent 45%)}
 .glass-shell :where(button,select,input,textarea),.aira-dialog :where(button,select,textarea){border-radius:10px}
 .glass-shell :where(button,a,input,textarea,select,summary):focus-visible,.aira-dialog :focus-visible{outline:3px solid var(--glass-tint);outline-offset:3px}
 .glass-shell button:active:not(:disabled){transform:translateY(1px)}
 .glass-shell button:disabled,.aira-dialog button:disabled{opacity:.65;cursor:default}
 .glass-shell a:not([class*="card"]):not(nav a),.aira-dialog a{color:var(--glass-tint);text-decoration:none}
 .glass-shell a:hover,.aira-dialog a:hover{text-decoration:underline;text-underline-offset:.2em}
-.glass-shell h1{font-size:clamp(20px,2vw,26px);letter-spacing:-.025em}
+.glass-shell h1{font-size:clamp(18px,2vw,26px);letter-spacing:-.025em}
 .glass-shell main>.space-y-5>.grid>.card{display:block;padding:1.25rem;font-weight:600}
 .glass-shell input:not([type=checkbox]):not([type=range]),.glass-shell textarea,.glass-shell select,.aira-dialog textarea,.aira-dialog select{border:1px solid var(--glass-edge);background:var(--glass-base);color:var(--glass-text);padding:.5rem .65rem;max-width:100%}
 .glass-button,.chat-options select,.chat-actions button,.dialog-tools button,.chat-history button,.chat-empty button,.composer button,.bubble>button,.assistant-heading button{padding:.45rem .7rem;background:var(--glass-base);color:var(--glass-tint);border:1px solid var(--glass-edge);border-radius:10px}
 .export-actions,.chat-actions,.dialog-tools,.assistant-heading,.composer,.chat-options,.answer-title{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
 .export-actions button,.aira-launch{display:inline-flex;align-items:center;gap:.4rem}
-.aira-launch{position:fixed;bottom:1rem;right:1rem;z-index:31;font-weight:700;color:var(--glass-tint);padding:.2rem .85rem .2rem .25rem;border-radius:999px}
+.aira-launch{position:fixed;bottom:1.25rem;right:1.25rem;z-index:35;font-weight:700;color:var(--glass-tint);padding:.25rem;border-radius:999px;transition:all .15s ease-out}
+@media(min-width:640px){.aira-launch{padding:.25rem .85rem .25rem .3rem}}
 .aira-orb{display:inline-grid;place-items:center;position:relative;width:44px;height:44px;flex:none}
 .aira-orb canvas{position:absolute;width:44px;height:44px}
-.aira-dialog{position:fixed;inset:auto 1rem 1rem auto;margin:0;width:min(380px,96vw);height:min(600px,90dvh);color:var(--glass-text);padding:.75rem;overflow:hidden}
+.aira-dialog{position:fixed;inset:auto 1rem 1rem auto;margin:0;width:min(420px,96vw);height:min(620px,88dvh);color:var(--glass-text);padding:.85rem;overflow:hidden;background-color:color-mix(in srgb,var(--glass-base) 96%,transparent);backdrop-filter:blur(16px) saturate(120%);box-shadow:0 12px 36px rgba(0,0,0,0.3)}
 .aira-dialog[open]{display:flex;flex-direction:column;animation:aira-open .24s ease-out}
-.aira-dialog::backdrop{background:#07181950}
+.aira-dialog::backdrop{background:rgba(7,24,25,0.6);backdrop-filter:blur(3px)}
 @keyframes aira-open{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
 .dialog-tools{justify-content:flex-end;font-size:.8rem;margin-bottom:.5rem}
-.assistant-layout{display:grid;grid-template-columns:minmax(130px,.7fr) minmax(260px,2.8fr) minmax(160px,1fr);gap:.9rem;height:calc(100dvh - 7rem);min-height:300px}
+.assistant-layout{display:grid;grid-template-columns:minmax(140px,.8fr) minmax(260px,2.8fr) minmax(160px,1fr);gap:.9rem;height:calc(100dvh - 7rem);min-height:300px}
 .assistant-layout.compact{display:flex;height:auto;min-height:0;flex:1}
 .chat-main,.chat-history,.evidence-list{padding:1rem;min-width:0}
 .chat-main{display:flex;flex-direction:column;gap:.75rem;min-height:0;width:100%}
@@ -577,9 +578,9 @@ html, body {
 .chat-actions{margin-top:.7rem}
 .chat-actions [aria-pressed=true]{outline:2px solid var(--glass-tint)}
 .composer{flex-wrap:nowrap}.composer textarea{flex:1;min-width:0;resize:none}
-@supports(backdrop-filter:blur(1px)){.glass-shell>aside,.glass-shell header.sticky,.aira-dialog{background-color:color-mix(in srgb,var(--glass-base) 91%,transparent);backdrop-filter:blur(12px) saturate(115%)}}
+@supports(backdrop-filter:blur(1px)){.glass-shell>aside,.glass-shell header.sticky{background-color:color-mix(in srgb,var(--glass-base) 92%,transparent);backdrop-filter:blur(14px) saturate(115%)}}
 @media(max-width:800px){.assistant-layout{grid-template-columns:1fr;height:auto}.chat-history,.evidence-list{max-height:10rem}.chat-main{min-height:55dvh}.compact .chat-main{min-height:0}}
-@media(max-width:540px){.aira-dialog{inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;border-radius:0}.glass-shell main{padding-bottom:5rem}.export-actions button{font-size:12px}}
+@media(max-width:640px){.aira-dialog{inset:auto 0 0 0;width:100vw;height:min(580px,92dvh);max-width:none;border-bottom-left-radius:0;border-bottom-right-radius:0}.export-actions button{font-size:12px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 @media(prefers-reduced-transparency:reduce){.glass-shell>aside,.glass-shell header.sticky,.aira-dialog{background:var(--glass-base);backdrop-filter:none}}
 @media print{.aira-launch,.aira-dialog,.export-actions{display:none!important}}
