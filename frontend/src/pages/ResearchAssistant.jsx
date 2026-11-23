@@ -12,7 +12,7 @@ export default function ResearchAssistant({compact=false}) {
   function send(){if(draft.trim()&&!chat.busy){chat.ask(draft);setDraft('');follow.current=true}}
   const sources=[...chat.active.messages].reverse().find(m=>m.data)?.data.sources||[]
   return <div className={'assistant-layout '+(compact?'compact':'')}>
-    {!compact && <aside className="card chat-history"><h2>Conversations</h2><button onClick={chat.newChat}>New chat</button>
+    {!compact && <aside className="card chat-history"><h2>Conversations</h2><button className="new-chat-btn" onClick={chat.newChat}>+ New conversation</button>
       {chat.threads.map(t=><button key={t.id} aria-current={t.id===chat.active.id?'true':undefined} onClick={()=>chat.choose(t.id)}>{t.messages[0]?.text||'New conversation'}</button>)}</aside>}
     <section className="card chat-main"><header className="assistant-heading"><Avatar animated state={chat.busy?(chat.partial?'answering':'thinking'):draft?'listening':last?.role==='error'?'error':last?.data?'answering':'idle'}/>
       <div><h2>AIRA</h2><p>Evidence assistant</p></div><button className="ml-auto" onClick={chat.clear}>Clear chat</button></header>
