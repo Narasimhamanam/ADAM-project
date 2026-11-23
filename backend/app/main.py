@@ -22,7 +22,7 @@ from fastapi.responses import JSONResponse
 from app.config import get_settings
 from app.core.logging import configure_logging, get_logger
 from app.database import initialize_with_backoff, engine
-from app.routers import health, system, datasets, ml, ai, trajectory, research
+from app.routers import answers, reports, health, system, datasets, ml, ai, trajectory, research
 
 # ---------------------------------------------------------------------------
 # Bootstrap logging before anything else
@@ -204,6 +204,8 @@ async def global_exception_handler(request: Request, exc: Exception) -> JSONResp
 # ---------------------------------------------------------------------------
 API_PREFIX = settings.api_prefix  # /api
 
+app.include_router(answers.router, prefix=API_PREFIX)
+app.include_router(reports.router, prefix=API_PREFIX)
 app.include_router(health.router, prefix=API_PREFIX)
 app.include_router(system.router, prefix=API_PREFIX)
 app.include_router(datasets.router, prefix=API_PREFIX)

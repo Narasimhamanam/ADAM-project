@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import ReportDownloads from '../components/ReportDownloads'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import {
   Users,
   Search,
@@ -32,7 +33,7 @@ import Skeleton from '../components/ui/Skeleton'
 
 export default function PatientExplorer() {
   const [subjects, setSubjects] = useState([])
-  const [selectedSubjectId, setSelectedSubjectId] = useState('CH1-011')
+  const [selectedSubjectId, setSelectedSubjectId] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
   const [diagnosisFilter, setDiagnosisFilter] = useState('all')
   const [visitFilter, setVisitFilter] = useState('all') // 'all' | 'multiple' | 'single'
@@ -45,10 +46,6 @@ export default function PatientExplorer() {
   const [listError, setListError] = useState(null)
   const [detailError, setDetailError] = useState(null)
 
-  // Independent imaging state (OASIS-1)
-  const [imagingSubjects, setImagingSubjects] = useState([])
-  const [loadingImaging, setLoadingImaging] = useState(false)
-  const [selectedImagingId, setSelectedImagingId] = useState('OAS1_0001')
   const [activeTab, setActiveTab] = useState('timeline') // 'timeline' | 'clinical' | 'imaging'
 
   // 1. Load subjects list (Lightweight, single non-blocking call)
@@ -63,8 +60,8 @@ export default function PatientExplorer() {
       if (list.length > 0) {
         // Keep selected if present, else select first subject
         setSelectedSubjectId((prev) => {
-          if (prev && list.some((s) => s.study_id === prev)) return prev
-          return list[0].study_id
+          if (prev && list.some((s) => (s.subject_id || s.study_id) === prev)) return prev
+          return (list[0].subject_id || list[0].study_id)
         })
       }
     } catch (err) {
@@ -80,8 +77,12 @@ export default function PatientExplorer() {
   }, [loadSubjectsList])
 
   // 2. Load detailed data for selected subject (Lightweight, no TreeSHAP on initial view)
+  const detailSequence = useRef(0)
   const loadSubjectDetail = useCallback(async (subjId) => {
     if (!subjId) return
+    const request = ++detailSequence.current
+    setTrajectoryData(null)
+    setDigitalTwinProfile(null)
     setLoadingSubject(true)
     setDetailError(null)
 
@@ -92,6 +93,7 @@ export default function PatientExplorer() {
         fetchDigitalTwinProfile('ADAM1_BASELINE', subjId),
       ])
 
+      if (request !== detailSequence.current) return
       if (trajRes.status === 'fulfilled' && trajRes.value) {
         setTrajectoryData(trajRes.value)
       } else if (trajRes.status === 'rejected') {
@@ -111,7 +113,7 @@ export default function PatientExplorer() {
       console.error('Failed to load participant detail:', err)
       setDetailError(err.message || 'Failed to retrieve participant records.')
     } finally {
-      setLoadingSubject(false)
+      if (request === detailSequence.current) setLoadingSubject(false)
     }
   }, [])
 
@@ -121,28 +123,7 @@ export default function PatientExplorer() {
     }
   }, [selectedSubjectId, loadSubjectDetail])
 
-  // 3. Lazy-load OASIS-1 Neuroimaging records only when imaging tab is activated
-  useEffect(() => {
-    if (activeTab === 'imaging' && imagingSubjects.length === 0 && !loadingImaging) {
-      let isMounted = true
-      setLoadingImaging(true)
-      fetchNeuroimagingSubjects('OASIS1_MRI')
-        .then((res) => {
-          if (isMounted) {
-            setImagingSubjects(res?.subjects || [])
-          }
-        })
-        .catch((err) => {
-          console.warn('Could not load neuroimaging subjects:', err)
-        })
-        .finally(() => {
-          if (isMounted) setLoadingImaging(false)
-        })
-      return () => {
-        isMounted = false
-      }
-    }
-  }, [activeTab, imagingSubjects.length, loadingImaging])
+
 
   // Filtered participant list
   const filteredSubjects = useMemo(() => {
@@ -160,7 +141,7 @@ export default function PatientExplorer() {
       const matchesSearch =
         !searchQuery ||
         s.subject_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.study_id?.toLowerCase().includes(searchQuery.toLowerCase())
+        (s.subject_id || s.study_id)?.toLowerCase().includes(searchQuery.toLowerCase())
       return matchesDiagnosis && matchesVisits && matchesSearch
     })
   }, [subjects, diagnosisFilter, visitFilter, searchQuery])
@@ -187,8 +168,8 @@ export default function PatientExplorer() {
     // Support both observations and visits compatibility aliases
     const rawList = trajectoryData.observations || trajectoryData.visits || []
     return rawList.map((obs, idx) => {
-      const dayOffset = obs.study_day ?? obs.day_offset ?? obs.day ?? 0
-      const prob = obs.ad_probability ?? obs.predicted_probability ?? obs.risk_probability ?? 0.5
+      const dayOffset = obs.study_day ?? obs.day_offset ?? obs.day ?? null
+      const prob = obs.ad_probability ?? obs.predicted_probability ?? obs.risk_probability ?? null
 
       // Harmonize species abundance
       let keyTaxa = []
@@ -202,7 +183,7 @@ export default function PatientExplorer() {
       }
 
       return {
-        sample_id: obs.sample_id || `Sample-${idx + 1}`,
+        sample_id: obs.sample_id || null,
         study_day: dayOffset,
         sample_date: obs.sample_date || null,
         ad_probability: prob,
@@ -257,16 +238,7 @@ export default function PatientExplorer() {
           >
             Digital Twin &amp; Biomarkers
           </button>
-          <button
-            onClick={() => setActiveTab('imaging')}
-            className={`px-3 py-1.5 rounded-md font-semibold transition-colors ${
-              activeTab === 'imaging'
-                ? 'bg-primary-600 text-white shadow-sm'
-                : 'text-surface-400 hover:text-surface-200'
-            }`}
-          >
-            Independent Imaging Resource
-          </button>
+
         </div>
       </div>
 
@@ -299,7 +271,7 @@ export default function PatientExplorer() {
         <div className="card p-4 space-y-3 lg:col-span-1 flex flex-col h-[720px]">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-surface-400">
-              Participants ({filteredSubjects.length}/{subjects.length || 102})
+              Participants ({filteredSubjects.length}/{subjects.length})
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-800 text-surface-400 font-mono">
               ADAM1_BASELINE
@@ -311,7 +283,7 @@ export default function PatientExplorer() {
             <Search size={13} className="absolute left-2.5 top-2.5 text-surface-400" />
             <input
               type="text"
-              placeholder="Search study_id (e.g. CH1-011)..."
+              placeholder="Search by study ID"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full text-xs pl-8 pr-3 py-1.5 rounded-md bg-surface-900 border border-surface-700 text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
@@ -344,7 +316,7 @@ export default function PatientExplorer() {
           {/* Quick Filter Chips for Prominent Verified Subjects */}
           <div className="flex flex-wrap gap-1 pt-1 border-t border-surface-700/50">
             <span className="text-[10px] text-surface-400 font-medium">Frequent:</span>
-            {['CH1-011', 'CH1-017', 'CH1-172', 'CH1-173', 'CH1-149'].map((id) => (
+            {filteredSubjects.slice(0, 5).map(s => s.subject_id || s.study_id).map((id) => (
               <button
                 key={id}
                 onClick={() => setSelectedSubjectId(id)}
@@ -434,7 +406,7 @@ export default function PatientExplorer() {
                     </div>
                     <div>
                       <h2 className="text-lg font-bold text-surface-50 font-mono flex items-center gap-2">
-                        {selectedSubjectId || 'CH1-011'}
+                        {selectedSubjectId || 'Unavailable'}
                         <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-surface-800 text-surface-300 border border-surface-700 font-sans">
                           Cohort: ADAM1_BASELINE
                         </span>
@@ -463,7 +435,7 @@ export default function PatientExplorer() {
                   <div className="p-2.5 rounded-lg bg-surface-900 border border-surface-700/60">
                     <span className="text-surface-400 block text-[11px]">Age Category:</span>
                     <span className="text-surface-100 font-semibold font-mono">
-                      {digitalTwinProfile?.clinical_baseline?.age_cat ?? '≥75 (Senior)'}
+                      {digitalTwinProfile?.clinical_baseline?.age_cat ?? 'Unavailable'}
                     </span>
                   </div>
                   <div className="p-2.5 rounded-lg bg-surface-900 border border-surface-700/60">
@@ -524,10 +496,10 @@ export default function PatientExplorer() {
                               <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                                 <div className="flex items-center gap-2">
                                   <span className="font-bold text-surface-100 font-mono">
-                                    Visit {idx + 1}: Sample {v.sample_id}
+                                    Visit {idx + 1}: Sample {v.sample_id || 'unavailable'}
                                   </span>
                                   <span className="text-[11px] px-2 py-0.5 rounded bg-surface-800 text-surface-300 font-mono">
-                                    Day {v.study_day}
+                                    Day {v.study_day ?? 'unavailable'}
                                   </span>
                                   {v.sample_date && (
                                     <span className="text-[11px] text-surface-500 font-mono">
@@ -537,14 +509,16 @@ export default function PatientExplorer() {
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                  <span className="text-[11px] text-surface-400">Calibrated Risk:</span>
+                                  <span className="text-[11px] text-surface-400">Model probability:</span>
                                   <span className="font-mono font-bold text-surface-50">
-                                    {(prob * 100).toFixed(1)}%
+                                    {Number.isFinite(prob) ? (prob * 100).toFixed(1) + '%' : 'Unavailable'}
                                   </span>
                                 </div>
                               </div>
 
-                              {/* Progress bar of calibrated risk */}
+                              <small>Research use only, not a medical device. Individual interval unavailable.</small>
+                              {v.sample_id && <ReportDownloads key={v.sample_id} record={v.sample_id} />}
+                              {/* Model probability */}
                               <div className="w-full bg-surface-800 rounded-full h-1.5 overflow-hidden">
                                 <div
                                   className={`h-full ${prob >= 0.5 ? 'bg-rose-500' : 'bg-emerald-500'}`}
@@ -577,6 +551,15 @@ export default function PatientExplorer() {
               )}
 
               {/* ── Tab 2: Digital Twin & Biomarkers ── */}
+              {activeTab === 'clinical' && digitalTwinProfile && <section className="card p-4 space-y-2">
+                <h3>Clinical matches for {digitalTwinProfile.participant_id}</h3>
+                <p>First visit per subject. Similarity equals one minus the mean range-scaled difference in age, frailty and malnutrition. Descriptive similarity has no calibrated confidence interval.</p>
+                {(digitalTwinProfile.clinical_matches || []).map(m => <p key={m.participant_id}>
+                  <a className="text-accent-400 underline" href={'/reports?sample=' + encodeURIComponent(m.sample_id)}>{m.participant_id} · {m.sample_id}</a>
+                  {' · Similarity ' + m.similarity.toFixed(3) + ' · Closest on ' + m.closest_features.join(', ') + ' · Recorded label ' + m.recorded_label}
+                </p>)}
+                {!digitalTwinProfile.clinical_matches?.length && <p>No eligible matches available.</p>}
+              </section>}
               {activeTab === 'clinical' && (
                 <div className="card p-5 space-y-4">
                   <div className="flex items-center justify-between">
@@ -597,7 +580,7 @@ export default function PatientExplorer() {
                           <ul className="space-y-1 text-surface-400">
                             <li>Total visits observed: <strong className="text-surface-100 font-mono">{digitalTwinProfile.total_observed_visits ?? timelineObservations.length}</strong></li>
                             <li>Incident progression observed: <strong className="text-surface-100">None (Static Cohort)</strong></li>
-                            <li>Static Diagnosis: <strong className="text-surface-100">{digitalTwinProfile.static_clinical_diagnosis || digitalTwinProfile.diagnosis_status || 'Cognitively Stable'}</strong></li>
+                            <li>Static Diagnosis: <strong className="text-surface-100">{digitalTwinProfile.static_clinical_diagnosis || digitalTwinProfile.diagnosis_status || 'Unavailable'}</strong></li>
                             <li>Mean calibrated probability: <strong className="text-surface-100 font-mono">{digitalTwinProfile.mean_predicted_probability ? `${(digitalTwinProfile.mean_predicted_probability * 100).toFixed(1)}%` : 'N/A'}</strong></li>
                             <li>Observation span: <strong className="text-surface-100 font-mono">{digitalTwinProfile.observation_span_days ?? totalFollowUpSpan} days</strong></li>
                           </ul>
@@ -609,97 +592,19 @@ export default function PatientExplorer() {
                             Participant exhibits stable longitudinal trajectory with consistent Shannon diversity index across repeated sampling waves.
                           </p>
                           <div className="p-2 rounded bg-surface-800 text-[10px] text-surface-300 font-mono">
-                            Status Verdict: {digitalTwinProfile.longitudinal_stability_verdict || 'STABLE'}
+                            Status Verdict: {digitalTwinProfile.longitudinal_stability_verdict || 'Unavailable'}
                           </div>
                         </div>
                       </div>
                     </div>
                   ) : (
                     <div className="p-6 text-center text-xs text-surface-500 bg-surface-900 rounded-lg">
-                      Digital twin profile is compiling...
+                      Digital twin profile unavailable.
                     </div>
                   )}
                 </div>
               )}
 
-              {/* ── Tab 3: Independent Imaging Resource ── */}
-              {activeTab === 'imaging' && (
-                <div className="card p-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Scan size={16} className="text-cyan-400" />
-                      <h3 className="text-xs font-bold text-surface-50 uppercase tracking-wider">
-                        Independent Neuroimaging Resources (OASIS-1 / OASIS-3 / ADNI)
-                      </h3>
-                    </div>
-                    <span className="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-mono">
-                      No Cross-Cohort Stool Linkage
-                    </span>
-                  </div>
-
-                  <div className="p-3 rounded-lg bg-surface-900/60 border border-surface-700/40 text-xs text-surface-300">
-                    <p className="leading-relaxed text-[11px]">
-                      <strong>Independent Research Resource Notice:</strong> OASIS and ADNI are completely separate neuroimaging cohorts without crosswalk linkage to ADAM-1 stool metagenomes. They are presented here strictly as independent neuroimaging benchmarks.
-                    </p>
-                  </div>
-
-                  {/* OASIS-1 Volumetric Biomarkers Table */}
-                  <div className="space-y-2">
-                    <span className="text-xs font-bold text-surface-400 uppercase tracking-wider">
-                      Cataloged OASIS-1 Volumetric Subjects ({imagingSubjects.length} verified):
-                    </span>
-
-                    {loadingImaging ? (
-                      <div className="p-6 text-center">
-                        <LoadingSpinner size="sm" />
-                        <p className="text-xs text-surface-400 mt-2">Loading OASIS-1 structural records...</p>
-                      </div>
-                    ) : (
-                      <div className="overflow-x-auto">
-                        <table className="w-full text-xs text-left text-surface-300">
-                          <thead className="bg-surface-900 text-surface-400 uppercase text-[10px] font-semibold border-b border-surface-700">
-                            <tr>
-                              <th className="p-2.5">Subject ID</th>
-                              <th className="p-2.5">Age</th>
-                              <th className="p-2.5">CDR Global</th>
-                              <th className="p-2.5">Hippocampus (cm³)</th>
-                              <th className="p-2.5">Ventricles (cm³)</th>
-                              <th className="p-2.5">Linkage Status</th>
-                            </tr>
-                          </thead>
-                          <tbody className="divide-y divide-surface-800">
-                            {imagingSubjects.map((img) => (
-                              <tr key={img.subject_id} className="hover:bg-surface-850">
-                                <td className="p-2.5 font-mono font-bold text-surface-100">{img.subject_id}</td>
-                                <td className="p-2.5">{img.age_at_scan ?? img.age ?? 'N/A'}</td>
-                                <td className="p-2.5 font-mono">{typeof (img.cdr_global ?? img.cdr_score) === 'number' ? (img.cdr_global ?? img.cdr_score).toFixed(1) : '0.0'}</td>
-                                <td className="p-2.5 font-mono text-cyan-400">{typeof img.hippocampus_volume_cm3 === 'number' ? img.hippocampus_volume_cm3.toFixed(2) : 'N/A'}</td>
-                                <td className="p-2.5 font-mono">{typeof img.lateral_ventricles_volume_cm3 === 'number' ? img.lateral_ventricles_volume_cm3.toFixed(2) : 'N/A'}</td>
-                                <td className="p-2.5">
-                                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface-800 text-surface-400 border border-surface-700">
-                                    Independent MRI Cohort
-                                  </span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* GARD Linkage Status Notice */}
-                  <div className="p-3.5 rounded-lg bg-surface-900 border border-surface-700/60 text-xs space-y-1">
-                    <div className="flex items-center gap-1.5 font-bold text-amber-400">
-                      <AlertTriangle size={14} />
-                      <span>GARD Multimodal Linkage: REQUEST_NOT_SENT</span>
-                    </div>
-                    <p className="text-surface-400 leading-relaxed text-[11px]">
-                      GARD multimodal participant linkage is marked <code className="text-amber-400 font-mono">UNKNOWN_NOT_VERIFIED</code>. Paired microbiome-neuroimaging analyses cannot be performed until formal data-use agreements are secured.
-                    </p>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>
