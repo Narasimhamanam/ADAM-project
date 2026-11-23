@@ -70,6 +70,8 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - run: npm test
+      - run: node scripts/test_sidebar_order.cjs
       - run: node scripts/test_trajectory_frontend.cjs
   manuscript:
     runs-on: ubuntu-latest
