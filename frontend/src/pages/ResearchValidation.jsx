@@ -26,6 +26,7 @@ import {
   fetchCrosswalkAudit,
   fetchGardStatus,
 } from '../api/client'
+import NestedComparison from '../components/NestedComparison'
 import ValidationStatus from '../components/ValidationStatus'
 import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ErrorAlert from '../components/ui/ErrorAlert'
@@ -325,7 +326,7 @@ export default function ResearchValidation() {
           {/* ══════════════════════════════════════════════════════════════════
               TAB 2: BENCHMARKS LEDGER
              ══════════════════════════════════════════════════════════════════ */}
-          {activeTab === 'benchmarks' && <ValidationStatus />}
+          {activeTab === 'benchmarks' && <><ValidationStatus /><NestedComparison /></>}
           {/* ══════════════════════════════════════════════════════════════════
               TAB 4: DATA LINKAGE & INTEGRITY GATES
              ══════════════════════════════════════════════════════════════════ */}

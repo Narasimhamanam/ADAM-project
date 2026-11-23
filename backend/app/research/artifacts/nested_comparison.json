@@ -1,0 +1,303 @@
+{
+  "seed": 42,
+  "outer_folds": 5,
+  "inner_folds": 3,
+  "bootstrap_subjects": 500,
+  "selection": "minimum inner validation Brier",
+  "subjects": 102,
+  "visits": 335,
+  "unit": "mean feature vector across observed visits per participant; retrospective",
+  "interval": "resampled participants conditional on fitted out-of-fold probabilities",
+  "source_revision": "efff563c3e1c639b2ef9c5a5023d46d82b111bb0",
+  "script_sha256": "d8043a56ebcd0a46715eef972be64750fff7e9015129eae8eb50905646fa3bb3",
+  "data_sha256": "83e5cffd455146442788ade79a0faa2567ee97b600002a291bcc27ea93808ff5",
+  "models": {
+    "Training prevalence": {
+      "selected_by_fold": [
+        {},
+        {},
+        {},
+        {},
+        {}
+      ],
+      "grid": {},
+      "metrics": {
+        "AUROC": {
+          "value": 0.477796052631579,
+          "ci95": [
+            0.364808865227959,
+            0.5946264310718529
+          ],
+          "valid_bootstraps": 500
+        },
+        "AUPRC": {
+          "value": 0.3614223866696871,
+          "ci95": [
+            0.25714798616286105,
+            0.4768186388163255
+          ],
+          "valid_bootstraps": 500
+        },
+        "Brier": {
+          "value": 0.23396327290938215,
+          "ci95": [
+            0.21082488518934048,
+            0.2593743340276127
+          ],
+          "valid_bootstraps": 500
+        },
+        "Sensitivity at specificity >= 90%": {
+          "value": 0.0,
+          "ci95": [
+            0.0,
+            0.0
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration intercept": {
+          "value": -2.6531087218327114,
+          "ci95": [
+            -14.005193984316996,
+            8.307918994818591
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration slope": {
+          "value": -4.085552418790541,
+          "ci95": [
+            -25.85864669163849,
+            17.192142416922234
+          ],
+          "valid_bootstraps": 500
+        }
+      }
+    },
+    "Logistic regression": {
+      "selected_by_fold": [
+        {
+          "logisticregression__C": 0.01
+        },
+        {
+          "logisticregression__C": 0.01
+        },
+        {
+          "logisticregression__C": 0.01
+        },
+        {
+          "logisticregression__C": 0.01
+        },
+        {
+          "logisticregression__C": 0.01
+        }
+      ],
+      "grid": {
+        "C": [
+          0.01,
+          0.1,
+          1
+        ]
+      },
+      "metrics": {
+        "AUROC": {
+          "value": 0.645970394736842,
+          "ci95": [
+            0.5257617985878855,
+            0.7460400538329367
+          ],
+          "valid_bootstraps": 500
+        },
+        "AUPRC": {
+          "value": 0.5023228012831673,
+          "ci95": [
+            0.35471298704444565,
+            0.6650297627480612
+          ],
+          "valid_bootstraps": 500
+        },
+        "Brier": {
+          "value": 0.27560121909426755,
+          "ci95": [
+            0.21464270502524166,
+            0.3442740119963323
+          ],
+          "valid_bootstraps": 500
+        },
+        "Sensitivity at specificity >= 90%": {
+          "value": 0.13157894736842105,
+          "ci95": [
+            0.029411764705882353,
+            0.3801724137931034
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration intercept": {
+          "value": -0.4748136108016672,
+          "ci95": [
+            -0.9045623044333939,
+            -0.016338222567363402
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration slope": {
+          "value": 0.05885559977257349,
+          "ci95": [
+            -0.006543140800820017,
+            0.18576069323630648
+          ],
+          "valid_bootstraps": 500
+        }
+      }
+    },
+    "Random forest": {
+      "selected_by_fold": [
+        {
+          "randomforestclassifier__min_samples_leaf": 2
+        },
+        {
+          "randomforestclassifier__min_samples_leaf": 2
+        },
+        {
+          "randomforestclassifier__min_samples_leaf": 2
+        },
+        {
+          "randomforestclassifier__min_samples_leaf": 2
+        },
+        {
+          "randomforestclassifier__min_samples_leaf": 2
+        }
+      ],
+      "grid": {
+        "min_samples_leaf": [
+          2,
+          5
+        ]
+      },
+      "metrics": {
+        "AUROC": {
+          "value": 0.7730263157894738,
+          "ci95": [
+            0.6715649266609146,
+            0.863092910046035
+          ],
+          "valid_bootstraps": 500
+        },
+        "AUPRC": {
+          "value": 0.6133702031060434,
+          "ci95": [
+            0.45466581618311375,
+            0.7927186426883048
+          ],
+          "valid_bootstraps": 500
+        },
+        "Brier": {
+          "value": 0.19742682758242186,
+          "ci95": [
+            0.1688988985716856,
+            0.2294418847710959
+          ],
+          "valid_bootstraps": 500
+        },
+        "Sensitivity at specificity >= 90%": {
+          "value": 0.42105263157894735,
+          "ci95": [
+            0.075,
+            0.6369047619047615
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration intercept": {
+          "value": 0.6655061018090948,
+          "ci95": [
+            -0.18198967222307805,
+            1.6277165943338803
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration slope": {
+          "value": 2.0535054604475866,
+          "ci95": [
+            1.1313162955964644,
+            3.4089479405985923
+          ],
+          "valid_bootstraps": 500
+        }
+      }
+    },
+    "XGBoost": {
+      "selected_by_fold": [
+        {
+          "xgbclassifier__learning_rate": 0.1
+        },
+        {
+          "xgbclassifier__learning_rate": 0.03
+        },
+        {
+          "xgbclassifier__learning_rate": 0.03
+        },
+        {
+          "xgbclassifier__learning_rate": 0.1
+        },
+        {
+          "xgbclassifier__learning_rate": 0.03
+        }
+      ],
+      "grid": {
+        "learning_rate": [
+          0.03,
+          0.1
+        ]
+      },
+      "metrics": {
+        "AUROC": {
+          "value": 0.7203947368421053,
+          "ci95": [
+            0.6075998082827365,
+            0.8234959118973997
+          ],
+          "valid_bootstraps": 500
+        },
+        "AUPRC": {
+          "value": 0.5504564631788956,
+          "ci95": [
+            0.4004711529191034,
+            0.7465307811441719
+          ],
+          "valid_bootstraps": 500
+        },
+        "Brier": {
+          "value": 0.2121412377180219,
+          "ci95": [
+            0.16680232474829929,
+            0.2606193522523152
+          ],
+          "valid_bootstraps": 500
+        },
+        "Sensitivity at specificity >= 90%": {
+          "value": 0.34210526315789475,
+          "ci95": [
+            0.0,
+            0.5442207792207792
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration intercept": {
+          "value": -0.06723567869836375,
+          "ci95": [
+            -0.6911291625498631,
+            0.7167371587114139
+          ],
+          "valid_bootstraps": 500
+        },
+        "Calibration slope": {
+          "value": 0.6126798908399869,
+          "ci95": [
+            0.1996903287949263,
+            1.3729193338115295
+          ],
+          "valid_bootstraps": 500
+        }
+      }
+    }
+  },
+  "ADAM agent workflow": "Unavailable: no fold-specific workflow predictions were generated."
+}

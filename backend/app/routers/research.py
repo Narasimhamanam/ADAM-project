@@ -365,3 +365,12 @@ def cohort_integrity():
     }
     return {"samples": len(frame), "subjects": frame["study_id"].nunique(),
             "cells": frame.size, "checks": checks}
+
+@router.get("/nested-comparison", summary="Saved subject-level nested benchmark")
+def nested_comparison():
+    from pathlib import Path
+    from app.research.rigor import ARTIFACT_DIR
+    result = load_rigor_report(str(Path(ARTIFACT_DIR) / "nested_comparison.json"))
+    if result is None:
+        raise HTTPException(status_code=404, detail="Benchmark has not been generated.")
+    return result
