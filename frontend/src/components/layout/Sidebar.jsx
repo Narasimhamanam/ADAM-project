@@ -29,6 +29,7 @@ import clsx from 'clsx';
 import { useDemoPhase } from '../../context/DemoPhaseContext';
 
 const PRIMARY_DESTINATIONS = [
+  { to: '/assistant', icon: FlaskConical, label: 'AIRA', description: 'Literature questions and evidence' },
   {
     to: '/overview',
     icon: LayoutDashboard,
@@ -45,7 +46,7 @@ const PRIMARY_DESTINATIONS = [
     to: '/patients',
     icon: Users,
     label: 'Patient Explorer',
-    description: '102 subjects & timeline history',
+    description: 'Subjects & timeline history',
   },
   {
     to: '/research',
@@ -176,19 +177,7 @@ export default function Sidebar({ isOpen, onClose }) {
             <ChevronRight size={13} className="text-surface-500" />
           </NavLink>
 
-          {/* Verification Badge */}
-          <div className="px-3 py-2 rounded-lg bg-surface-900/80 border border-surface-800 text-[10px] space-y-1">
-            <div className="flex items-center justify-between text-surface-400">
-              <span className="font-medium">Pipeline Status</span>
-              <span className="text-emerald-400 font-bold flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                Verified
-              </span>
-            </div>
-            <div className="text-surface-500 text-[9px] font-mono truncate">
-              Phase {activeDemoPhase} • IEEE Access (2025)
-            </div>
-          </div>
+
         </div>
       </aside>
     </>

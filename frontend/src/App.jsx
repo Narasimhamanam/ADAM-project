@@ -22,6 +22,7 @@ import { fetchHealth } from './api/client';
 import ErrorBoundary from './components/ui/ErrorBoundary';
 
 // The 5 Core Redesigned Pages
+import ResearchAssistant from './pages/ResearchAssistant';
 import Overview from './pages/Overview';
 import Analyze from './pages/Analyze';
 import PatientExplorer from './pages/PatientExplorer';
@@ -85,7 +86,7 @@ export default function App() {
           <Route path="/models" element={<Navigate to="/analyze" replace />} />
           <Route path="/shap" element={<Navigate to="/analyze" replace />} />
           <Route path="/workflow" element={<Navigate to="/analyze" replace />} />
-          <Route path="/assistant" element={<Navigate to="/analyze" replace />} />
+          <Route path="/assistant" element={<ResearchAssistant />} />
           <Route path="/agents" element={<Navigate to="/analyze" replace />} />
 
           {/* Patient Explorer Aliases */}
