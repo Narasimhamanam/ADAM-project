@@ -8,6 +8,7 @@ from app.ml.data_loader import load_dataset_df
 import json
 
 from app.rag.literature_store import get_all_articles, search_literature
+from app.rag.domain_router import normalize_and_spellcheck, route_query_scope, EXAMPLE_CHIPS
 
 router = APIRouter(prefix="/ai", tags=["Literature answers"])
 
@@ -19,16 +20,56 @@ class Question(BaseModel):
 
 
 def answer_question(payload):
-    q = payload.question.strip()
+    raw_q = payload.question.strip()
+    norm_q, correction_notice, weak_suggestions = normalize_and_spellcheck(raw_q)
+    q = norm_q
+
+    # Scope routing
+    routed = route_query_scope(q)
+    if routed["category"] in ["greeting", "out_of_scope", "platform"]:
+        res = {
+            "answer": routed["answer"],
+            "explanation": routed["explanation"],
+            "caveats": routed.get("caveats", "Research use only, not a medical device."),
+            "sources": [],
+            "followups": routed.get("followups", EXAMPLE_CHIPS),
+            "disclaimer": "Research use only, not a medical device."
+        }
+        if correction_notice:
+            res["correction_notice"] = correction_notice
+        if weak_suggestions:
+            res["suggestions"] = weak_suggestions
+        return res
+
     result = {"answer": "The available evidence does not answer this clearly.", "sources": [],
               "explanation": "The indexed summaries do not establish an answer to that question.",
               "caveats": "The index is small. Conflicting findings have not been systematically assessed.",
-              "followups": [], "disclaimer": "Research use only, not a medical device."}
+              "followups": EXAMPLE_CHIPS, "disclaimer": "Research use only, not a medical device."}
+    if correction_notice:
+        result["correction_notice"] = correction_notice
+    if weak_suggestions:
+        result["suggestions"] = weak_suggestions
+
     if re.search(r"diagnose|dosage|what dose|should I (take|stop)|prescribe|sudden confusion|face droop|slurred speech|chest pain|cannot breathe", q, re.I):
         result.update(answer="AIRA cannot assess symptoms or recommend treatment.",
                       explanation="Contact a healthcare professional. For sudden or severe symptoms, seek urgent medical care.")
         return result
     if re.search(r"\b(cure|treat|prevent|diagnosis for me|guarantee)\w*\b", q, re.I):
+        return result
+
+    # Check for general Alzheimer's definitions: "what is ad?", "what is alzheimer's"
+    if re.search(r"\b(what is (ad|alzheimer'?s|dementia)|define (ad|alzheimer'?s|dementia))\b", q, re.I):
+        result.update(
+            answer="Alzheimer's disease (AD) is a progressive neurodegenerative disorder characterized by extracellular amyloid-beta plaque deposition, intracellular hyperphosphorylated tau neurofibrillary tangles, synaptic loss, and gradual cognitive decline.",
+            explanation="General background, not from the indexed papers. Pathologically, AD begins years prior to overt dementia onset. Emerging gut-brain research investigates how gut microbiota-derived metabolites and mucosal inflammation may influence neuroinflammation and amyloid deposition.",
+            caveats="Observational studies establish associations between gut dysbiosis and AD biomarkers, but causal intervention mechanisms in humans remain under investigation.",
+            sources=[],
+            followups=[
+                "How does the gut microbiome relate to amyloid pathology?",
+                "What did Haran et al. find regarding butyrate-producing bacteria?",
+                "What is the difference between association and causation in microbiome research?"
+            ]
+        )
         return result
     index = {p["pmid"]: p for p in get_all_articles()}
     stop = set("what which where study paper about does there with that from show found find link between indexed reports evidence authors research their this have could results report".split())

@@ -29,6 +29,7 @@ import LoadingSpinner from '../components/ui/LoadingSpinner'
 import ErrorAlert from '../components/ui/ErrorAlert'
 import EmptyState from '../components/ui/EmptyState'
 import Skeleton from '../components/ui/Skeleton'
+import ReportDownloads from '../components/ReportDownloads'
 
 export default function PatientExplorer() {
   const [subjects, setSubjects] = useState([])
