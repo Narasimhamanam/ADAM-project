@@ -1,6 +1,6 @@
 # External validation access audit
 
-Checked 2026-11-16. **No external performance is reported.** Public cohorts exist;
+Checked 2026-11-16. **Historical access audit.** Public cohorts exist;
 this execution did not obtain a compatible labeled feature matrix. That is a
 processing/access limitation, not evidence that external datasets do not exist.
 
@@ -29,3 +29,7 @@ obtain a permitted feature/diagnosis/subject manifest, verify preprocessing unit
 freeze the baseline model and schema before reading external outcomes, then call
 `evaluate_frozen`. Never impute absent clinical variables as zero or map genus
 values to species. A prespecified taxonomy-only model may be needed.
+
+## AlzBiom genus-only follow-up
+
+The supplied authors' archive enabled a separate 97-genus analysis. The external AUROC was 0.561. Five-fold ADAM-only cross-validation selected the original penalty and produced identical predictions. Aggregate metrics are in `backend/app/research/artifacts/alzbiom_summary.json`. Archive-specific redistribution terms remain unverified. The species-plus-clinical model still lacks an independent evaluation.

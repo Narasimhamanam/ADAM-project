@@ -331,6 +331,9 @@ async def get_rigor_report():
     if repeated is not None:
         report["repeated"] = {key: repeated[key] for key in (
             "config", "summary", "paired_coverage_deltas", "risk_coverage")}
+    external = load_rigor_report(str(Path(ARTIFACT_DIR) / "alzbiom_summary.json"))
+    if external is not None:
+        report["alzbiom"] = external
     return report
 
 
