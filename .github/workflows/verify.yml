@@ -103,6 +103,7 @@ jobs:
             sleep 1
           done
           node frontend/scripts/test_website.mjs
+          node frontend/scripts/smoke_test.mjs
   manuscript:
     runs-on: ubuntu-latest
     steps:
