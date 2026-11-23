@@ -28,6 +28,7 @@ import PatientExplorer from './pages/PatientExplorer';
 import ResearchValidation from './pages/ResearchValidation';
 import ReportsEvidence from './pages/ReportsEvidence';
 import RigorSuite from './pages/RigorSuite';
+import ResearchAssistant from './pages/ResearchAssistant';
 import Settings from './pages/Settings';
 
 export default function App() {
@@ -69,6 +70,7 @@ export default function App() {
           <Route path="/overview" element={<Overview />} />
           <Route path="/analyze" element={<Analyze />} />
           <Route path="/patients" element={<PatientExplorer />} />
+          <Route path="/assistant" element={<ResearchAssistant />} />
           <Route path="/research" element={<ResearchValidation />} />
           <Route path="/reports" element={<ReportsEvidence />} />
           <Route path="/rigor" element={<RigorSuite />} />
@@ -85,7 +87,6 @@ export default function App() {
           <Route path="/models" element={<Navigate to="/analyze" replace />} />
           <Route path="/shap" element={<Navigate to="/analyze" replace />} />
           <Route path="/workflow" element={<Navigate to="/analyze" replace />} />
-          <Route path="/assistant" element={<Navigate to="/analyze" replace />} />
           <Route path="/agents" element={<Navigate to="/analyze" replace />} />
 
           {/* Patient Explorer Aliases */}
