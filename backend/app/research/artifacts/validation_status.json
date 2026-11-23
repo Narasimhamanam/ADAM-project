@@ -1,0 +1,10 @@
+{
+  "genus_model": {
+    "cohort": "AlzBiom",
+    "cases": 75,
+    "controls": 100,
+    "interpretation": "No detectable transfer.",
+    "interval_scope": "The primary AUROC interval conditions on the fitted model."
+  },
+  "species_clinical": "The species-plus-clinical model and its conformal coverage remain externally unvalidated."
+}

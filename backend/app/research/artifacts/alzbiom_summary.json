@@ -1,0 +1,26 @@
+{
+  "tuned_C": 1,
+  "tuned_auc": 0.5614666666666667,
+  "tuned_brier": 0.24792993774343333,
+  "source_subjects": 102,
+  "source_species": 357,
+  "shared_genera": 97,
+  "external_records": 175,
+  "source_prevalence": 0.37254901960784315,
+  "external_prevalence": 0.42857142857142855,
+  "oracle_brier": 0.24489795918367344,
+  "calibration_offset": 0.3290159795585134,
+  "joint_intercept": 0.6065129496819701,
+  "calibration_slope": 1.4525403305248041,
+  "refit_auc_ci95": [
+    0.45506,
+    0.6564099999999999
+  ],
+  "auc": 0.5614666666666667,
+  "auc_ci95": [
+    0.4736,
+    0.6468066666666665
+  ],
+  "brier": 0.24792993774343333,
+  "source_prior_brier": 0.24803646948975674
+}
