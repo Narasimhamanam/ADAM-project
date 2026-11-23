@@ -72,8 +72,7 @@ export default function RigorSuite() {
       <header>
         <h1 className="text-2xl font-bold text-surface-50 flex items-center gap-2"><Scale size={22} /> Rigor Suite</h1>
         <p className="text-sm text-surface-400 mt-1">
-          {pv.n_samples} samples · {pv.n_subjects} subjects · {pv.n_features} features. All figures are mean ± SD across
-          repeated runs on this single cohort (not confidence intervals, not external validation).
+          {pv.n_samples} samples · {pv.n_subjects} subjects · {pv.n_features} features. Internal cohort metrics and external transfer results are labeled separately.
         </p>
       </header>
 
@@ -88,6 +87,16 @@ export default function RigorSuite() {
           sub={`k=${ss.config.top_k}, ${ss.config.n_boot_used} subject-bootstraps`} accent="primary" />
       </div>
 
+      {report.alzbiom && <Section icon={Scale} title="External evaluation on AlzBiom"
+        note={`Exploratory genus-only comparison on ${report.alzbiom.external_records} records. Both models trained on ADAM. Lower Brier scores indicate better probability predictions.`}>
+        <Table head={['Model', 'AUROC', 'Brier score']} rows={[
+          ['Original genus model (C = 1)', f(report.alzbiom.auc), f(report.alzbiom.brier, 5)],
+          [`ADAM cross-validated penalty (C = ${report.alzbiom.tuned_C})`, f(report.alzbiom.tuned_auc), f(report.alzbiom.tuned_brier, 5)],
+          ['ADAM prevalence', '0.500', f(report.alzbiom.source_prior_brier, 5)],
+          ['AlzBiom prevalence (retrospective)', '0.500', f(report.alzbiom.oracle_brier, 5)],
+        ]} />
+        <p>Original AUROC 95% interval with source refitting: {report.alzbiom.refit_auc_ci95.map(v => f(v)).join(' to ')}. {report.validation_status?.species_clinical || 'Validation status unavailable.'}</p>
+      </Section>}
       <Section icon={ShieldAlert} title="1. Subject-level leakage audit"
         note="The Alzheimer's label is constant within a subject, so sample-level CV places the same person in train and test folds.">
         <Table

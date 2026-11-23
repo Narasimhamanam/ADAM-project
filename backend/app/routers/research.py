@@ -346,3 +346,31 @@ async def get_rigor_section(section: str):
     if report is None:
         raise HTTPException(status_code=404, detail="Rigor report not generated yet.")
     return {"provenance": report.get("provenance"), section: report.get(section)}
+
+@router.get("/integrity", summary="Recompute local ADAM record integrity counts")
+def cohort_integrity():
+    from app.ml.data_loader import load_dataset_df
+    from app.ml.diversity import get_taxa_columns
+
+    frame = load_dataset_df()
+    ids = frame["Sample ID"]
+    checks = {
+        "Duplicate sample ID rows": int(ids.duplicated(keep=False).sum()),
+        "Sample IDs linked to multiple subjects": int((frame.groupby("Sample ID")["study_id"].nunique() > 1).sum()),
+        "Missing subject IDs": int(frame["study_id"].isna().sum()),
+        "Missing cells": int(frame.isna().sum().sum()),
+        "Labels outside binary schema": int((~frame["Alzheimers"].isin([0, 1])).sum()),
+        "Subjects with conflicting recorded labels": int((frame.groupby("study_id")["Alzheimers"].nunique() > 1).sum()),
+        "Negative taxon abundance cells": int((frame[get_taxa_columns(frame)] < 0).sum().sum()),
+    }
+    return {"samples": len(frame), "subjects": frame["study_id"].nunique(),
+            "cells": frame.size, "checks": checks}
+
+@router.get("/nested-comparison", summary="Saved subject-level nested benchmark")
+def nested_comparison():
+    from pathlib import Path
+    from app.research.rigor import ARTIFACT_DIR
+    result = load_rigor_report(str(Path(ARTIFACT_DIR) / "nested_comparison.json"))
+    if result is None:
+        raise HTTPException(status_code=404, detail="Benchmark has not been generated.")
+    return result

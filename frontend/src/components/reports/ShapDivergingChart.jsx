@@ -5,19 +5,8 @@ export default function ShapDivergingChart({ predictionData }) {
   const contributions = predictionData?.feature_contributions || [];
   const topContributions = contributions.slice(0, 10);
 
-  // If no contributions yet, provide fallback sample values matching FB100
-  const items = topContributions.length > 0 ? topContributions : [
-    { feature: 'malnutrition_indicator_sco', shap_value: -1.4462, feature_value: 1.0, impact: 'decreases_risk' },
-    { feature: 'clinical_frailty_scale', shap_value: 0.4698, feature_value: 7.0, impact: 'increases_risk' },
-    { feature: 'Phocaeicola dorei', shap_value: -0.4142, feature_value: 0.0, impact: 'decreases_risk' },
-    { feature: 'Dialister invisus', shap_value: -0.3428, feature_value: 6.0437, impact: 'decreases_risk' },
-    { feature: 'GABA Analogs', shap_value: -0.2566, feature_value: 0.0, impact: 'decreases_risk' },
-    { feature: 'Neglecta timonensis', shap_value: 0.2561, feature_value: 0.0, impact: 'increases_risk' },
-    { feature: 'GGB3433 SGB4573', shap_value: -0.2134, feature_value: 0.0, impact: 'decreases_risk' },
-    { feature: 'Clostridia bacterium', shap_value: -0.1960, feature_value: 0.0, impact: 'decreases_risk' },
-    { feature: 'Parabacteroides distasonis', shap_value: -0.1526, feature_value: 0.0, impact: 'decreases_risk' },
-    { feature: 'Bacteroides ovatus', shap_value: 0.1438, feature_value: 0.0, impact: 'increases_risk' },
-  ];
+  const items = topContributions;
+  if (!items.length) return <p>Feature contributions unavailable for this record.</p>;
 
   // Calculate maximum absolute SHAP value for scaling bars
   const maxAbsShap = Math.max(...items.map((i) => Math.abs(i.shap_value)), 0.5);

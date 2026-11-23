@@ -71,6 +71,30 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: node scripts/test_trajectory_frontend.cjs
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: pip install -r backend/requirements.txt
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - name: Exercise production bundle with real API
+        run: |
+          (cd backend && python -m uvicorn app.main:app --port 8000) > /tmp/adam-api.log 2>&1 &
+          (cd frontend && VITE_API_URL=http://127.0.0.1:8000 npm run preview) > /tmp/adam-web.log 2>&1 &
+          for attempt in $(seq 1 120); do
+            if curl -fsS http://127.0.0.1:3000/api/ml/samples?limit=1 >/dev/null; then break; fi
+            sleep 2
+          done
+          node frontend/scripts/test_website.mjs
   manuscript:
     runs-on: ubuntu-latest
     steps:
