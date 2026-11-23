@@ -1,0 +1,235 @@
+{
+  "design": "Authored known-item queries against the six-document development index",
+  "corpus_sha256": "39d6760c2ea99b8fa37776fca10ed2ee875b1de29e50c413ed8143c9089868a7",
+  "n_questions": 30,
+  "recall_at_1": 1.0,
+  "recall_at_3": 1.0,
+  "index_citation_identity": 1.0,
+  "retrieved_citations": 44,
+  "rows": [
+    {
+      "question": "Which platform combines model explanations with nursing home microbiome data?",
+      "expected": "41036149",
+      "retrieved": [
+        "41036149",
+        "31064831"
+      ]
+    },
+    {
+      "question": "Which study integrates machine learning and language-model agents?",
+      "expected": "41036149",
+      "retrieved": [
+        "41036149"
+      ]
+    },
+    {
+      "question": "How does ADAM use longitudinal observations?",
+      "expected": "41036149",
+      "retrieved": [
+        "41036149",
+        "29051531"
+      ]
+    },
+    {
+      "question": "Which source discusses retrospective displays and held-out evaluation?",
+      "expected": "41036149",
+      "retrieved": [
+        "41036149"
+      ]
+    },
+    {
+      "question": "Which paper describes ADAM microbiome and clinical data integration?",
+      "expected": "41036149",
+      "retrieved": [
+        "41036149"
+      ]
+    },
+    {
+      "question": "Which cohort investigated epithelial P-glycoprotein?",
+      "expected": "31064831",
+      "retrieved": [
+        "31064831"
+      ]
+    },
+    {
+      "question": "Where were intestinal epithelial assays used?",
+      "expected": "31064831",
+      "retrieved": [
+        "31064831"
+      ]
+    },
+    {
+      "question": "What did Haran find about butyrate-producing bacteria?",
+      "expected": "31064831",
+      "retrieved": [
+        "31064831"
+      ]
+    },
+    {
+      "question": "Which work linked nursing-home metagenomics to intestinal expression?",
+      "expected": "31064831",
+      "retrieved": [
+        "31064831",
+        "41036149"
+      ]
+    },
+    {
+      "question": "Which paper discusses the anti-inflammatory P-glycoprotein pathway?",
+      "expected": "31064831",
+      "retrieved": [
+        "31064831"
+      ]
+    },
+    {
+      "question": "Which study compared fecal microbial communities with matched controls?",
+      "expected": "29051531",
+      "retrieved": [
+        "29051531"
+      ]
+    },
+    {
+      "question": "Where was lower diversity linked to cerebrospinal fluid biomarkers?",
+      "expected": "29051531",
+      "retrieved": [
+        "29051531",
+        "31064831"
+      ]
+    },
+    {
+      "question": "What did Vogt report about microbiome alterations?",
+      "expected": "29051531",
+      "retrieved": [
+        "29051531"
+      ]
+    },
+    {
+      "question": "Which study compares community diversity in Alzheimer dementia?",
+      "expected": "29051531",
+      "retrieved": [
+        "29051531"
+      ]
+    },
+    {
+      "question": "Which indexed paper mentions Bifidobacterium and alpha diversity?",
+      "expected": "29051531",
+      "retrieved": [
+        "29051531"
+      ]
+    },
+    {
+      "question": "Which study reports higher Escherichia/Shigella?",
+      "expected": "27776263",
+      "retrieved": [
+        "27776263"
+      ]
+    },
+    {
+      "question": "Which study examined Eubacterium rectale in amyloid-positive participants?",
+      "expected": "27776263",
+      "retrieved": [
+        "27776263",
+        "33074224",
+        "29051531"
+      ]
+    },
+    {
+      "question": "Where were peripheral inflammation markers studied?",
+      "expected": "27776263",
+      "retrieved": [
+        "27776263"
+      ]
+    },
+    {
+      "question": "Which work measured Bacteroides fragilis alongside pro-inflammatory taxa?",
+      "expected": "27776263",
+      "retrieved": [
+        "27776263"
+      ]
+    },
+    {
+      "question": "Which study by Cattaneo reports inflammatory gut bacterial taxa?",
+      "expected": "27776263",
+      "retrieved": [
+        "27776263",
+        "33074224",
+        "29051531"
+      ]
+    },
+    {
+      "question": "Which study measured circulating bacterial products in 89 older adults?",
+      "expected": "33074224",
+      "retrieved": [
+        "33074224",
+        "27776263"
+      ]
+    },
+    {
+      "question": "What study examined amyloid PET burden and butyrate?",
+      "expected": "33074224",
+      "retrieved": [
+        "33074224",
+        "27776263"
+      ]
+    },
+    {
+      "question": "Which work measured markers of endothelial dysfunction?",
+      "expected": "33074224",
+      "retrieved": [
+        "33074224",
+        "27776263"
+      ]
+    },
+    {
+      "question": "Which article investigated lipopolysaccharide and short-chain fatty acids?",
+      "expected": "33074224",
+      "retrieved": [
+        "33074224"
+      ]
+    },
+    {
+      "question": "Which study associates circulating butyrate with amyloid burden?",
+      "expected": "33074224",
+      "retrieved": [
+        "33074224",
+        "27776263"
+      ]
+    },
+    {
+      "question": "Why analyze sequencing abundances as relative compositions?",
+      "expected": "29187837",
+      "retrieved": [
+        "29187837"
+      ]
+    },
+    {
+      "question": "Which source covers log-ratio transformations?",
+      "expected": "29187837",
+      "retrieved": [
+        "29187837"
+      ]
+    },
+    {
+      "question": "What paper explains zero handling for compositional microbiome analysis?",
+      "expected": "29187837",
+      "retrieved": [
+        "29187837"
+      ]
+    },
+    {
+      "question": "Which study explains relative microbial changes and CLR?",
+      "expected": "29187837",
+      "retrieved": [
+        "29187837",
+        "29051531"
+      ]
+    },
+    {
+      "question": "Where does Gloor discuss compositional constraints?",
+      "expected": "29187837",
+      "retrieved": [
+        "29187837",
+        "29051531"
+      ]
+    }
+  ]
+}

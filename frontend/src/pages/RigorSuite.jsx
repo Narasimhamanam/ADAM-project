@@ -95,7 +95,7 @@ export default function RigorSuite() {
           ['ADAM prevalence', '0.500', f(report.alzbiom.source_prior_brier, 5)],
           ['AlzBiom prevalence (retrospective)', '0.500', f(report.alzbiom.oracle_brier, 5)],
         ]} />
-        <p>Original AUROC 95% interval with source refitting: {report.alzbiom.refit_auc_ci95.map(v => f(v)).join(' to ')}. External performance of the species-plus-clinical model remains unknown.</p>
+        <p>Original AUROC 95% interval with source refitting: {report.alzbiom.refit_auc_ci95.map(v => f(v)).join(' to ')}. {report.validation_status?.species_clinical || 'Validation status unavailable.'}</p>
       </Section>}
       <Section icon={ShieldAlert} title="1. Subject-level leakage audit"
         note="The Alzheimer's label is constant within a subject, so sample-level CV places the same person in train and test folds.">

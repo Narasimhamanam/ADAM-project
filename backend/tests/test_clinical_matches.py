@@ -33,3 +33,12 @@ async def test_report_identity_and_integrity_api():
         assert audit.status_code == 200
         assert audit.json()["samples"] == len(frame)
         assert audit.json()["checks"]["Duplicate sample ID rows"] == int(frame["Sample ID"].duplicated(keep=False).sum())
+
+@pytest.mark.asyncio
+async def test_served_validation_status_matches_external_artifact():
+    async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app), base_url="http://test") as client:
+        report = (await client.get("/api/research/rigor")).json()
+    cohort = report["validation_status"]["genus_model"]
+    assert cohort["cases"] + cohort["controls"] == report["alzbiom"]["external_records"]
+    assert cohort["cases"] / report["alzbiom"]["external_records"] == pytest.approx(report["alzbiom"]["external_prevalence"])
+    assert sum(row["n"] for row in report["calibration"]["reliability_bins_raw_last_repeat"]) == report["provenance"]["n_samples"]

@@ -17,3 +17,11 @@
 ## Research limitations
 
 The frozen genus-level model showed no detectable transfer to AlzBiom. The species-plus-clinical model and conformal prediction sets lack independent validation. Clinical neighbor scores describe baseline resemblance and have no validated prognostic interpretation. AIRA displays indexed research summaries. Its clinical question-answering accuracy has not been established.
+
+## Validation and retrieval follow-up
+
+Dashboard, Reports, Benchmarks and Rigor Suite consume a shared validation status artifact. The external case/control counts are checked against the frozen evaluation. The internal reliability curve shows the raw XGBoost probabilities from the last internal calibration repeat, with the number of visits included.
+
+AIRA combines BM25 with corpus-local latent semantic embeddings and reranks by exact phrase matches. The saved evaluation contains all 30 authored questions and their retrieved identifiers. Recall at ranks 1 and 3 was 30/30 on these development questions for both the original TF-IDF retriever and the hybrid. All 44 returned hybrid citations matched the title and identifier in the index. This tests known-item retrieval on six indexed summaries. Clinical answer quality, unseen-question recall and full-text retrieval remain unevaluated.
+
+The follow-up backend suite passed 157 tests with one scikit-learn deprecation warning. CPython executable-line instrumentation recorded 7,098 of 10,608 backend application lines (66.91%, including module/class definition lines). Frontend lint and production build passed. Browser, accessibility, frontend coverage and production response-time measurement remain open.
