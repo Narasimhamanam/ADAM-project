@@ -263,9 +263,29 @@ def build_participant_digital_twin(cohort_id: str, participant_id: str) -> Optio
     )
 
     result_dict = profile.to_dict()
+    result_dict["clinical_matches"] = clinical_matches(df, participant_id)
     result_dict["inference_status"] = "SUBJECT_HELD_OUT_UNCALIBRATED"
     result_dict["uncertainty_status"] = "NOT_ESTIMATED"
     return result_dict
+
+
+def clinical_matches(df: pd.DataFrame, participant_id: str, limit: int = 3):
+    """Rank other subjects by mean range-scaled absolute differences at first visit."""
+    features = ["age", "clinical_frailty_scale", "malnutrition_indicator_sco"]
+    baseline = (df.sort_values(["day", "Sample ID"]).drop_duplicates("study_id")
+                .set_index("study_id"))
+    values = baseline[features].apply(pd.to_numeric, errors="coerce")
+    ranges = values.max() - values.min()
+    values = values.loc[:, ranges > 0].dropna()
+    if participant_id not in values.index or values.shape[1] == 0:
+        return []
+    differences = (values.drop(index=participant_id) - values.loc[participant_id]).abs()
+    scaled = differences.div(ranges[values.columns])
+    scores = (1 - scaled.mean(axis=1)).sort_index().nlargest(limit)
+    return [{"participant_id": str(subject), "sample_id": str(baseline.at[subject, "Sample ID"]),
+             "similarity": float(score), "closest_features": scaled.loc[subject].nsmallest(2).index.tolist(),
+             "recorded_label": int(baseline.at[subject, "Alzheimers"])}
+            for subject, score in scores.items()]
 
 
 def list_digital_twin_participants(cohort_id: str = "ADAM1_BASELINE") -> List[Dict[str, Any]]:

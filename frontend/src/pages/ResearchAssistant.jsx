@@ -1,280 +1,49 @@
-/**
- * Research Assistant (AIRA) Chat Interface
- * ========================================
- * Interactive conversational interface backed by the ADAM-1 RAG & LLM Engine.
- * Elevated with card-raised elevation, high-contrast chat bubbles, and clinical tokens.
- */
-import React, { useState, useRef, useEffect } from 'react'
-import {
-  MessageSquare,
-  Send,
-  Sparkles,
-  BookOpen,
-  Bot,
-  User,
-  RefreshCw,
-  Cpu,
-  HelpCircle,
-  ExternalLink,
-  ChevronRight,
-} from 'lucide-react'
-import LoadingSpinner from '../components/ui/LoadingSpinner'
-import ErrorAlert from '../components/ui/ErrorAlert'
-import MarkdownContent from '../components/ui/MarkdownContent'
+import React, { useEffect, useRef, useState } from 'react'
+import { useConversation } from '../context/Conversation'
+import Avatar, { OrbIcon } from '../components/Avatar'
+import { Send, Square, Copy, RefreshCw, ThumbsUp, ThumbsDown, ArrowDown } from 'lucide-react'
 
-const SUGGESTED_PROMPTS = [
-  'What is the role of Phocaeicola dorei in Alzheimer’s pathology?',
-  'How do butyrate producers like Eubacterium rectale confer neuroprotection?',
-  'Compare XGBoost vs Random Forest on the 30-seed ADAM benchmark.',
-  'How do Clinical Frailty Scale and PPI medication alter gut microbiome diversity?',
-  'What are the key bacterial mechanisms linking gut dysbiosis to amyloid burden?',
-]
-
-const API_BASE = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api'
-
-export default function ResearchAssistant() {
-  const [messages, setMessages] = useState([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content:
-        'Hello! I am **AIRA (Artificial Intelligence Research Assistant)** for the ADAM-1 Enhanced platform.\n\nI can help you analyze the **335-sample metagenomic cohort**, interpret **XGBoost & TreeSHAP biomarker rankings**, and retrieve **evidence-based biomedical literature** on the gut-brain axis in Alzheimer’s disease. How can I assist your research today?',
-      provider: 'ADAM-1 Biomedical Expert Engine',
-      citations: [
-        { pmid: 'PMC8472911', title: 'Gut Microbiota Composition in Alzheimer’s Pathology' },
-        { pmid: 'PMC9284102', title: 'Machine Learning Biomarkers in Longitudinal Cohorts' },
-      ],
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    },
-  ])
-
-  const [inputQuery, setInputQuery] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(null)
-  const [activeProvider, setActiveProvider] = useState('ADAM-1 Biomedical Expert Engine')
-  const messagesEndRef = useRef(null)
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages, loading])
-
-  // Load AI Layer Status
-  useEffect(() => {
-    fetch(`${API_BASE}/ai/status`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.active_provider) {
-          setActiveProvider(data.active_provider)
-        }
-      })
-      .catch(() => {})
-  }, [])
-
-  async function handleSend(textToSend) {
-    const query = textToSend || inputQuery
-    if (!query.trim() || loading) return
-
-    const userMsg = {
-      id: `user-${Date.now()}`,
-      role: 'user',
-      content: query.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    }
-
-    setMessages((prev) => [...prev, userMsg])
-    setInputQuery('')
-    setLoading(true)
-    setError(null)
-
-    try {
-      const res = await fetch(`${API_BASE}/ai/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: userMsg.content,
-          include_literature: true,
-        }),
-      })
-
-      if (!res.ok) throw new Error('Failed to generate response from AI Assistant')
-      const data = await res.json()
-
-      const assistantMsg = {
-        id: `assistant-${Date.now()}`,
-        role: 'assistant',
-        content: data.response,
-        provider: data.provider,
-        citations: data.citations || [],
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      }
-
-      setMessages((prev) => [...prev, assistantMsg])
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  function handleKeyDown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
-  }
-
-  return (
-    <div className="space-y-6 animate-fade-in flex flex-col h-[calc(100vh-8rem)]">
-      {/* ── Header ── */}
-      <div className="flex items-start justify-between flex-wrap gap-4 shrink-0">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold text-surface-50">AI Research Assistant (AIRA)</h1>
-            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent-500/15 text-accent-600 dark:text-accent-300 border border-accent-500/30">
-              RAG &amp; Multi-Omics
-            </span>
-          </div>
-          <p className="text-surface-400 mt-1 text-sm font-medium">
-            Conversational reasoning across metagenomics, ML model benchmarks, and PubMed literature.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="card px-3 py-1.5 flex items-center gap-2 bg-surface-900 border-surface-700/60 text-xs text-surface-400 shadow-sm">
-            <Cpu size={13} className="text-accent-500" />
-            <span className="font-medium">Engine:</span>
-            <span className="font-mono text-accent-600 dark:text-accent-300 font-bold">{activeProvider}</span>
-          </div>
-        </div>
+export default function ResearchAssistant({compact=false}) {
+  const chat=useConversation(),[draft,setDraft]=useState(''),[copied,setCopied]=useState('')
+  const area=useRef(null),log=useRef(null),follow=useRef(true)
+  const last=chat.active.messages.at(-1)
+  useEffect(()=>{if(follow.current && log.current)log.current.scrollTop=log.current.scrollHeight},[chat.active.messages,chat.busy])
+  useEffect(()=>{if(area.current){area.current.style.height='auto';area.current.style.height=Math.min(area.current.scrollHeight,120)+'px'}},[draft])
+  function send(){if(draft.trim()&&!chat.busy){chat.ask(draft);setDraft('');follow.current=true}}
+  const sources=[...chat.active.messages].reverse().find(m=>m.data)?.data.sources||[]
+  return <div className={'assistant-layout '+(compact?'compact':'')}>
+    {!compact && <aside className="card chat-history"><h2>Conversations</h2><button onClick={chat.newChat}>New chat</button>
+      {chat.threads.map(t=><button key={t.id} aria-current={t.id===chat.active.id?'true':undefined} onClick={()=>chat.choose(t.id)}>{t.messages[0]?.text||'New conversation'}</button>)}</aside>}
+    <section className="card chat-main"><header className="assistant-heading"><Avatar animated state={chat.busy?(chat.partial?'answering':'thinking'):draft?'listening':last?.role==='error'?'error':last?.data?'answering':'idle'}/>
+      <div><h2>AIRA</h2><p>Evidence assistant</p></div><button className="ml-auto" onClick={chat.clear}>Clear chat</button></header>
+      <div className="chat-options"><label>Audience <select value={chat.audience} onChange={e=>chat.setAudience(e.target.value)}><option value="patient">Patient</option><option value="clinician">Clinician</option></select></label></div>
+      <label className="chat-options"><input type="checkbox" checked={chat.useRecord && !!chat.record} disabled={!chat.record || chat.busy} onChange={e=>chat.setUseRecord(e.target.checked)}/>Use selected record {chat.record || '(select a report first)'}</label>
+      <div className="chat-log" ref={log} onScroll={e=>{const n=e.currentTarget;follow.current=n.scrollHeight-n.scrollTop-n.clientHeight<55}}>
+        {!chat.active.messages.length && <div className="chat-empty"><h3>What would you like to understand?</h3>
+          {['Which study examined butyrate and amyloid burden?','What do compositional microbiome data mean?'].map(q=><button key={q} onClick={()=>chat.ask(q)}>{q}</button>)}</div>}
+        {chat.active.messages.map(m=><article className={'bubble '+m.role} key={m.id}>
+          {m.role==='user'?m.text:m.role==='error'?<><p role="alert">{m.text}</p><button onClick={()=>chat.ask(m.question)}>Retry</button></>:<>
+            <div className="answer-title"><OrbIcon size={23}/><strong>AIRA</strong></div>
+            <p>{m.data.answer.split(/(\[\d+\])/).map((part,i)=>/^\[\d+\]$/.test(part)?<a key={i} href={'#src-'+m.id+'-'+part.slice(1,-1)}>{part}</a>:part)}</p>
+            <p>{m.data.explanation}</p>{m.data.project_source && <a href={m.data.project_source}>Saved study results</a>}{m.data.context && <p>Record {m.data.context.sample_id} � Study {m.data.context.study_id} � Day {m.data.context.visit_day}</p>}
+            {m.data.sources.map((s,i)=><details key={s.pmid} id={'src-'+m.id+'-'+(i+1)}><summary>[{i+1}] {s.title}</summary>
+              <p>{s.claim}</p><a href={'https://pubmed.ncbi.nlm.nih.gov/'+s.pmid+'/'} target="_blank" rel="noreferrer">{s.authors}, {s.year} · PMID {s.pmid}</a><p>Study design: {s.study_type||'unrecorded'} · Sample size: {s.sample_size??'unrecorded'}</p></details>)}
+            <p><strong>Caveats. </strong>{m.data.caveats}</p><small>{m.data.disclaimer}</small>
+            <div className="chat-actions"><button aria-label="Copy answer" onClick={async()=>{try{await navigator.clipboard.writeText([m.data.answer,m.data.explanation,...m.data.sources.map(s=>s.title+' PMID '+s.pmid),m.data.disclaimer].join('\n'));setCopied(m.id)}catch{setCopied('')}}}><Copy size={15}/>{copied===m.id?'Copied':''}</button>
+              <button disabled={chat.busy} aria-label="Regenerate answer" onClick={()=>chat.ask(m.question)}><RefreshCw size={15}/></button>
+              {[[1,ThumbsUp],[-1,ThumbsDown]].map(([value,Icon])=><button key={value} aria-label={value===1?'Helpful':'Unhelpful'} aria-pressed={m.feedback===value} onClick={()=>chat.feedback(m.id,value)}><Icon size={15}/></button>)}</div>
+            {m.feedbackError && <p role="alert">Feedback could not be saved.</p>}
+            {m.data.followups.map(q=><button key={q} disabled={chat.busy} onClick={()=>chat.ask(q)}>{q}</button>)}
+          </>}
+        </article>)}
+        {chat.busy && chat.partial && <p>{chat.partial}</p>}
+        <div aria-live="polite">{chat.busy?chat.phase:last?.data?'Answer ready.':''}</div>
       </div>
-
-      {error && <ErrorAlert message={error} onRetry={() => handleSend()} />}
-
-      {/* ── Chat Canvas ── */}
-      <div className="card-raised flex-1 flex flex-col p-4 bg-gradient-to-b from-surface-900 via-surface-900 to-surface-850 border border-surface-700/60 overflow-hidden min-h-0">
-        {/* Messages Scroll Area */}
-        <div className="flex-1 overflow-y-auto space-y-4 pr-2">
-          {messages.map((m) => {
-            const isAssistant = m.role === 'assistant'
-            return (
-              <div
-                key={m.id}
-                className={`flex gap-3 text-sm ${isAssistant ? 'items-start' : 'items-start flex-row-reverse'}`}
-              >
-                {/* Avatar */}
-                <div
-                  className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-                    isAssistant
-                      ? 'bg-accent-500/20 text-accent-500 border border-accent-500/30 shadow-sm'
-                      : 'bg-primary-500/20 text-primary-500 border border-primary-500/30 shadow-sm'
-                  }`}
-                >
-                  {isAssistant ? <Bot size={16} /> : <User size={16} />}
-                </div>
-
-                {/* Message Body */}
-                <div className={`max-w-3xl space-y-2 ${isAssistant ? 'text-left' : 'text-right'}`}>
-                  <div
-                    className={`p-4 rounded-xl text-xs leading-relaxed ${
-                      isAssistant
-                        ? 'bg-surface-800/90 border border-surface-700/80 text-surface-100 shadow-sm'
-                        : 'bg-accent-500/15 border border-accent-500/30 text-surface-50 shadow-sm whitespace-pre-wrap'
-                    }`}
-                  >
-                    {isAssistant ? (
-                      <MarkdownContent content={m.content} />
-                    ) : (
-                      m.content
-                    )}
-                  </div>
-
-                  {/* Citations & Meta (Assistant only) */}
-                  {isAssistant && m.citations && m.citations.length > 0 && (
-                    <div className="flex flex-wrap gap-2 pt-1">
-                      {m.citations.map((c, i) => (
-                        <a
-                          key={i}
-                          href={`https://pubmed.ncbi.nlm.nih.gov/?term=${encodeURIComponent(c.pmid || '')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          title={`View on PubMed: ${c.title || c.pmid}`}
-                          className="flex items-center gap-1.5 text-[10px] px-2 py-1 rounded bg-surface-900 border border-surface-700/60 text-accent-500 dark:text-accent-300 font-medium hover:border-accent-500/60 hover:bg-surface-800 transition-colors"
-                        >
-                          <BookOpen size={10} className="shrink-0" />
-                          <span className="font-bold">[{c.pmid}]</span>
-                          <span className="text-surface-400 truncate max-w-[200px]">{c.title}</span>
-                          <ExternalLink size={9} className="opacity-60 shrink-0" />
-                        </a>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex items-center gap-2 text-[10px] text-surface-400 font-mono">
-                    <span>{m.timestamp}</span>
-                    {isAssistant && m.provider && (
-                      <>
-                        <span>•</span>
-                        <span className="text-accent-500 dark:text-accent-400">{m.provider}</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-
-          {loading && (
-            <div className="flex gap-3 items-center text-sm text-surface-400">
-              <div className="w-8 h-8 rounded-lg bg-accent-500/20 text-accent-500 border border-accent-500/30 flex items-center justify-center shrink-0 animate-pulse">
-                <Bot size={16} />
-              </div>
-              <div className="p-3 bg-surface-800/80 border border-surface-700/80 rounded-xl flex items-center gap-2">
-                <LoadingSpinner message="AIRA is analyzing datasets and literature..." />
-              </div>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* ── Suggested Prompts Chips ── */}
-        <div className="pt-3 pb-2 border-t border-surface-700/40">
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-            <span className="text-[10px] font-bold text-surface-400 uppercase tracking-wider shrink-0 flex items-center gap-1">
-              <Sparkles size={11} className="text-warning-500" /> Suggested:
-            </span>
-            {SUGGESTED_PROMPTS.map((prompt, idx) => (
-              <button
-                key={idx}
-                onClick={() => handleSend(prompt)}
-                disabled={loading}
-                className="shrink-0 text-[11px] px-2.5 py-1 rounded-full bg-surface-800/80 hover:bg-surface-700 border border-surface-700 text-surface-300 hover:text-surface-50 transition-all whitespace-nowrap cursor-pointer font-medium"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* ── Input Box ── */}
-        <div className="relative pt-1">
-          <textarea
-            value={inputQuery}
-            onChange={(e) => setInputQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask AIRA anything about gut microbiome, Alzheimer's biomarkers, or model results... (Press Enter to send)"
-            rows={2}
-            disabled={loading}
-            className="input text-xs pr-12 resize-none shadow-inner"
-          />
-          <button
-            onClick={() => handleSend()}
-            disabled={!inputQuery.trim() || loading}
-            className="absolute right-3 bottom-4 p-2 rounded-lg bg-accent-500 hover:bg-accent-600 disabled:opacity-40 text-white transition-all shadow-md cursor-pointer"
-          >
-            <Send size={14} />
-          </button>
-        </div>
-      </div>
-    </div>
-  )
+      <form className="composer" onSubmit={e=>{e.preventDefault();send()}}><textarea ref={area} rows={1} maxLength={500} aria-label="Research question" placeholder="Ask a research question…" value={draft} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.nativeEvent.isComposing){e.preventDefault();send()}}}/>
+        {chat.busy?<button type="button" aria-label="Stop" onClick={chat.stop}><Square size={17}/></button>:<button disabled={!draft.trim()} aria-label="Send"><Send size={17}/></button>}
+        <button type="button" aria-label="Scroll to latest" onClick={()=>{follow.current=true;log.current.scrollTop=log.current.scrollHeight}}><ArrowDown size={16}/></button></form>
+      <small>Research use only, not a medical device.</small>
+    </section>
+    {!compact && <aside className="card evidence-list"><h2>Evidence</h2>{sources.length?sources.map(s=><p key={s.pmid}><a href={'https://pubmed.ncbi.nlm.nih.gov/'+s.pmid+'/'}>{s.title}</a></p>):<p>Sources appear with a supported answer.</p>}</aside>}
+  </div>
 }
