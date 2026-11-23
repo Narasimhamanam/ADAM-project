@@ -33,15 +33,15 @@ const PIPELINE_STAGES = [
   { id: 'retrieval', step: 2, label: 'Evidence Retrieval', desc: 'Querying vector store for PubMed citations on key taxa' },
   { id: 'summarization', step: 3, label: 'Summarization', desc: 'AIRA agent synthesizes biomarker findings & clinical profile' },
   { id: 'classification', step: 4, label: 'Classification', desc: 'AIRA classification agent verifies consistency & risk rationale' },
-  { id: 'result', step: 5, label: 'Final Result', desc: 'Calibrated consensus risk prediction & audit trail generated' },
+  { id: 'result', step: 5, label: 'Final Result', desc: 'Model result and run details' },
 ]
 
 export default function Analyze() {
   const [datasets, setDatasets] = useState([])
   const [selectedCohort, setSelectedCohort] = useState('ADAM1_BASELINE')
   const [samples, setSamples] = useState([])
-  const [selectedSampleId, setSelectedSampleId] = useState('DC054')
-  const [selectedModel, setSelectedModel] = useState('xgboost')
+  const [selectedSampleId, setSelectedSampleId] = useState('')
+  const [selectedModel, setSelectedModel] = useState('adam_workflow')
   const [showAdvanced, setShowAdvanced] = useState(false)
   const [threshold, setThreshold] = useState(0.5)
   const [includeShap, setIncludeShap] = useState(true)
@@ -88,6 +88,8 @@ export default function Analyze() {
     initData()
   }, [])
 
+  useEffect(() => { setAnalysisResult(null) }, [selectedModel, selectedSampleId, threshold, includeShap, includeLiterature])
+
   // Filter samples
   const filteredSamples = samples.filter((s) => {
     const isAD = s.alzheimers === 1 || s.alzheimers === 1.0 || s.alzheimers_diagnosis === 1
@@ -113,31 +115,28 @@ export default function Analyze() {
       if (selectedModel === 'adam_workflow') {
         // Multi-agent workflow execution
         setCurrentStage('computation')
-        await new Promise((r) => setTimeout(r, 400))
-        setCurrentStage('retrieval')
-        await new Promise((r) => setTimeout(r, 400))
-        setCurrentStage('summarization')
-
         const data = await executeAdamWorkflow(selectedSampleId)
-        setCurrentStage('classification')
-        await new Promise((r) => setTimeout(r, 300))
+        const prediction = data.computational_agent?.ml_prediction
+        if (!Number.isFinite(prediction?.probability)) throw new Error('Workflow returned no model probability.')
         setCurrentStage('result')
 
         setAnalysisResult({
           type: 'workflow',
+          decision_threshold: threshold,
+          workflow_decision: data.final_result?.adam_prediction,
           sample_id: selectedSampleId,
           study_id: data.study_id || samples.find((s) => s.sample_id === selectedSampleId)?.study_id,
           model: 'ADAM Multi-Agent Workflow',
           cohort: selectedCohort,
           timestamp: new Date().toISOString(),
-          predicted_label: data.predicted_label ?? (data.risk_probability >= threshold ? 1 : 0),
-          probability: data.risk_probability ?? data.probability ?? 0.5,
-          confidence: data.confidence ?? 0.85,
+          predicted_label: Number(prediction.probability >= threshold),
+          probability: prediction.probability,
+          confidence: prediction.confidence,
           ground_truth: samples.find((s) => s.sample_id === selectedSampleId)?.alzheimers ?? null,
-          shap_values: data.shap_values || data.top_features || [],
-          literature_articles: data.literature_articles || data.references || [],
-          summary_text: data.summary_text || data.agent_summary || '',
-          classification_rationale: data.classification_rationale || '',
+          shap_values: includeShap ? data.computational_agent?.shap_explanation?.all_contributions || [] : [],
+          literature_articles: includeLiterature ? data.summarization_agent?.citations || [] : [],
+          summary_text: data.summarization_agent?.summary_text || '',
+          classification_rationale: data.classification_agent?.decision_basis || '',
           raw_data: data,
         })
       } else {
@@ -162,9 +161,9 @@ export default function Analyze() {
 
         // Fetch literature RAG citations if enabled
         let literatureArticles = []
-        if (includeLiterature) {
+        if (includeLiterature && data.feature_contributions?.length) {
           try {
-            const litRes = await fetch(`${API_BASE}/ai/literature/articles`)
+            const litRes = await fetch(`${API_BASE}/ai/literature/search?q=${encodeURIComponent(data.feature_contributions.slice(0, 3).map(f => f.feature).join(' '))}&top_k=3`)
             if (litRes.ok) {
               const litData = await litRes.json()
               literatureArticles = (litData.articles || litData || []).slice(0, 3)
@@ -176,16 +175,17 @@ export default function Analyze() {
 
         setAnalysisResult({
           type: 'model',
+          decision_threshold: threshold,
           sample_id: selectedSampleId,
           study_id: data.study_id || samples.find((s) => s.sample_id === selectedSampleId)?.study_id,
           model: selectedModel.toUpperCase(),
           cohort: selectedCohort,
           timestamp: new Date().toISOString(),
-          predicted_label: data.predicted_label,
+          predicted_label: Number(data.alzheimers_risk_probability >= threshold),
           probability: data.alzheimers_risk_probability,
           confidence: data.confidence,
           ground_truth: data.ground_truth_label ?? samples.find((s) => s.sample_id === selectedSampleId)?.alzheimers,
-          shap_values: data.top_feature_contributions || data.top_features || [],
+          shap_values: includeShap ? data.feature_contributions || [] : [],
           literature_articles: literatureArticles,
           raw_data: data,
         })
@@ -229,8 +229,6 @@ export default function Analyze() {
               className="w-full text-xs rounded-lg bg-surface-900 border border-surface-700 px-3 py-2 text-surface-100 focus:outline-none focus:ring-1 focus:ring-accent-500"
             >
               <option value="ADAM1_BASELINE">ADAM1_BASELINE (Stool Metagenomics + Clinical, 335 samples) [Verified]</option>
-              <option value="ALZBIOM_CS" disabled>ALZBIOM_CS (European Validation Cohort) [Not Downloaded]</option>
-              <option value="OASIS1_MRI" disabled>OASIS1_MRI (Structural MRI Scans) [No Stool Linkage]</option>
             </select>
           </div>
 
@@ -238,6 +236,7 @@ export default function Analyze() {
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-surface-300">Model Architecture</label>
             <select
+              disabled={running}
               value={selectedModel}
               onChange={(e) => setSelectedModel(e.target.value)}
               className="w-full text-xs rounded-lg bg-surface-900 border border-surface-700 px-3 py-2 text-surface-100 focus:outline-none focus:ring-1 focus:ring-accent-500"
@@ -254,6 +253,7 @@ export default function Analyze() {
             <label className="text-xs font-semibold text-surface-300">Select Clinical Sample</label>
             <div className="flex gap-2">
               <select
+                disabled={running}
                 value={selectedSampleId}
                 onChange={(e) => setSelectedSampleId(e.target.value)}
                 className="flex-1 text-xs rounded-lg bg-surface-900 border border-surface-700 px-3 py-2 text-surface-100 font-mono focus:outline-none focus:ring-1 focus:ring-accent-500"
@@ -272,8 +272,9 @@ export default function Analyze() {
         <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-surface-700/50">
           <div className="flex items-center gap-1.5 flex-wrap">
             <span className="text-[11px] text-surface-400 font-medium">Quick Select:</span>
-            {['DC054', 'DC060', 'FB002', 'FB100', 'FB302', 'FB438'].map((sid) => (
+            {filteredSamples.slice(0, 6).map((sample) => sample.sample_id).map((sid) => (
               <button
+                disabled={running}
                 key={sid}
                 onClick={() => setSelectedSampleId(sid)}
                 className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors ${
@@ -331,7 +332,7 @@ export default function Analyze() {
                   step="0.05"
                   min="0.1"
                   max="0.9"
-                  value={threshold}
+                  disabled={running} value={threshold}
                   onChange={(e) => setThreshold(parseFloat(e.target.value))}
                   className="w-full px-2 py-1 rounded bg-surface-900 border border-surface-700 text-surface-100 font-mono"
                 />
@@ -341,7 +342,7 @@ export default function Analyze() {
                 <input
                   type="checkbox"
                   id="shapCheck"
-                  checked={includeShap}
+                  disabled={running} checked={includeShap}
                   onChange={(e) => setIncludeShap(e.target.checked)}
                   className="rounded border-surface-700 bg-surface-900 text-accent-500"
                 />
@@ -354,7 +355,7 @@ export default function Analyze() {
                 <input
                   type="checkbox"
                   id="ragCheck"
-                  checked={includeLiterature}
+                  disabled={running} checked={includeLiterature}
                   onChange={(e) => setIncludeLiterature(e.target.checked)}
                   className="rounded border-surface-700 bg-surface-900 text-accent-500"
                 />
@@ -422,7 +423,10 @@ export default function Analyze() {
       {/* ── C. Results Layout ── */}
       {analysisResult && (
         <div className="space-y-6">
-          {/* 1. Primary Result Card */}
+          <div className="flex gap-4"><button onClick={() => window.print()}>Print / save PDF</button>
+              <a download="adam-run.json" href={'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(analysisResult, null, 2))}>Export JSON</a></div>
+            {analysisResult.workflow_decision && <p>Workflow classification: {analysisResult.workflow_decision}. The probability below is the computational model output.</p>}
+            {/* 1. Primary Result Card */}
           <div className="card p-5 space-y-4 border-l-4 border-l-accent-500">
             <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-surface-700/60">
               <div className="flex items-center gap-2">
@@ -446,12 +450,12 @@ export default function Analyze() {
                 <div className="flex items-center gap-2">
                   <span
                     className={`text-xl font-extrabold font-mono ${
-                      analysisResult.predicted_label === 1 || analysisResult.probability >= threshold
+                      analysisResult.predicted_label === 1
                         ? 'text-rose-400'
                         : 'text-emerald-400'
                     }`}
                   >
-                    {analysisResult.predicted_label === 1 || analysisResult.probability >= threshold
+                    {analysisResult.predicted_label === 1
                       ? 'Elevated AD Risk'
                       : 'Non-AD Control'}
                   </span>
@@ -463,7 +467,7 @@ export default function Analyze() {
 
               {/* Risk Probability */}
               <div className="space-y-1">
-                <span className="text-xs text-surface-400 font-medium">Predicted Probability</span>
+                <span className="text-xs text-surface-400 font-medium">ML probability · individual interval unavailable</span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-2xl font-bold text-surface-50 font-mono">
                     {(analysisResult.probability * 100).toFixed(1)}%
@@ -500,7 +504,7 @@ export default function Analyze() {
                 <div className="text-[10px] text-surface-400">
                   {analysisResult.predicted_label === analysisResult.ground_truth ? (
                     <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                      <CheckCircle2 size={11} /> Correct prediction on held-out test record
+                      <CheckCircle2 size={11} /> Matches recorded cohort label
                     </span>
                   ) : (
                     <span className="text-amber-400 font-semibold flex items-center gap-1">
@@ -535,11 +539,7 @@ export default function Analyze() {
               {analysisResult.shap_values && analysisResult.shap_values.length > 0 ? (
                 <div className="pt-2">
                   <ShapDivergingChart
-                    featureContributions={analysisResult.shap_values.slice(0, 8).map((f) => ({
-                      feature: f.feature_name || f.feature || 'Feature',
-                      shap_value: f.shap_value || f.attribution || 0,
-                      feature_value: f.feature_value ?? f.value ?? 0,
-                    }))}
+                    predictionData={{ feature_contributions: analysisResult.shap_values }}
                   />
                 </div>
               ) : (
@@ -577,20 +577,20 @@ export default function Analyze() {
                     >
                       <div className="font-semibold text-surface-100 flex items-start justify-between gap-2">
                         <span className="line-clamp-1">{art.title || art.citation || 'Scientific Article'}</span>
-                        {art.doi && (
+                        {(art.doi || /^\d+$/.test(art.pmid)) && (
                           <a
-                            href={`https://doi.org/${art.doi}`}
+                            href={art.doi ? `https://doi.org/${art.doi}` : `https://pubmed.ncbi.nlm.nih.gov/${art.pmid}/`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-accent-400 hover:underline shrink-0 flex items-center gap-1 text-[10px]"
                           >
-                            <span>DOI</span>
+                            <span>Source</span>
                             <ExternalLink size={10} />
                           </a>
                         )}
                       </div>
                       <p className="text-[11px] text-surface-400 line-clamp-2">
-                        {art.abstract || art.excerpt || 'Empirical evidence on gut microbiome dysbiosis in cognitive impairment.'}
+                        {art.abstract || art.snippet || art.excerpt}
                       </p>
                     </div>
                   ))}

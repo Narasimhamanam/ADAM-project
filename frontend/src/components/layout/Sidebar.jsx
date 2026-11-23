@@ -30,6 +30,7 @@ import clsx from 'clsx';
 import { useDemoPhase } from '../../context/DemoPhaseContext';
 
 const PRIMARY_DESTINATIONS = [
+  { to: '/assistant', icon: FlaskConical, label: 'AIRA', description: 'Literature questions and evidence' },
   {
     to: '/overview',
     icon: LayoutDashboard,

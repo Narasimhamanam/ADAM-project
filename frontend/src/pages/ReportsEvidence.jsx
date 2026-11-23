@@ -1,6 +1,3 @@
-import { rememberRecord } from '../context/recentRecords'
-import { useConversation } from '../context/Conversation'
-import ReportDownloads from '../components/ReportDownloads'
 import React, { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { apiClient, fetchAvailableSamples } from '../api/client'
@@ -8,7 +5,6 @@ import ShapDivergingChart from '../components/reports/ShapDivergingChart'
 import ValidationStatus from '../components/ValidationStatus'
 
 export default function ReportsEvidence() {
-  const {setRecord,setUseRecord}=useConversation()
   const [params, setParams] = useSearchParams()
   const id = (params.get('sample') || '').trim().toUpperCase()
   const [draft, setDraft] = useState(id)
@@ -19,8 +15,6 @@ export default function ReportsEvidence() {
   }, [])
   useEffect(() => {
     setDraft(id)
-    setUseRecord(false)
-    setRecord(null)
     if (!id) return
     const controller = new AbortController()
     const options = { signal: controller.signal }
@@ -34,7 +28,7 @@ export default function ReportsEvidence() {
             return data.sample_id === id ? data : null
           } catch { return null }
         }))
-        if (!controller.signal.aborted) { setRecord(id); setResult({ id, sample, predictions }); rememberRecord(id) }
+        if (!controller.signal.aborted) setResult({ id, sample, predictions })
       } catch (error) {
         if (!controller.signal.aborted) setResult({ id, error: error.response?.status === 404 ? 'Record not found.' : 'Could not load this record.' })
       }
@@ -56,6 +50,6 @@ export default function ReportsEvidence() {
         <p>Collection day {current.sample.day ?? 'unavailable'}</p>
         {['XGBoost', 'Random forest', 'Logistic regression'].map((name, i) => <p key={name}>{name} probability: {Number.isFinite(current.predictions[i]?.alzheimers_risk_probability) ? (current.predictions[i].alzheimers_risk_probability * 100).toFixed(1) + '%' : 'Unavailable'}</p>)}
         <p>Individual probability intervals are unavailable.</p><ShapDivergingChart predictionData={current.predictions[0]} />
-        <ReportDownloads key={id} record={id} /><button onClick={() => window.print()}>Print / save PDF</button>
+        <button onClick={() => window.print()}>Print / save PDF</button>
       </section>}</div><ValidationStatus /><a href="/assistant">Search literature with AIRA</a></div>
 }
