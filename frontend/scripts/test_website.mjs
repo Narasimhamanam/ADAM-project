@@ -20,7 +20,9 @@ try {
   await page.goto(origin + '/analyze')
   assert.equal(await page.$$eval('select', els => els[1].value), 'adam_workflow')
   await page.goto(origin + '/assistant')
-  await page.type('input[aria-label="Research question"]', 'butyrate')
+  await page.waitForSelector('textarea[aria-label="Research question"], input[aria-label="Research question"]')
+  const inputSelector = await page.$('textarea[aria-label="Research question"]') ? 'textarea[aria-label="Research question"]' : 'input[aria-label="Research question"]'
+  await page.type(inputSelector, 'butyrate')
   await page.keyboard.press('Enter')
   await page.waitForSelector('a[href^="https://pubmed.ncbi.nlm.nih.gov/"]')
   await page.goto(origin + '/research?tab=linkage')
