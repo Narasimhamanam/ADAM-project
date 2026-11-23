@@ -59,8 +59,8 @@ export default function PatientExplorer() {
       if (list.length > 0) {
         // Keep selected if present, else select first subject
         setSelectedSubjectId((prev) => {
-          if (prev && list.some((s) => s.study_id === prev)) return prev
-          return list[0].study_id
+          if (prev && list.some((s) => (s.subject_id || s.study_id) === prev)) return prev
+          return (list[0].subject_id || list[0].study_id)
         })
       }
     } catch (err) {
@@ -140,7 +140,7 @@ export default function PatientExplorer() {
       const matchesSearch =
         !searchQuery ||
         s.subject_id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.study_id?.toLowerCase().includes(searchQuery.toLowerCase())
+        (s.subject_id || s.study_id)?.toLowerCase().includes(searchQuery.toLowerCase())
       return matchesDiagnosis && matchesVisits && matchesSearch
     })
   }, [subjects, diagnosisFilter, visitFilter, searchQuery])
@@ -167,8 +167,8 @@ export default function PatientExplorer() {
     // Support both observations and visits compatibility aliases
     const rawList = trajectoryData.observations || trajectoryData.visits || []
     return rawList.map((obs, idx) => {
-      const dayOffset = obs.study_day ?? obs.day_offset ?? obs.day ?? 0
-      const prob = obs.ad_probability ?? obs.predicted_probability ?? obs.risk_probability ?? 0.5
+      const dayOffset = obs.study_day ?? obs.day_offset ?? obs.day ?? null
+      const prob = obs.ad_probability ?? obs.predicted_probability ?? obs.risk_probability ?? null
 
       // Harmonize species abundance
       let keyTaxa = []
@@ -182,7 +182,7 @@ export default function PatientExplorer() {
       }
 
       return {
-        sample_id: obs.sample_id || `Sample-${idx + 1}`,
+        sample_id: obs.sample_id || null,
         study_day: dayOffset,
         sample_date: obs.sample_date || null,
         ad_probability: prob,
@@ -282,7 +282,7 @@ export default function PatientExplorer() {
             <Search size={13} className="absolute left-2.5 top-2.5 text-surface-400" />
             <input
               type="text"
-              placeholder="Search study_id (e.g. CH1-011)..."
+              placeholder="Search by study ID"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full text-xs pl-8 pr-3 py-1.5 rounded-md bg-surface-900 border border-surface-700 text-surface-100 placeholder-surface-500 focus:outline-none focus:ring-1 focus:ring-primary-500"
@@ -495,10 +495,10 @@ export default function PatientExplorer() {
                               <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                                 <div className="flex items-center gap-2">
                                   <span className="font-bold text-surface-100 font-mono">
-                                    Visit {idx + 1}: Sample {v.sample_id}
+                                    Visit {idx + 1}: Sample {v.sample_id || 'unavailable'}
                                   </span>
                                   <span className="text-[11px] px-2 py-0.5 rounded bg-surface-800 text-surface-300 font-mono">
-                                    Day {v.study_day}
+                                    Day {v.study_day ?? 'unavailable'}
                                   </span>
                                   {v.sample_date && (
                                     <span className="text-[11px] text-surface-500 font-mono">
@@ -508,14 +508,16 @@ export default function PatientExplorer() {
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                  <span className="text-[11px] text-surface-400">Calibrated Risk:</span>
+                                  <span className="text-[11px] text-surface-400">Model probability:</span>
                                   <span className="font-mono font-bold text-surface-50">
-                                    {(prob * 100).toFixed(1)}%
+                                    {Number.isFinite(prob) ? (prob * 100).toFixed(1) + '%' : 'Unavailable'}
                                   </span>
                                 </div>
                               </div>
 
-                              {/* Progress bar of calibrated risk */}
+                              <small>Research use only, not a medical device. Individual interval unavailable.</small>
+                              {v.sample_id && <ReportDownloads key={v.sample_id} record={v.sample_id} />}
+                              {/* Model probability */}
                               <div className="w-full bg-surface-800 rounded-full h-1.5 overflow-hidden">
                                 <div
                                   className={`h-full ${prob >= 0.5 ? 'bg-rose-500' : 'bg-emerald-500'}`}

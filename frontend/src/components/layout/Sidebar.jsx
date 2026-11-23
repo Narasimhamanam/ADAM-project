@@ -25,6 +25,7 @@ import {
   Activity,
   Scale,
 } from 'lucide-react';
+import { OrbIcon } from '../Avatar';
 import clsx from 'clsx';
 import { useDemoPhase } from '../../context/DemoPhaseContext';
 
@@ -48,6 +49,7 @@ const PRIMARY_DESTINATIONS = [
     label: 'Patient Explorer',
     description: 'Subjects & timeline history',
   },
+  { to: '/assistant', icon: OrbIcon, label: 'AIRA', description: 'Literature questions and evidence' },
   {
     to: '/research',
     icon: ShieldCheck,

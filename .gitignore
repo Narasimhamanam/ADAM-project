@@ -69,3 +69,8 @@ manuscript/main.pdf
 
 backend/app/research/artifacts/repeated_subject_predictions.csv
 backend/app/research/artifacts/repeated_report.json
+
+# Interface captures may contain participant-level information.
+ADAM-interface-screenshots*.zip
+adam-visual-audit/
+ADAM-interface-screenshots/
