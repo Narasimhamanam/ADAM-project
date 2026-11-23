@@ -606,4 +606,6 @@ html, body {
 .record-item{justify-content:space-between;border-bottom:1px solid var(--glass-edge);padding:.55rem 0;font-size:14px}
 .glass-shell nav a[aria-current=page],.glass-shell nav a[aria-current=page] svg{color:var(--glass-tint)}
 .glass-shell nav a .text-surface-500{color:var(--glass-muted)}
+.glass-tab-active{background-color:color-mix(in srgb,var(--glass-tint) 20%,transparent)!important;color:var(--glass-tint)!important;border-color:color-mix(in srgb,var(--glass-tint) 40%,transparent)!important}
+.composer textarea{min-height:48px!important;line-height:1.4!important;padding:.65rem .8rem!important}
 @media(max-width:850px){.overview-columns{grid-template-columns:1fr}}
